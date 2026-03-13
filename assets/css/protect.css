@@ -1,0 +1,43 @@
+/* Anti-scraping and copy protection */
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+img {
+    pointer-events: none; /* Prevent right-click, saving, dragging on images */
+}
+
+@media print {
+    html, body {
+        display: none !important;
+    }
+}
+
+.blur-content > *:not(#protection-overlay) {
+    filter: blur(15px) grayscale(100%) !important;
+    opacity: 0.1 !important;
+    user-select: none !important;
+    pointer-events: none !important;
+}
+
+/* Invisible overlay for pixel copying protection (watermark) */
+body::after {
+    content: "Protected Content";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999998;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(255,255,255,0.02) 100px, rgba(255,255,255,0.02) 200px);
+    opacity: 0.1;
+    color: rgba(0,0,0,0.01);
+    font-size: 2px;
+}

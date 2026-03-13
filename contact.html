@@ -2,13 +2,14 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; img-src 'self' data: https:;">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="index, follow">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="./static/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 
 
@@ -17,6 +18,7 @@
         Contact
 
     </title>
+    <link rel="stylesheet" href="./assets/css/protect.css">
 </head>
 
 <body>
@@ -81,9 +83,11 @@
 
     <main>
 
-        <h1>Contact Me</h1>
+        <h1 class="text-center mt-5"><span
+                style="background-color: rgb(86, 233, 233); padding:10px; font-weight:bold;font-size:1.5cm;font-style: italic; border-radius: 20px;">Contact</span>
+        </h1>
 
-        <ul class="m-5 list-unstyled text-center font-italic">
+        <ul class="m-5 list-unstyled text-center font-italic" data-nosnippet>
 
             <li class="list-grroup-item h2">
                 <tr>
@@ -91,7 +95,7 @@
                         Mail
                     </td>
                     <td>
-                        <a href="mailto:pctablet505@gmail.com" style="font-style:oblique;">pctablet505@gmail.com</a>
+                        <a href="#" class="protected-contact" data-contact="bWFpbHRvOndvcmsucmFodWwxMjZAZ21haWwuY29t" data-display="d29yay5yYWh1bDEyNkBnbWFpbC5jb20=" style="font-style:oblique;">Click to view</a>
                     </td>
                 </tr>
 
@@ -103,7 +107,7 @@
                         Phone
                     </td>
                     <td>
-                        <a href="tel:+91 8709253658" style="font-style:oblique;">+91 8709253658</a>
+                        <a href="#" class="protected-contact" data-contact="dGVsOis5MS04NzA5MjUzNjU4" data-display="KzkxLTg3MDkyNTM2NTg=" style="font-style:oblique;">Click to view</a>
                     </td>
                 </tr>
 
@@ -115,7 +119,19 @@
                         LinkedIn
                     </td>
                     <td>
-                        <a href="https://www.linkedin.com/in/pctablet505" style="font-style:oblique;">@pctablet505</a>
+                        <a href="https://www.linkedin.com/in/rahul126" style="font-style:oblique;">@rahul126</a>
+                    </td>
+                </tr>
+
+            </li>
+
+            <li class="list-grroup-item h2">
+                <tr>
+                    <td>
+                        Website
+                    </td>
+                    <td>
+                        <a href="https://github.com/pctablet505/portfolio" style="font-style:oblique;">pctablet505/portfolio</a>
                     </td>
                 </tr>
 
@@ -127,7 +143,7 @@
                         Hackerrank
                     </td>
                     <td>
-                        <a href="https://www.hackerrank.com/pctablet505" style="font-style:oblique;">@pctablet505</a>
+                        <a href="https://www.hackerrank.com/stopslavery404" style="font-style:oblique;">@stopslavery404</a>
                     </td>
                 </tr>
 
@@ -151,7 +167,19 @@
                         Instagram
                     </td>
                     <td>
-                        <a href="https://www.instagram.com/pctablet505" style="font-style:oblique;">pctablet505</a>
+                        <a href="https://www.instagram.com/hellorahul.me" style="font-style:oblique;">@hellorahul.me</a>
+                    </td>
+                </tr>
+
+            </li>
+            
+            <li class="list-grroup-item h2">
+                <tr>
+                    <td>
+                        YouTube
+                    </td>
+                    <td>
+                        <a href="https://www.youtube.com/channel/UCnRPtPB_CXs1ngGlwKqP-yw" style="font-style:oblique;">Channel</a>
                     </td>
                 </tr>
 
@@ -164,6 +192,7 @@
 
 
 
+    <script src="./assets/js/protect.js"></script>
 </body>
 
 </html>

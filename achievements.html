@@ -2,13 +2,14 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; img-src 'self' data: https:;">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="index, follow">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="./static/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 
 
@@ -17,6 +18,7 @@
         Achievements
 
     </title>
+    <link rel="stylesheet" href="./assets/css/protect.css">
 </head>
 
 <body>
@@ -81,78 +83,113 @@
 
     <main>
 
-        <h1 class="underlined">My Achievements</h1>
+        <h1 class="underlined">Skills & Achievements</h1>
 
+        <h2 class="text-center" style="margin-top: 30px;">Skills</h2>
         <ul class="list-group text-center bordered">
             <li>
-                <dt>World Programming Championship - IIT Mumbai</dt>
-                <dd> Rank 69 | Certificate no 99695</dd>
+                <dt>Programming Languages</dt>
+                <dd>Python, C, C++, Java, Kotlin, JavaScript</dd>
             </li>
             <li>
-                <dt>Gold in HackFest 2020</dt>
-                <dd>Rank 29 | 8051
-                    Rating 2042.08 from 1500
-                    <a href="https://www.hackerrank.com/reslits/hackerrank-hackfest-2020/pctablet505">Visit</a>
-                </dd>
+                <dt>Data Analysis and Statistics</dt>
+                <dd>Advanced Data Structures, Algorithms, Probabilistic Modeling, Inference, Estimation, Hypothesis Testing, Prediction, Data Analysis</dd>
             </li>
             <li>
-                <dt>CodeVita Season 9</dt>
-                <dd>Cleared Round 1</dd>
+                <dt>Artificial Intelligence</dt>
+                <dd>Search, Optimization, Reinforcement Learning, Bayes-Net, Knowledge-Based Agents</dd>
             </li>
             <li>
-                <dt>CodeVita Season 9</dt>
-                <dd>Got AIR 242 in Round 2</dd>
+                <dt>Machine Learning</dt>
+                <dd>Regression, Classification, Clustering, Recommendation, Collaborative Filtering, Non-Parametric Models</dd>
             </li>
             <li>
-                <dt>Hack the Interview III</dt>
-                <dd>Rank(73 | 919)
-                    <a href="https://www.hackerrank.com/reslits/hack-the-interview-iv/pctablet505">Visit</a>
-                </dd>
+                <dt>Tools and Libraries</dt>
+                <dd>TensorFlow, PyTorch, Keras, Scikit-Learn, Seaborn, Matplotlib, OpenCV</dd>
             </li>
             <li>
-                <dt>Hack the Interview IV (Asia Pacific)</dt>
-                <dd> Rank(100 | 4353)
-                    <a href="https://www.hackerrank.com/reslits/hack-the-interview-iv-apac/pctablet505">Visit</a>
-                </dd>
+                <dt>Computer Vision</dt>
+                <dd>Object Detection, Image Segmentation, Geometric Transformations, Synthetic Dataset Generation, Object Tracking</dd>
             </li>
             <li>
-                <dt>Hack the Interview IV (U.S.) </dt>
-                <dd>Rank( 65 | 1217)
-                    <a href="https://www.hackerrank.com/reslits/hack-the-interview-iv/pctablet505?h_r=profile">Visit</a>
-                </dd>
+                <dt>Android Development</dt>
+                <dd>Java, Kotlin, ML model porting, Services, Fragments, Rest APIs, Sensor Access, Python Script on Android</dd>
             </li>
             <li>
-                <dt>Hackerrank Algorithms</dt>
-                <dd>Rank 815/ 2219538
-
-                    <a
-                        href="https://www.hackerrank.com/leaderboard?filter=pctablet505&filter_on=hacker&page=1&track=algorithms&type=practice">Visit</a>
-                </dd>
+                <dt>Web Development</dt>
+                <dd>JavaScript, Flask, Django, HTML, SASS, CSS, Bootstrap, SQL, MVC, Git</dd>
             </li>
             <li>
-                <dt>Hackerrank Data Structures </dt>
-                <dd>
-                    Rank 169| 931788
-                    <a
-                        href="https://www.hackerrank.com/leaderboard?filter=pctablet505&filter_on=hacker&page=1&track=data-structures&type=practice">Visit</a>
-                </dd>
-            </li>
-            <li>
-                <dt>Hackerrank Python Practice</dt>
-                <dd>
-                    Rank 1<a
-                        href="https://www.hackerrank.com/leaderboard?filter=pctablet505&filter_on=hacker&page=1&track=python&type=practice">Visit</a>
-                </dd>
+                <dt>IOT</dt>
+                <dd>Arduino, Sensors, Wireless Control</dd>
             </li>
         </ul>
 
-
-
+        <h2 class="text-center" style="margin-top: 30px;">Achievements</h2>
+        <ul class="list-group text-center bordered">
+            <li>
+                <dt>MD Appreciation Award</dt>
+                <dd>Honoured with MD Appreciatioin award by honourable MD at Samsung Research, Noida, for developing SRI-N Satyapan.</dd>
+            </li>
+            <li>
+                <dt>Implemented van Emde Boas Tree</dt>
+                <dd><a href="https://github.com/stopslavery404/van-Emde-Boas-Tree" target="_blank" rel="noopener noreferrer">1st time correct implementation in python in the History</a></dd>
+            </li>
+            <li>
+                <dt>World Programming Championship - IIT Mumbai</dt>
+                <dd>Rank 69 | Certificate no 99695</dd>
+            </li>
+            <li>
+                <dt>Gold in HackFest 2020</dt>
+                <dd><a href="https://www.hackerrank.com/results/hackerrank-hackfest-2020/stopslavery404" target="_blank" rel="noopener noreferrer">Rank 29 | 8051 Rating 2042.08 from 1500</a></dd>
+            </li>
+            <li>
+                <dt>GATE 2021</dt>
+                <dd><a href="./assets/images/gate2021.png" target="_blank" rel="noopener noreferrer">Got AIR 5648</a></dd>
+            </li>
+            <li>
+                <dt>CodeVita Season 9</dt>
+                <dd>Cleared Round 1 with Rank 1042</dd>
+            </li>
+            <li>
+                <dt>CodeVita Season 9</dt>
+                <dd>Got International 242 in Round 2</dd>
+            </li>
+            <li>
+                <dt>CodeVita Season 10</dt>
+                <dd>Got International 426 in Round 1</dd>
+            </li>
+            <li>
+                <dt>Hack the Interview III</dt>
+                <dd><a href="https://www.hackerrank.com/results/hack-the-interview-iv/stopslavery404" target="_blank" rel="noopener noreferrer">Rank(73 | 919)</a></dd>
+            </li>
+            <li>
+                <dt>Hack the Interview IV (Asia Pacific)</dt>
+                <dd><a href="https://www.hackerrank.com/results/hack-the-interview-iv-apac/stopslavery404" target="_blank" rel="noopener noreferrer">Rank(100 | 4353)</a></dd>
+            </li>
+            <li>
+                <dt>Hack the Interview IV (U.S.)</dt>
+                <dd><a href="https://www.hackerrank.com/results/hack-the-interview-iv/stopslavery404?h_r=profile" target="_blank" rel="noopener noreferrer">Rank( 65 | 1217)</a></dd>
+            </li>
+            <li>
+                <dt>Hackerrank Algorithms</dt>
+                <dd><a href="https://www.hackerrank.com/leaderboard?filter=stopslavery404&filter_on=hacker&page=1&track=algorithms&type=practice" target="_blank" rel="noopener noreferrer">Rank 1026/ 2219538</a></dd>
+            </li>
+            <li>
+                <dt>Hackerrank Data Structures</dt>
+                <dd><a href="https://www.hackerrank.com/leaderboard?filter=stopslavery404&filter_on=hacker&page=1&track=data-structures&type=practice" target="_blank" rel="noopener noreferrer">Rank 540| 931788</a></dd>
+            </li>
+            <li>
+                <dt>Hackerrank Python Practice</dt>
+                <dd><a href="https://www.hackerrank.com/leaderboard?filter=stopslavery404&filter_on=hacker&page=1&track=python&type=practice" target="_blank" rel="noopener noreferrer">Rank 1</a></dd>
+            </li>
+        </ul>
 
     </main>
 
 
 
+    <script src="./assets/js/protect.js"></script>
 </body>
 
 </html>
