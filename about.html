@@ -2,13 +2,14 @@
 <html lang="en">
 
 <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' https: 'unsafe-inline'; style-src 'self' https: 'unsafe-inline'; img-src 'self' data: https:;">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="index, follow">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="./static/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 
 
@@ -17,6 +18,7 @@
 About
 
     </title>
+    <link rel="stylesheet" href="./assets/css/protect.css">
 </head>
 
 <body>
@@ -81,25 +83,20 @@ About
     
     <main>
         
-
 <h1 class="underlined" style="text-align:left; margin-bottom:30px;">About</h1>
-<div class="bordered">
+<div class="bordered" data-nosnippet>
     <h2>Present Details</h2>
     <p>
-        <img src="/static/me/3.jpg" style="border:3px solid black; border-radius: 150px; width:150px; height:150px; float:right;margin-right: 200px;">
+        <img src="./assets/images/3.jpg" style="border:3px solid black; border-radius: 150px; width:150px; height:150px; float:right;margin-right: 200px;">
         Hello everybody I am Rahul.<br>
-        I am a Science student and a programmer.<br>
-        I am from <a href="https://www.bitsindri.ac.in" target="_blank">BIT Sindri</a>,
-        <a href="https://www.google.com/maps/place/BIT+Sindri/@23.6548241,86.4709426,16.74z/data=!4m5!3m4!1s0x39f696e95958a6d5:0x7c14e668e6f2feea!8m2!3d23.6568531!4d86.4740646"
-            target="_blank">Dhanbad India</a><br>
+        I'm a Data Scientist and SDE blending analytical rigor with engineering excellence.<br>
+        Currently working as a Software Engineer (Machine Learning) with Keras Team at Google.<br>
     </p>
-    <h2>Interests</h2>
+    <h2>Experience</h2>
     <p>
-        My fields of interest are Data Structures, Algorithms, Artificial Intelligence and Machine Learning.
-        I am learning web programming not because I love this thing but because It is an important thing.
-        It helps us to express ourselves and produce something that could be used by common people
-        who aren't programmers.
-        And also because its important to get a job.
+        <strong>Google</strong>: Software Engineer (Machine Learning), working with Keras Team. (Feb 2025-Present)<br>
+        <strong>Qualcomm</strong>: Machine Learning Engineer, worked with on-device AI implementation. (Sept 2024-Jan 2025)<br>
+        <strong>Samsung R&D Institute India</strong>: Research & Development Engineer. (July 2022-Present)<br>
     </p>
     <h2>History</h2>
     <p>
@@ -120,11 +117,11 @@ About
 
 </div>
 
-
     </main>
         
     
 
+    <script src="./assets/js/protect.js"></script>
 </body>
 
 </html>
