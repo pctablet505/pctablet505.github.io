@@ -379,7 +379,11 @@ ul, ol { list-style: none; }
   text-align: center;
   box-shadow: var(--shadow-sm);
 }
-.diagram-wrapper .mermaid { display: inline-block; min-width: 200px; }
+.diagram-wrapper { width: 100%; text-align: center; }
+.diagram-wrapper .mermaid,
+.mermaid { display: block; width: 100%; min-width: 0; margin: 1.25rem auto; text-align: center; }
+/* Force mermaid SVGs to scale up to the content column (override mermaid's small inline max-width) */
+.mermaid svg { width: 100% !important; max-width: 820px !important; height: auto !important; }
 
 .diagram-caption {
   text-align: center;
