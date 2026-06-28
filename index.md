@@ -16,6 +16,12 @@ header:
       url: "mailto:work.rahul126@gmail.com"
 ---
 
+<style>
+.stat-row{display:flex;flex-wrap:wrap;gap:.6rem .8rem;justify-content:center;margin:1.4rem auto .6rem;max-width:920px}
+.stat-row>span{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.28);border-radius:999px;padding:.42rem .9rem;font-size:.92rem;line-height:1.2;white-space:nowrap}
+.stat-row strong{color:#58a6ff}
+</style>
+
 <div class="stat-row">
   <span><strong>60+</strong> merged PRs to Google's Keras ecosystem</span>
   <span><strong>1,003</strong> contributions / yr</span>
