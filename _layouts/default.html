@@ -66,7 +66,13 @@
       pre.replaceWith(wrapper);
     });
 
-    mermaid.run();
+    // Render only after the web font has loaded, so mermaid measures text
+    // correctly and node boxes don't clip the labels.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { mermaid.run(); });
+    } else {
+      mermaid.run();
+    }
   </script>
 </body>
 </html>
