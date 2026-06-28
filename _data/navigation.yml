@@ -1,0 +1,13 @@
+main:
+  - title: "Open Source"
+    url: "/#open-source-impact"
+  - title: "Experience"
+    url: "/#experience"
+  - title: "Projects"
+    url: "/#projects"
+  - title: "Skills"
+    url: "/#skills"
+  - title: "Achievements"
+    url: "/#achievements"
+  - title: "Contact"
+    url: "/#contact"

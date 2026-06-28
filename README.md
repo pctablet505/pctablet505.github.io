@@ -1,43 +1,36 @@
 # pctablet505.github.io
 
-A static personal portfolio website hosted on **GitHub Pages**.
+Personal portfolio site for Rahul Kumar — hosted on **GitHub Pages** via Jekyll + minimal-mistakes theme.
 
-## Description
+**Live site:** [https://pctablet505.github.io](https://pctablet505.github.io)
 
-This is a responsive, static HTML/CSS portfolio site showcasing projects, achievements, certifications, education, and contact information. It is designed to be lightweight, fast, and easily deployable via GitHub Pages.
+## Stack
 
-## Live Site
+- **Jekyll** with [minimal-mistakes](https://github.com/mmistakes/minimal-mistakes) remote theme (`4.27.1`)
+- **GitHub Pages** — deploys automatically on push to `main`
+- All content authored in `index.md` (single-page splash layout)
 
-Visit the portfolio at: [https://pctablet505.github.io](https://pctablet505.github.io)
-
-## Tech Stack
-
-- **HTML5** — Semantic page structure
-- **CSS3** — Custom styling (`assets/css/styles.css`, `assets/css/protect.css`)
-- **Bootstrap 5.3** — Responsive layout and components
-- **JavaScript** — Bootstrap bundle and minor interactions (`assets/js/`)
-- **Images** — Certificates, photos, and project screenshots (`assets/images/`)
-
-## Project Structure
+## Structure
 
 ```
 pctablet505.github.io/
-├── index.html              # Home / landing page
-├── about.html              # About me
-├── achievements.html       # Achievements
-├── certifications.html     # Certifications
-├── contact.html            # Contact information
-├── education.html          # Education background
-├── hobbies.html            # Hobbies
-├── robots.txt              # SEO crawler instructions
+├── _config.yml          # Site config, remote_theme, author sidebar
+├── _data/
+│   └── navigation.yml   # Top nav links
+├── index.md             # All portfolio content (hero + 8 sections)
+├── Gemfile              # For local builds (github-pages gem)
+├── robots.txt
 └── assets/
-    ├── css/
-    │   ├── styles.css      # Main stylesheet
-    │   └── protect.css     # Additional protective styles
-    ├── images/             # Photos, certificates, screenshots
-    └── js/                 # JavaScript files
+    └── images/          # sketch.jpg (headshot) + certificate images
 ```
 
-## Deployment
+## Local build
 
-This site is automatically deployed via **GitHub Pages** from the `master` branch. Push changes to update the live site.
+```bash
+bundle install
+bundle exec jekyll serve
+```
+
+## TODO
+
+- Upload résumé PDF to `assets/` and link from Contact section in `index.md`
