@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  {% seo %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+<body>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-brand">Rahul Kumar</a>
+      <ul class="nav-links" role="list">
+        <li><a href="#open-source">Impact</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#achievements">Achievements</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    {{ content }}
+  </main>
+
+  <!--
+    Mermaid v10 ESM — loads from CDN, converts kramdown's
+    <pre><code class="language-mermaid"> output to <div class="mermaid">,
+    then runs mermaid on the page.
+  -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'neutral',
+      fontFamily: '"Inter", system-ui, sans-serif',
+      fontSize: 14,
+      flowchart: { curve: 'basis', padding: 20 },
+      themeVariables: {
+        primaryColor: '#eef2ff',
+        primaryBorderColor: '#4f46e5',
+        primaryTextColor: '#1f2328',
+        lineColor: '#4f46e5',
+        secondaryColor: '#f7f8fa',
+        tertiaryColor: '#ffffff'
+      }
+    });
+
+    // Convert kramdown-rendered fenced mermaid blocks to mermaid divs.
+    // kramdown outputs: <pre><code class="language-mermaid">...</code></pre>
+    document.querySelectorAll('pre > code.language-mermaid').forEach(function (codeEl) {
+      const pre = codeEl.parentElement;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'diagram-wrapper';
+      const div = document.createElement('div');
+      div.className = 'mermaid';
+      div.textContent = codeEl.textContent;
+      wrapper.appendChild(div);
+      pre.replaceWith(wrapper);
+    });
+
+    mermaid.run();
+  </script>
+</body>
+</html>
