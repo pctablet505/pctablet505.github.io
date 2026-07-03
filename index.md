@@ -58,20 +58,18 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
     <h2 class="section-heading">⚡ Open-Source Impact</h2>
     <hr class="rule">
     <p class="section-sub">
-      60 merged PRs across Google's Keras ecosystem —
-      <strong>keras-team/keras</strong> (40) ·
-      <strong>keras-team/keras-hub</strong> (15) ·
-      <strong>keras-team/keras-io</strong> (3) ·
-      <strong>google-ai-edge/litert-torch</strong> (2)
+      108 PRs authored across Google's Keras ecosystem —
+      <strong>43 merged</strong> (keras 26 · keras-hub 17) ·
+      <strong>35 in review</strong> (keras, keras-hub, keras-io, litert-torch)
     </p>
 
     <!-- Contribution stats bar -->
     <div class="stats-bar">
-      <div class="stat-item"><div class="val">145</div><div class="lbl">Commits</div></div>
-      <div class="stat-item"><div class="val">92</div><div class="lbl">Pull Requests</div></div>
-      <div class="stat-item"><div class="val">26</div><div class="lbl">Issues</div></div>
+      <div class="stat-item"><div class="val">169</div><div class="lbl">Commits</div></div>
+      <div class="stat-item"><div class="val">97</div><div class="lbl">Pull Requests</div></div>
+      <div class="stat-item"><div class="val">27</div><div class="lbl">Issues</div></div>
       <div class="stat-item"><div class="val">10</div><div class="lbl">Reviews</div></div>
-      <div class="stat-item"><div class="val">1,003</div><div class="lbl">Contributions / yr</div></div>
+      <div class="stat-item"><div class="val">1,230</div><div class="lbl">Contributions / yr</div></div>
     </div>
 
     <!-- Notable PRs -->
@@ -89,13 +87,35 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
       </div>
 
       <div class="pr-item">
+        <span class="pr-repo">keras-team/keras-hub</span>
+        <div class="pr-body">
+          <div class="pr-title">
+            <a href="https://github.com/keras-team/keras-hub/pull/2132" target="_blank" rel="noopener">#2132 — Llama 3.1</a>
+            <span class="badge-merged">merged</span>
+          </div>
+          <div class="pr-impact">Implemented Llama 3.1 natively in KerasHub.</div>
+        </div>
+      </div>
+
+      <div class="pr-item">
         <span class="pr-repo">keras-team/keras</span>
         <div class="pr-body">
           <div class="pr-title">
-            <a href="https://github.com/keras-team/keras/pull/22822" target="_blank" rel="noopener">#22822 — Fix namespace hijacking and callable injection in deserialize_keras_object</a>
+            <a href="https://github.com/keras-team/keras/pull/22362" target="_blank" rel="noopener">#22362 — Fix save/load for custom models with sublayers in nested lists</a>
             <span class="badge-merged">merged</span>
           </div>
-          <div class="pr-impact">Closed a security vulnerability in model deserialization allowing arbitrary code execution.</div>
+          <div class="pr-impact">Fixed a serialization bug that broke persistence for a whole class of custom architectures.</div>
+        </div>
+      </div>
+
+      <div class="pr-item">
+        <span class="pr-repo">keras-team/keras</span>
+        <div class="pr-body">
+          <div class="pr-title">
+            <a href="https://github.com/keras-team/keras/pull/22998" target="_blank" rel="noopener">#22998 — Fix torch backend SymInt handling in convert_to_tensor and slice</a>
+            <span class="badge-merged">merged</span>
+          </div>
+          <div class="pr-impact">Made symbolic-shape tracing survive the torch export path — required for reliable LiteRT conversion.</div>
         </div>
       </div>
 
@@ -104,20 +124,9 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <div class="pr-body">
           <div class="pr-title">
             <a href="https://github.com/keras-team/keras/pull/23186" target="_blank" rel="noopener">#23186 — perf(torch): SDPA is_causal dispatch + bounded causal-mask cache in MultiHeadAttention</a>
-            <span class="badge-merged">merged</span>
+            <span class="badge-review">in review</span>
           </div>
-          <div class="pr-impact">Reduced attention overhead via FlashAttention causal dispatch and capped mask-cache growth.</div>
-        </div>
-      </div>
-
-      <div class="pr-item">
-        <span class="pr-repo">keras-team/keras</span>
-        <div class="pr-body">
-          <div class="pr-title">
-            <a href="https://github.com/keras-team/keras/pull/23189" target="_blank" rel="noopener">#23189 — perf(torch): fast paths in convert_to_tensor / cast (+ fix spurious .to())</a>
-            <span class="badge-merged">merged</span>
-          </div>
-          <div class="pr-impact">Eliminated unnecessary tensor copies across backends; fixed type-coercion regressions under TF 2.20.</div>
+          <div class="pr-impact">Part of a 13-PR torch-performance series: FlashAttention causal dispatch and capped mask-cache growth.</div>
         </div>
       </div>
 
@@ -126,20 +135,9 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <div class="pr-body">
           <div class="pr-title">
             <a href="https://github.com/keras-team/keras-hub/pull/2705" target="_blank" rel="noopener">#2705 — Implement KerasHub → LiteRT-LM export with prefill / decode signatures</a>
-            <span class="badge-merged">merged</span>
+            <span class="badge-review">in review</span>
           </div>
-          <div class="pr-impact">Enabling optimised on-device LLM inference with separate prefill and decode phases (Gemma 3 270M on Android, end-to-end validated).</div>
-        </div>
-      </div>
-
-      <div class="pr-item">
-        <span class="pr-repo">keras-team/keras-hub</span>
-        <div class="pr-body">
-          <div class="pr-title">
-            <a href="https://github.com/keras-team/keras-hub/pull/2773" target="_blank" rel="noopener">#2773 — Fix Gemma3 / 3n / 4 preprocessor crashes with Python-only tokenizer</a>
-            <span class="badge-merged">merged</span>
-          </div>
-          <div class="pr-impact">Unblocked Gemma 3/4 inference on environments without SentencePiece native bindings.</div>
+          <div class="pr-impact">Optimised on-device LLM inference with separate prefill and decode phases (Gemma 3 270M on Android, end-to-end validated).</div>
         </div>
       </div>
 
@@ -148,20 +146,9 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <div class="pr-body">
           <div class="pr-title">
             <a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">#2373 — Guide: Exporting Keras models to LiteRT with PyTorch backend</a>
-            <span class="badge-merged">merged</span>
+            <span class="badge-review">in review</span>
           </div>
-          <div class="pr-impact">Adopted as canonical ecosystem documentation on keras.io for LiteRT export.</div>
-        </div>
-      </div>
-
-      <div class="pr-item">
-        <span class="pr-repo">google-ai-edge/litert-torch</span>
-        <div class="pr-body">
-          <div class="pr-title">
-            <a href="https://github.com/google-ai-edge/litert-torch/pull/1024" target="_blank" rel="noopener">#1024 — Fail fast on dynamic_shapes and guard arange rewrite for symbolic args</a>
-            <span class="badge-merged">merged</span>
-          </div>
-          <div class="pr-impact">Improved error ergonomics and prevented silent graph-rewrite failures during torch → LiteRT conversion.</div>
+          <div class="pr-impact">The official keras.io guide for LiteRT export from the PyTorch backend.</div>
         </div>
       </div>
 
@@ -254,10 +241,9 @@ flowchart LR
           <li>Shipped <strong>LiteRT export</strong> for the PyTorch backend in Keras 3, enabling on-device deployment of PyTorch-trained models via TFLite / LiteRT (<a href="https://github.com/keras-team/keras/pull/22758" target="_blank" rel="noopener">keras#22758</a>).</li>
           <li>Built <strong>LiteRT-LM export</strong> for KerasHub with prefill / decode signatures — validated Gemma 3 270M on Android, end-to-end.</li>
           <li>Implemented Keras-native <strong>Llama 3.1</strong> and <strong>Multimodal Gemma 3</strong>; fixed 4/8-bit quantization instabilities across backends.</li>
-          <li>Authored the <a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">official keras.io guide for LiteRT export</a>, adopted as canonical ecosystem documentation.</li>
-          <li>Patched a <strong>namespace-hijacking security vulnerability</strong> in <code>deserialize_keras_object</code> (<a href="https://github.com/keras-team/keras/pull/22822" target="_blank" rel="noopener">keras#22822</a>).</li>
+          <li>Authored the <a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">official keras.io guide for LiteRT export</a> (in review).</li>
           <li>Migrated Adbrain ad-recommendation model to Keras 3; TF 2.20 / Python 3.13 / Orbax compatibility fixes.</li>
-          <li>75+ PRs across keras, keras-hub, keras-io, and litert-torch: bug fixes, perf optimisations, cross-backend compatibility.</li>
+          <li>108 PRs authored across keras, keras-hub, keras-io, and litert-torch (43 merged, 35 in review): bug fixes, perf optimisations, cross-backend compatibility.</li>
         </ul>
       </div>
 

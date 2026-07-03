@@ -352,6 +352,18 @@ ul, ol { list-style: none; }
   vertical-align: middle;
 }
 
+.badge-review {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 600;
+  padding: .1rem .42rem;
+  border-radius: 4px;
+  background: #fff1e5;
+  color: #953800;
+  margin-left: .4rem;
+  vertical-align: middle;
+}
+
 .github-stats {
   display: flex;
   flex-wrap: wrap;
