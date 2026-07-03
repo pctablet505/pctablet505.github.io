@@ -167,14 +167,15 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
 
     </div><!-- /pr-list -->
 
-    <!-- Live GitHub stats cards -->
+    <!-- GitHub stats cards — static self-generated SVGs (the shared
+         github-readme-stats instance rate-limits and 503s randomly) -->
     <div class="github-stats">
       <img
-        src="https://github-readme-stats.vercel.app/api?username=pctablet505&show_icons=true&hide_border=true&theme=default&bg_color=ffffff&title_color=4f46e5&icon_color=4f46e5&text_color=1f2328&ring_color=4f46e5"
+        src="{{ '/assets/images/stats-light.svg' | relative_url }}"
         alt="Rahul's GitHub stats"
         loading="lazy">
       <img
-        src="https://github-readme-stats.vercel.app/api/top-langs/?username=pctablet505&layout=compact&hide_border=true&bg_color=ffffff&title_color=4f46e5&text_color=1f2328"
+        src="{{ '/assets/images/langs-light.svg' | relative_url }}"
         alt="Top languages"
         loading="lazy">
     </div>
