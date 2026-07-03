@@ -329,7 +329,7 @@ flowchart LR
         </p>
         <div class="card-links">
           <a href="https://pctablet505.github.io/RLAlphaLabs/" class="card-link" target="_blank" rel="noopener">Live Demo →</a>
-          <a href="https://github.com/pctablet505/AlgoTrading" class="card-link" target="_blank" rel="noopener">Code →</a>
+          <span class="card-link" title="Source code available on request">Private repo · available on request</span>
         </div>
       </div>
 
