@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Rahul Kumar — ML Engineer @ Google"
-description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models run on edge devices. 60+ merged PRs, Keras · LiteRT · KerasHub."
+description: "ML Engineer on Google's Core ML (Keras) team. I shipped LiteRT export for the PyTorch backend in Keras 3 and wrote the keras.io guide for it — frontier models, on the devices in people's pockets."
 ---
 
 <!-- ========================================================
@@ -9,7 +9,6 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
      ======================================================== -->
 <section class="hero" id="hero">
   <div class="hero-inner">
-    <!-- TODO: Replace sketch.jpg with a real headshot -->
     <img src="/assets/images/sketch.jpg" alt="Rahul Kumar" class="avatar">
     <h1>Rahul Kumar</h1>
     <p class="hero-role">ML Engineer @ Google Core ML (Keras)</p>
@@ -39,8 +38,8 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
     </div>
 
     <div class="stat-chips">
-      <span class="chip"><strong>60+</strong> PRs to Google's Keras</span>
-      <span class="chip"><strong>1,003</strong> contributions / yr</span>
+      <a class="chip" href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener"><strong>50+</strong> PRs merged into keras-team</a>
+      <a class="chip" href="https://keras.io/guides/litert_export/" target="_blank" rel="noopener">I wrote the <strong>keras.io</strong> LiteRT guide</a>
       <span class="chip"><strong>75%</strong> memory ↓ via QAT</span>
       <span class="chip"><strong>10M+</strong> synthetic samples</span>
       <span class="chip">Top <strong>0.05%</strong> HackerRank</span>
@@ -58,18 +57,29 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
     <h2 class="section-heading">⚡ Open-Source Impact</h2>
     <hr class="rule">
     <p class="section-sub">
-      108 PRs authored across Google's Keras ecosystem —
-      <strong>43 merged</strong> (keras 26 · keras-hub 17) ·
-      <strong>35 in review</strong> (keras, keras-hub, keras-io, litert-torch)
+      <strong>50+ pull requests merged</strong> into Google's Keras ecosystem — LiteRT export for the
+      PyTorch backend, Llama 3.1 in KerasHub, torch-backend performance, and the keras.io guide that
+      explains the first one. I don't keep the tally on this page;
+      <a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">GitHub does, and GitHub is never out of date</a>.
     </p>
 
-    <!-- Contribution stats bar -->
+    <!-- Every tile is a floor or a terminal artifact, and every tile is a link.
+         Do NOT put a rolling metric here again: contributions/yr, commits, issues,
+         reviews and open-PR counts are trailing-12-month windows that move daily in
+         both directions, so no hardcoded value of them is ever honest for long. -->
     <div class="stats-bar">
-      <div class="stat-item"><div class="val">169</div><div class="lbl">Commits</div></div>
-      <div class="stat-item"><div class="val">97</div><div class="lbl">Pull Requests</div></div>
-      <div class="stat-item"><div class="val">27</div><div class="lbl">Issues</div></div>
-      <div class="stat-item"><div class="val">10</div><div class="lbl">Reviews</div></div>
-      <div class="stat-item"><div class="val">1,230</div><div class="lbl">Contributions / yr</div></div>
+      <a class="stat-item" href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">
+        <div class="val">50+</div><div class="lbl">PRs merged into keras-team</div>
+      </a>
+      <a class="stat-item" href="https://keras.io/guides/litert_export/" target="_blank" rel="noopener">
+        <div class="val">keras.io</div><div class="lbl">the LiteRT guide, by me</div>
+      </a>
+      <a class="stat-item" href="https://github.com/keras-team/keras/pull/22758" target="_blank" rel="noopener">
+        <div class="val">Keras 3</div><div class="lbl">LiteRT export, PyTorch</div>
+      </a>
+      <a class="stat-item" href="https://github.com/pctablet505/gemmademo-litertlm-android-app" target="_blank" rel="noopener">
+        <div class="val">Android</div><div class="lbl">Gemma, on-device</div>
+      </a>
     </div>
 
     <!-- Notable PRs -->
@@ -123,10 +133,10 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <span class="pr-repo">keras-team/keras</span>
         <div class="pr-body">
           <div class="pr-title">
-            <a href="https://github.com/keras-team/keras/pull/23186" target="_blank" rel="noopener">#23186 — perf(torch): SDPA is_causal dispatch + bounded causal-mask cache in MultiHeadAttention</a>
-            <span class="badge-review">in review</span>
+            <a href="https://github.com/keras-team/keras/pull/23183" target="_blank" rel="noopener">#23183 — perf(ops): inject traceback argument info on error only, not on every call</a>
+            <span class="badge-merged">merged</span>
           </div>
-          <div class="pr-impact">Part of a 13-PR torch-performance series: FlashAttention causal dispatch and capped mask-cache growth.</div>
+          <div class="pr-impact">Keras was assembling debug metadata on every op call and throwing it away. Now it only runs when something actually throws. One of a run of fixes off <a href="https://github.com/keras-team/keras/issues/22561" target="_blank" rel="noopener">keras#22561</a>, where I root-caused a large gap between Keras[torch] eager and raw PyTorch on small models.</div>
         </div>
       </div>
 
@@ -134,10 +144,10 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <span class="pr-repo">keras-team/keras-hub</span>
         <div class="pr-body">
           <div class="pr-title">
-            <a href="https://github.com/keras-team/keras-hub/pull/2705" target="_blank" rel="noopener">#2705 — Implement KerasHub → LiteRT-LM export with prefill / decode signatures</a>
-            <span class="badge-review">in review</span>
+            <a href="https://github.com/keras-team/keras-hub/pull/2698" target="_blank" rel="noopener">#2698 — Enable LiteRT export tests on the torch backend</a>
+            <span class="badge-merged">merged</span>
           </div>
-          <div class="pr-impact">Optimised on-device LLM inference with separate prefill and decode phases (Gemma 3 270M on Android, end-to-end validated).</div>
+          <div class="pr-impact">First landed piece of KerasHub → LiteRT-LM export. A small LLM on a phone wants two graphs: one that chews the prompt in parallel and one that emits a token at a time. I built both, and a 270M-parameter Gemma generates text end-to-end on Android — <a href="https://github.com/pctablet505/gemmademo-litertlm-android-app" target="_blank" rel="noopener">the demo app is public</a>.</div>
         </div>
       </div>
 
@@ -145,27 +155,21 @@ description: "ML Engineer at Google Core ML (Keras) making frontier GenAI models
         <span class="pr-repo">keras-team/keras-io</span>
         <div class="pr-body">
           <div class="pr-title">
-            <a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">#2373 — Guide: Exporting Keras models to LiteRT with PyTorch backend</a>
-            <span class="badge-review">in review</span>
+            <a href="https://keras.io/guides/litert_export/" target="_blank" rel="noopener">Exporting Keras models to LiteRT — the official guide</a>
+            <span class="badge-merged">live on keras.io</span>
           </div>
-          <div class="pr-impact">The official keras.io guide for LiteRT export from the PyTorch backend.</div>
+          <div class="pr-impact">In the Keras developer guides, byline and all. If you go looking for how to get a Keras model onto a device, this is the page you land on. (<a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">keras-io#2373</a>, merged Jul 2026.)</div>
         </div>
       </div>
 
     </div><!-- /pr-list -->
 
-    <!-- GitHub stats cards — static self-generated SVGs (the shared
-         github-readme-stats instance rate-limits and 503s randomly) -->
-    <div class="github-stats">
-      <img
-        src="{{ '/assets/images/stats-light.svg' | relative_url }}"
-        alt="Rahul's GitHub stats"
-        loading="lazy">
-      <img
-        src="{{ '/assets/images/langs-light.svg' | relative_url }}"
-        alt="Top languages"
-        loading="lazy">
-    </div>
+    <!-- The GitHub stats and language SVGs used to live here. Both deleted.
+         Dropping the flaky github-readme-stats dependency was right; baking the
+         numbers into an image was not. Nothing regenerated them, grep couldn't
+         find them, and an SVG diff is unreadable coordinate soup — so they were
+         guaranteed to rot silently, and they rendered the same wrong numbers a
+         second time. Numbers live in HTML or they live on GitHub, never in an <img>. -->
 
   </div><!-- /container -->
 </section>
@@ -241,9 +245,9 @@ flowchart LR
           <li>Shipped <strong>LiteRT export</strong> for the PyTorch backend in Keras 3, enabling on-device deployment of PyTorch-trained models via TFLite / LiteRT (<a href="https://github.com/keras-team/keras/pull/22758" target="_blank" rel="noopener">keras#22758</a>).</li>
           <li>Built <strong>LiteRT-LM export</strong> for KerasHub with prefill / decode signatures — validated Gemma 3 270M on Android, end-to-end.</li>
           <li>Implemented Keras-native <strong>Llama 3.1</strong> and <strong>Multimodal Gemma 3</strong>; fixed 4/8-bit quantization instabilities across backends.</li>
-          <li>Authored the <a href="https://github.com/keras-team/keras-io/pull/2373" target="_blank" rel="noopener">official keras.io guide for LiteRT export</a> (in review).</li>
+          <li>Wrote the <a href="https://keras.io/guides/litert_export/" target="_blank" rel="noopener">official Keras guide to LiteRT export</a> — live on keras.io, under my name.</li>
           <li>Migrated Adbrain ad-recommendation model to Keras 3; TF 2.20 / Python 3.13 / Orbax compatibility fixes.</li>
-          <li>108 PRs authored across keras, keras-hub, keras-io, and litert-torch (43 merged, 35 in review): bug fixes, perf optimisations, cross-backend compatibility.</li>
+          <li><strong>50+ PRs merged</strong> across keras, keras-hub and keras-io — serialization and quantization fixes, torch-backend performance, cross-backend compatibility (<a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">the list is public</a>).</li>
         </ul>
       </div>
 
@@ -266,16 +270,28 @@ flowchart LR
       <!-- Samsung -->
       <div class="timeline-item">
         <div class="exp-co">Samsung R&D Institute India (SRI-N)</div>
-        <div class="exp-meta"><strong>R&D Engineer — Computer Vision</strong> · Jan 2022 – Sep 2024 · Noida, India</div>
+        <div class="exp-meta"><strong>R&D Engineer — Computer Vision</strong> · Jul 2022 – Sep 2024 · Noida, India</div>
         <div class="tags">
           <span class="tag">YOLO</span><span class="tag">Mask R-CNN</span><span class="tag">TFLite</span>
           <span class="tag">OpenCV</span><span class="tag">Kotlin</span><span class="tag">Java</span><span class="tag">Android</span>
         </div>
         <ul class="bullets">
-          <li><strong>Knox Capture:</strong> End-to-end damaged-barcode scanning pipeline — <strong>10M+ synthetic samples</strong> via geometric/probabilistic transforms; accuracy <strong>70% → 90%</strong> with YOLOv11, Mask R-CNN, U-Net.</li>
+          <li><strong>Knox Capture:</strong> End-to-end damaged-barcode scanning pipeline — <strong>10M+ synthetic samples</strong> via geometric/probabilistic transforms; accuracy <strong>70% → 90%</strong> with YOLO, Mask R-CNN and U-Net.</li>
           <li><strong>SRIN-Satyapan:</strong> Anti-cheat proctored exam platform — <strong>2,000+ concurrent users</strong>, <strong>10,000+ registered faces</strong>, real-time face-recognition auth on Android + web portal. <em>MD Appreciation Award.</em></li>
           <li><strong>Face recognition optimisation:</strong> Embedding search O(n) → O(log n); lookup time <strong>1,200 ms → 87 ms</strong> on Android tablets serving 10k+ users.</li>
           <li><strong>Drop detection:</strong> Replaced deep learning with statistical feature engineering — <strong>99% parameter reduction</strong>, <strong>95% power reduction</strong>, accuracy drop &lt;2%.</li>
+        </ul>
+      </div>
+
+      <!-- Samsung internship -->
+      <div class="timeline-item">
+        <div class="exp-co">Samsung R&D Institute India (SRI-N)</div>
+        <div class="exp-meta"><strong>Intern</strong> · Jan 2022 – Jun 2022 · Noida, India</div>
+        <div class="tags">
+          <span class="tag">CycleGAN</span><span class="tag">PyTorch</span><span class="tag">Android</span><span class="tag">Java</span>
+        </div>
+        <ul class="bullets">
+          <li>Trained CycleGAN for generative-AI use cases in Samsung's software competency programme; converted to full-time R&D Engineer in July.</li>
         </ul>
       </div>
 
@@ -303,7 +319,7 @@ flowchart LR
           Covers PyTorch-backend export, LiteRT-LM prefill/decode signatures, and the official keras.io documentation.
         </p>
         <div class="card-links">
-          <a href="https://github.com/keras-team/keras/pulls?q=is%3Apr+author%3Apctablet505" class="card-link" target="_blank" rel="noopener">View PRs →</a>
+          <a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" class="card-link" target="_blank" rel="noopener">Merged PRs →</a>
         </div>
       </div>
 
@@ -321,15 +337,15 @@ flowchart LR
       </div>
 
       <div class="card">
-        <span class="card-emoji">📄</span>
-        <div class="card-title">ATS Optimizer</div>
+        <span class="card-emoji">📱</span>
+        <div class="card-title">Gemma on Android — LiteRT-LM</div>
         <p class="card-desc">
-          Automated job-application pipeline: ATS scoring via NLP keyword extraction + semantic similarity,
-          LLM-powered résumé tailoring, multi-portal scraping (LinkedIn, Indeed), and automated form submission.
-          Built for 50+ applications per day.
+          A 270M-parameter Gemma generating tokens on a phone, end-to-end: KerasHub → LiteRT-LM export
+          with separate prefill and decode signatures, then a minimal Android app that runs it on device.
         </p>
         <div class="card-links">
-          <a href="https://github.com/pctablet505/ats-optimizer" class="card-link" target="_blank" rel="noopener">Code →</a>
+          <a href="https://github.com/pctablet505/gemmademo-litertlm-android-app" class="card-link" target="_blank" rel="noopener">Android app →</a>
+          <a href="https://github.com/pctablet505/litert-demo" class="card-link" target="_blank" rel="noopener">Export notebooks →</a>
         </div>
       </div>
 
@@ -441,7 +457,10 @@ flowchart LR
       <div class="a-card">
         <div class="a-rank">#1 Global</div>
         <div class="a-title">HackerRank Python</div>
-        <div class="a-meta">Ranked first among all competitive programmers on the platform.</div>
+        <div class="a-meta">
+          Top of the global Python practice leaderboard. &nbsp;
+          <a href="https://www.hackerrank.com/leaderboard?filter=stopslavery404&amp;filter_on=hacker&amp;page=1&amp;track=python&amp;type=practice" target="_blank" rel="noopener">Leaderboard →</a>
+        </div>
       </div>
 
       <div class="a-card">
@@ -489,14 +508,14 @@ flowchart LR
       <div class="a-card">
         <div class="a-rank">AIR 5,648</div>
         <div class="a-title">GATE 2021</div>
-        <div class="a-meta">Among 1,000,000+ candidates in Computer Science.</div>
+        <div class="a-meta">All-India Rank in the Computer Science &amp; Information Technology paper.</div>
       </div>
 
       <div class="a-card">
-        <div class="a-rank">First Impl</div>
+        <div class="a-rank">O(n log log u)</div>
         <div class="a-title">Van Emde Boas Tree in Python</div>
         <div class="a-meta">
-          First historically correct Python implementation with O(n log log u) space optimisation. &nbsp;
+          Predecessor and successor in O(log log u) time, in O(n log log u) space instead of the textbook O(u) — so it stays usable on a sparse key range. &nbsp;
           <a href="https://github.com/pctablet505/van-Emde-Boas-Tree" target="_blank" rel="noopener">Code →</a>
         </div>
       </div>
