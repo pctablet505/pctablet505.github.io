@@ -1,7 +1,10 @@
 User-agent: Googlebot-Image
+Allow: /porchlamp/
 Disallow: /
 
 User-agent: *
 Disallow: /assets/images/
 Disallow: /static/me/
 Disallow: /static/certificates/
+
+Sitemap: https://pctablet505.github.io/porchlamp/sitemap.xml

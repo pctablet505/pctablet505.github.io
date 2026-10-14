@@ -312,6 +312,18 @@ flowchart LR
     <div class="card-grid">
 
       <div class="card">
+        <span class="card-emoji">🏮</span>
+        <div class="card-title">Porchlamp — Find the projects that leave the light on</div>
+        <p class="card-desc">
+          A porch lamp left on tells a visitor they are expected. Porchlamp ranks <strong>11,000 open-source projects</strong> across <strong>212,390 outside PRs</strong> by what happens to a stranger's pull request, not by stars — revealing that <strong>36.9%</strong> of active projects are PR black holes (48% at 50k+ stars) and stars correlate just <strong>0.13</strong> with responsiveness.
+        </p>
+        <div class="card-links">
+          <a href="https://pctablet505.github.io/porchlamp/" class="card-link" target="_blank" rel="noopener">Live Ranking →</a>
+          <a href="https://github.com/pctablet505/porchlamp" class="card-link" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+      </div>
+
+      <div class="card">
         <span class="card-emoji">🧠</span>
         <div class="card-title">Keras / KerasHub — LiteRT Export Pipeline</div>
         <p class="card-desc">
