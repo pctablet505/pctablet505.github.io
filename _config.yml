@@ -19,3 +19,10 @@ exclude:
   - Gemfile.lock
   - vendor/
   - README.md
+
+# The Search Console verification file is served as-is but kept out of sitemap.xml.
+defaults:
+  - scope:
+      path: "googled8fac072696a3851.html"
+    values:
+      sitemap: false
