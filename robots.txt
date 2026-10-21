@@ -7,3 +7,5 @@ Disallow: /assets/images/
 Disallow: /static/me/
 Disallow: /static/certificates/
 
+Sitemap: https://pctablet505.github.io/sitemap.xml
+

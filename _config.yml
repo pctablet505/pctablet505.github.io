@@ -1,13 +1,14 @@
 title: "Rahul Kumar"
 description: >-
-  ML Engineer @ Google Core ML (Keras) — making frontier GenAI models run on edge devices
-  and building the open-source infrastructure that gets them there.
+  ML engineer making frontier GenAI models run on edge devices, an open-source contributor to Keras,
+  and the builder of Porchlamp and RL Alpha Labs.
 url: "https://pctablet505.github.io"
 baseurl: ""
 repository: "pctablet505/pctablet505.github.io"
 
 plugins:
   - jekyll-seo-tag
+  - jekyll-sitemap
 
 markdown: kramdown
 highlighter: rouge

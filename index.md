@@ -1,7 +1,7 @@
 ---
 layout: default
-title: "Rahul Kumar — ML Engineer @ Google"
-description: "ML Engineer on Google's Core ML (Keras) team. I shipped LiteRT export for the PyTorch backend in Keras 3 and wrote the keras.io guide for it — frontier models, on the devices in people's pockets."
+title: "Rahul Kumar (pctablet505): ML engineer, on-device AI and open source"
+description: "ML engineer for on-device AI and open-source contributor to Keras (LiteRT export for PyTorch). I also build Porchlamp and RL Alpha Labs."
 ---
 
 <!-- ========================================================
@@ -11,7 +11,7 @@ description: "ML Engineer on Google's Core ML (Keras) team. I shipped LiteRT exp
   <div class="hero-inner">
     <img src="/assets/images/sketch.jpg" alt="Rahul Kumar" class="avatar">
     <h1>Rahul Kumar</h1>
-    <p class="hero-role">ML Engineer @ Google Core ML (Keras)</p>
+    <p class="hero-role">ML engineer · on-device AI · open-source contributor to Keras</p>
     <p class="hero-intro">
       Hi, I'm Rahul. I make frontier GenAI models run on the devices in people's pockets,
       and I contribute the open-source plumbing that gets them there.
@@ -57,7 +57,7 @@ description: "ML Engineer on Google's Core ML (Keras) team. I shipped LiteRT exp
     <h2 class="section-heading">⚡ Open-Source Impact</h2>
     <hr class="rule">
     <p class="section-sub">
-      <strong>50+ pull requests merged</strong> into Google's Keras ecosystem — LiteRT export for the
+      <strong>60+ pull requests merged</strong> into the open-source Keras ecosystem — LiteRT export for the
       PyTorch backend, Llama 3.1 in KerasHub, torch-backend performance, and the keras.io guide that
       explains the first one. I don't keep the tally on this page;
       <a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">GitHub does, and GitHub is never out of date</a>.
@@ -224,7 +224,7 @@ flowchart LR
       <div class="mermaid">
 flowchart LR
     A["Samsung R&D\nJul 2022 – Sep 2024"] --> B["Qualcomm\nSep 2024 – Jan 2025"]
-    B --> C["Google\nFeb 2025 – Present"]
+    B --> C["ML Engineer\nFeb 2025 – Present"]
     style A fill:#f7f8fa,stroke:#d0d7de,color:#1f2328
     style B fill:#fff7ed,stroke:#f59e0b,color:#1f2328
     style C fill:#eef2ff,stroke:#4f46e5,color:#1f2328
@@ -233,9 +233,9 @@ flowchart LR
 
     <div class="timeline">
 
-      <!-- Google -->
+      <!-- Current role -->
       <div class="timeline-item current">
-        <div class="exp-co">Google — Core ML / Keras Team</div>
+        <div class="exp-co">Current role: on-device ML, with open-source work on Keras</div>
         <div class="exp-meta"><strong>Software Engineer, Machine Learning</strong> · Feb 2025 – Present · Hyderabad, India</div>
         <div class="tags">
           <span class="tag">Keras</span><span class="tag">LiteRT</span><span class="tag">PyTorch</span>
@@ -247,7 +247,7 @@ flowchart LR
           <li>Implemented Keras-native <strong>Llama 3.1</strong> and <strong>Multimodal Gemma 3</strong>; fixed 4/8-bit quantization instabilities across backends.</li>
           <li>Wrote the <a href="https://keras.io/guides/litert_export/" target="_blank" rel="noopener">official Keras guide to LiteRT export</a> — live on keras.io, under my name.</li>
           <li>Migrated Adbrain ad-recommendation model to Keras 3; TF 2.20 / Python 3.13 / Orbax compatibility fixes.</li>
-          <li><strong>50+ PRs merged</strong> across keras, keras-hub and keras-io — serialization and quantization fixes, torch-backend performance, cross-backend compatibility (<a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">the list is public</a>).</li>
+          <li><strong>60+ PRs merged</strong> across keras, keras-hub and keras-io — serialization and quantization fixes, torch-backend performance, cross-backend compatibility (<a href="https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+org%3Akeras-team&amp;type=pullrequests" target="_blank" rel="noopener">the list is public</a>).</li>
         </ul>
       </div>
 
@@ -315,7 +315,7 @@ flowchart LR
         <span class="card-emoji">🏮</span>
         <div class="card-title">Porchlamp — Find the projects that leave the light on</div>
         <p class="card-desc">
-          A porch lamp left on tells a visitor they are expected. Porchlamp ranks <strong>11,000 open-source projects</strong> across <strong>212,390 outside PRs</strong> by what happens to a stranger's pull request, not by stars — revealing that <strong>36.9%</strong> of active projects are PR black holes (48% at 50k+ stars) and stars correlate just <strong>0.13</strong> with responsiveness.
+          A porch lamp left on tells a visitor they are expected. Porchlamp ranks <strong>11,000 open-source projects</strong> by what happens to a stranger's pull request, not by stars. The findings are refreshed with every snapshot in the <a href="https://porchlamp.org/black-holes/" target="_blank" rel="noopener">latest report</a>.
         </p>
         <div class="card-links">
           <a href="https://porchlamp.org/" class="card-link" target="_blank" rel="noopener">Live Ranking →</a>
@@ -327,7 +327,7 @@ flowchart LR
         <span class="card-emoji">🧠</span>
         <div class="card-title">Keras / KerasHub — LiteRT Export Pipeline</div>
         <p class="card-desc">
-          On-device deployment infrastructure for frontier models (Gemma, Llama, Flux) via Google's Keras 3 ecosystem.
+          On-device deployment infrastructure for frontier models (Gemma, Llama, Flux) via the Keras 3 ecosystem, as open-source contributions.
           Covers PyTorch-backend export, LiteRT-LM prefill/decode signatures, and the official keras.io documentation.
         </p>
         <div class="card-links">
@@ -339,12 +339,25 @@ flowchart LR
         <span class="card-emoji">📈</span>
         <div class="card-title">RL Alpha Labs — Algorithmic Trading</div>
         <p class="card-desc">
-          JAX-native PPO and DQN agents trading across <strong>746 NSE instruments</strong> with <strong>3.5+ years</strong> of OHLCV data.
-          128 vectorised environments for parallel rollout, full portfolio simulation with risk controls.
+          Research-stage lab testing JAX-native PPO and DQN agents across <strong>746 NSE instruments</strong> with <strong>3.5+ years</strong> of OHLCV data.
+          128 vectorised environments for parallel rollout, full portfolio simulation with risk controls; no live capital deployed.
         </p>
         <div class="card-links">
-          <a href="https://pctablet505.github.io/RLAlphaLabs/" class="card-link" target="_blank" rel="noopener">Live Demo →</a>
+          <a href="https://rlalphalabs.com/" class="card-link" target="_blank" rel="noopener">Lab site →</a>
           <span class="card-link" title="Source code available on request">Private repo · available on request</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-emoji">🎛️</span>
+        <div class="card-title">Servedeck — one control plane for local vLLM</div>
+        <p class="card-desc">
+          Runs each local vLLM model as its own systemd user unit, serves one OpenAI-compatible <code>/v1</code> endpoint that
+          answers to the name <code>main</code>, and shows live KV-cache use and throughput. Built at RL Alpha Labs; MIT licensed.
+        </p>
+        <div class="card-links">
+          <a href="https://github.com/pctablet505/servedeck" class="card-link" target="_blank" rel="noopener">GitHub →</a>
+          <a href="https://pctablet505.github.io/servedeck/" class="card-link" target="_blank" rel="noopener">Docs →</a>
         </div>
       </div>
 
@@ -591,3 +604,7 @@ flowchart LR
     <p class="footer-note">Built with Jekyll · Hosted on GitHub Pages · Hyderabad, India</p>
   </div>
 </section>
+
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "Person", "@id": "https://pctablet505.github.io/#person", "name": "Rahul Kumar", "alternateName": "pctablet505", "url": "https://pctablet505.github.io/", "jobTitle": "Machine learning engineer", "description": "ML engineer for on-device AI, open-source contributor to Keras, and builder of Porchlamp and RL Alpha Labs.", "knowsAbout": ["On-device AI", "Model quantization", "Keras", "LiteRT", "JAX", "Reinforcement learning"], "affiliation": {"@id": "https://rlalphalabs.com/#organization"}, "sameAs": ["https://github.com/pctablet505", "https://www.linkedin.com/in/pctablet505/", "https://dev.to/pctablet505", "https://hashnode.com/@pctablet505", "https://medium.com/@pctablet505", "https://x.com/pctablet505", "https://www.kaggle.com/pctablet505"]}
+</script>
