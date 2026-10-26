@@ -22,17 +22,17 @@
 <text x="305.8" y="191.1" font-size="17" font-weight="700" fill="#f8fafc" text-anchor="middle">13.53</text>
 <text x="305.8" y="354" font-size="13.5" fill="#e2e8f0" text-anchor="middle">+ gather kernel</text>
 <text x="305.8" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">(wide expert reads)</text>
-<rect x="419.0" y="171.6" width="88.0" height="158.4" fill="#fbbf24" rx="3"/>
-<text x="463.0" y="162.6" font-size="17" font-weight="700" fill="#fbbf24" text-anchor="middle">16.50</text>
+<rect x="419.0" y="171.6" width="88.0" height="158.4" fill="#cbd5e1" rx="3"/>
+<text x="463.0" y="162.6" font-size="17" font-weight="700" fill="#f8fafc" text-anchor="middle">16.50</text>
 <text x="463.0" y="354" font-size="13.5" fill="#e2e8f0" text-anchor="middle">+ cache of the</text>
-<text x="463.0" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">busiest experts</text>
-<rect x="576.2" y="186.1" width="88.0" height="143.9" fill="#cbd5e1" rx="3"/>
-<text x="620.2" y="177.1" font-size="17" font-weight="700" fill="#f8fafc" text-anchor="middle">14.99</text>
+<text x="463.0" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">busiest experts (peak)</text>
+<rect x="576.2" y="186.1" width="88.0" height="143.9" fill="#fbbf24" rx="3"/>
+<text x="620.2" y="177.1" font-size="17" font-weight="700" fill="#fbbf24" text-anchor="middle">14.99</text>
 <text x="620.2" y="354" font-size="13.5" fill="#e2e8f0" text-anchor="middle">As shipped</text>
 <text x="620.2" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">(room for long prompts)</text>
 <rect x="733.4" y="133.4" width="88.0" height="196.6" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5" rx="3"/>
 <text x="777.4" y="124.4" font-size="17" font-weight="700" fill="#94a3b8" text-anchor="middle">20.48</text>
 <text x="777.4" y="354" font-size="13.5" fill="#e2e8f0" text-anchor="middle">Router pruning</text>
-<text x="777.4" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">not shipped: hurt output</text>
+<text x="777.4" y="372" font-size="12.5" fill="#94a3b8" text-anchor="middle">(not shipped: hurt output)</text>
 <text x="28" y="402" font-size="12" fill="#94a3b8">Source: github.com/pctablet505/glm53-flash-single-gpu</text>
 </g></svg>
