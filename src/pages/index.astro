@@ -1,0 +1,192 @@
+---
+import Base from '../layouts/Base.astro';
+import Lamp from '../components/Lamp.astro';
+import WorkCard from '../components/WorkCard.astro';
+import Fig from '../components/Fig.astro';
+import EntryRow from '../components/EntryRow.astro';
+import {
+  AREA_META, AREA_ORDER, byArea, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section, work,
+  workIn,
+} from '../lib/site';
+
+const proof = identity.proof.map(numberRef);
+const featured = byArea(work().filter((e) => e.priority === 1));
+const jobs = byDate(section('Experience'));
+const demos = byPriority(section('Demos'));
+const writing = byDate(section('Writing')).slice(0, 4);
+const notes = byPriority(section('Notes')).slice(0, 4);
+const oss = profile.byId.get('oss-summary');
+const ossNums = oss?.numbers ?? [];
+const total = work().length;
+---
+<Base>
+  <section class="wrap hero">
+    <div class="glow" aria-hidden="true"></div>
+    <div class="who">
+      <Lamp />
+      <span class="handle">{identity.handle}</span>
+      <span aria-hidden="true">·</span>
+      <span>{identity.name}, machine learning engineer, {identity.location}</span>
+    </div>
+    <h1 class="display">{identity.headline}.</h1>
+    <p class="lede">{identity.lede}</p>
+    <div class="btn-row">
+      <a class="btn primary" href="/work/">See all {total} projects →</a>
+      {identity.resume && <a class="btn" href={identity.resume}>Resume (PDF)</a>}
+      <a class="btn" href="/about/">About me</a>
+      {identity.email && <a class="btn" href={`mailto:${identity.email}`}>Email</a>}
+    </div>
+    <div class="proof" aria-label="Headline results">
+      {proof.map(({ entry, num }) => (
+        <a href={entryHref(entry)} title={num.status === 'checked' ? `Checked ${num.as_of} at a public source` : 'Reported: no public source to check'}>
+          <span class="stat-value">{num.value}</span>
+          <span class="stat-what">{num.what}</span>
+          <span class="stat-src">{num.status === 'checked' ? <><span class="ok">●</span> checked</> : '○ reported'}</span>
+          <span class="stat-src" style="color:var(--accent-ink);margin-top:auto">{entry.title} →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">What I work on</p>
+          <h2>Four areas, one habit: measure what each change bought</h2>
+        </div>
+        <a class="more" href="/work/">All work →</a>
+      </div>
+      <div class="grid four">
+        {AREA_ORDER.map((a) => (
+          <a class="card area-card" data-area={a} href={`/work/#${a}`} style="text-decoration:none">
+            <span class="count">{workIn(a).length}</span>
+            <h3>{AREA_META[a].label}</h3>
+            <p class="one-line">{AREA_META[a].blurb}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Selected work</p>
+          <h2>The work I would show first</h2>
+          <p>Each card opens the full story: the problem, what I did, the result, and where the number comes from.</p>
+        </div>
+        <a class="more" href="/work/">{total - featured.length} more projects →</a>
+      </div>
+      <div class="grid two">
+        {featured.map((e) => <WorkCard entry={e} feature />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Demos lab</p>
+          <h2>Try the ideas in your browser</h2>
+          <p>Rebuilt from scratch with public techniques. Each page shows how it works today; live versions are on the way.</p>
+        </div>
+        <a class="more" href="/demos/">All demos →</a>
+      </div>
+      <div class="grid three">
+        {demos.map((d) => (
+          <article class="card feature">
+            <Fig id={d.id} />
+            <div class="body">
+              <div class="meta"><span class="chip">{d.status === 'live' ? 'Live' : 'Planned'}</span></div>
+              <h3><a href={entryHref(d)}>{d.title}</a></h3>
+              <p class="one-line">{d.summary.split('. ')[0]}.</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Experience</p>
+          <h2>Phones first, then frameworks</h2>
+        </div>
+        <a class="more" href="/experience/">Full timeline →</a>
+      </div>
+      <div class="mini-timeline">
+        {jobs.map((j) => (
+          <a href={entryHref(j)}>
+            <div class="when">{fmtSpan(j)}</div>
+            <div class="org">{j.org}</div>
+            <div class="role">{j.title_field}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Open source</p>
+          <h2>Merged upstream, in the open</h2>
+          {oss?.summary && <p>{oss.summary}</p>}
+        </div>
+        <a class="more" href="/open-source/">Open source →</a>
+      </div>
+      <div class="numbers">
+        {ossNums.map((n) => (
+          <div class="num">
+            <div class="stat-value">{n.value}</div>
+            <div class="stat-what">{n.what}</div>
+            <a class="stat-src" href={n.source}><span class="ok">●</span> checked {n.as_of}</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid two" style="gap:3rem">
+      <div>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Writing</p>
+            <h2>Articles</h2>
+          </div>
+          <a class="more" href="/writing/">All writing →</a>
+        </div>
+        <ul class="list">{writing.map((e) => <EntryRow entry={e} />)}</ul>
+      </div>
+      <div>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Notes</p>
+            <h2>The knowledge base</h2>
+          </div>
+          <a class="more" href="/notes/">All notes →</a>
+        </div>
+        <ul class="list">{notes.map((e) => <EntryRow entry={e} />)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">Contact</p>
+      <h2>Working on perception, sensing or fast inference?</h2>
+      <p class="lede">I am glad to talk about roles, collaborations and hard problems in on-device ML.</p>
+      <div class="btn-row">
+        {identity.email && <a class="btn primary" href={`mailto:${identity.email}`}>{identity.email}</a>}
+        {identity.links.filter((l) => l.priority === 1).map((l) => <a class="btn" href={l.url}>{l.label}</a>)}
+      </div>
+    </div>
+  </section>
+</Base>

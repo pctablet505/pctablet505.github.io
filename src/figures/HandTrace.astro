@@ -1,0 +1,117 @@
+---
+// Illustration drawn by code: how a left-hand and a right-hand grip differ. The thumb sweeps an arc around its
+// joint, so swipes curve the opposite way for each hand, taps cluster on the thumb's side, and the phone tilts
+// toward the hand that holds it.
+const phones = [
+  { hand: 'left', x0: 52, side: 1 },
+  { hand: 'right', x0: 318, side: -1 },
+];
+const W = 110;
+const H = 196;
+const Y0 = 26;
+function arc(x0: number, side: number): string {
+  const cx = side === 1 ? x0 - 6 : x0 + W + 6;
+  const cy = Y0 + H + 4;
+  const r = 112;
+  const pts: string[] = [];
+  for (let a = 22; a <= 78; a += 2) {
+    const t = (a * Math.PI) / 180;
+    pts.push(`${(cx + side * r * Math.cos(t)).toFixed(1)} ${(cy - r * Math.sin(t)).toFixed(1)}`);
+  }
+  return 'M' + pts.join(' L');
+}
+function taps(x0: number, side: number): [number, number][] {
+  const base: [number, number][] = [[22, 150], [34, 128], [18, 118], [44, 160], [30, 98]];
+  return base.map(([dx, dy]) => [side === 1 ? x0 + dx : x0 + W - dx, Y0 + dy]);
+}
+function tilt(x0: number, side: number): string {
+  const pts: string[] = [];
+  for (let i = 0; i <= 40; i++) {
+    const px = x0 + (i / 40) * W;
+    const py = 238 - side * 3 - Math.sin(i / 3.2) * 3 - side * (i / 40) * 2;
+    pts.push(`${px.toFixed(1)} ${py.toFixed(1)}`);
+  }
+  return 'M' + pts.join(' L');
+}
+interface Props {
+  big?: boolean;
+}
+const { big = false } = Astro.props;
+---
+<svg viewBox="0 0 480 270" role="img" aria-label="Illustration: two phones. On the left-hand phone the thumb's swipe curves one way and taps sit on the left; on the right-hand phone the swipe curves the other way and taps sit on the right." class:list={['ht', { big }]}>
+  {phones.map((p) => (
+    <g class={`phone ${p.hand}`}>
+      <rect x={p.x0} y={Y0} width={W} height={H} rx="16" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+      <rect x={p.x0 + 42} y={Y0 + 8} width="26" height="5" rx="2.5" fill="var(--line-2)" />
+      <path class="swipe" d={arc(p.x0, p.side)} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="5" stroke-linecap="round" />
+      {taps(p.x0, p.side).map(([tx, ty], i) => (
+        <circle class="tap" cx={tx} cy={ty} r="6" fill="var(--sensing)" style={`animation-delay:${(p.side === 1 ? 0 : 3) + i * 0.35}s`} />
+      ))}
+      <path d={tilt(p.x0, p.side)} fill="none" stroke="var(--ink-3)" stroke-width="1.5" />
+      <text x={p.x0 + W / 2} y="266" text-anchor="middle" class="cap">{p.hand} hand</text>
+    </g>
+  ))}
+  <g class="guess" font-family="var(--font-mono)" text-anchor="middle">
+    <rect x="196" y="110" width="88" height="40" rx="20" fill="var(--surface)" stroke="var(--line-2)" />
+    <text class="g-left" x="240" y="135">← left</text>
+    <text class="g-right" x="240" y="135">right →</text>
+  </g>
+</svg>
+
+<style>
+  .cap {
+    font: 500 12px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .guess text {
+    font-size: 14px;
+    font-weight: 650;
+    fill: var(--sensing);
+  }
+  .swipe {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.85;
+  }
+  .left .swipe {
+    animation: ht-swipe 6s infinite;
+  }
+  .right .swipe {
+    animation: ht-swipe 6s infinite 3s;
+  }
+  .tap {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .tap {
+    animation: ht-tap 6s infinite backwards;
+  }
+  .g-left {
+    animation: ht-gl 6s infinite;
+  }
+  .g-right {
+    opacity: 0;
+    animation: ht-gr 6s infinite;
+  }
+  @keyframes ht-swipe {
+    0% { stroke-dashoffset: 1; opacity: 0.85; }
+    25% { stroke-dashoffset: 0; opacity: 0.85; }
+    45% { stroke-dashoffset: 0; opacity: 0; }
+    100% { stroke-dashoffset: 1; opacity: 0; }
+  }
+  @keyframes ht-tap {
+    0% { opacity: 0; transform: scale(0.4); }
+    6% { opacity: 0.8; transform: scale(1); }
+    30% { opacity: 0.35; transform: scale(1); }
+    48%, 100% { opacity: 0; }
+  }
+  @keyframes ht-gl { 0%, 45% { opacity: 1; } 50%, 95% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes ht-gr { 0%, 45% { opacity: 0; } 50%, 95% { opacity: 1; } 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .swipe, .tap, .g-left, .g-right { animation: none; }
+    .swipe { stroke-dashoffset: 0; }
+    .tap { opacity: 0.6; }
+    .g-right { opacity: 0; }
+  }
+</style>

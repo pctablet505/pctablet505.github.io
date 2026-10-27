@@ -1,0 +1,68 @@
+---
+// The figure for an entry, if it has one. Figures drawn from data read their numbers from PROFILE.md; the rest are
+// labelled as illustrations.
+import BarcodeDamage from '../figures/BarcodeDamage.astro';
+import DecodeChart from '../figures/DecodeChart.astro';
+import DotGrid from '../figures/DotGrid.astro';
+import DropTrace from '../figures/DropTrace.astro';
+import ExportPipeline from '../figures/ExportPipeline.astro';
+import FaceLandmarks from '../figures/FaceLandmarks.astro';
+import HandTrace from '../figures/HandTrace.astro';
+import NpuChip from '../figures/NpuChip.astro';
+import { profile } from '../lib/site';
+
+interface Props {
+  id: string;
+  big?: boolean;
+  caption?: boolean;
+}
+const { id, big = false, caption = false } = Astro.props;
+const e = profile.byId.get(id);
+const tiers = profile.byId.get('rl-alpha-labs')?.numbers.find((n) => n.id === 'tiers');
+
+const CAPTIONS: Record<string, string> = {
+  'damaged-barcodes': 'Illustration drawn by code: a real EAN-13 encoding is damaged, restored and read; a code too damaged to read is refused.',
+  'barcode-reader': 'Illustration drawn by code: a real EAN-13 encoding is damaged, restored and read; a code too damaged to read is refused.',
+  'face-recognition': 'Illustration drawn by code: faces found in one frame, each matched by walking a tree index rather than comparing every stored face.',
+  'attention-detection': 'Illustration drawn by code: landmarks and head pose; attention drops as the head turns away.',
+  'face-attention': 'Illustration drawn by code: landmarks and head pose; attention drops as the head turns away.',
+  'behavioural-identification': 'Illustration drawn by code: swipes curve the other way for each hand, taps sit on the thumb side, and the phone tilts toward the hand.',
+  'which-hand': 'Illustration drawn by code: swipes curve the other way for each hand, taps sit on the thumb side, and the phone tilts toward the hand.',
+  'drop-detection': 'Illustration drawn by code from the physics of a 1 m fall, not a recording: free fall reads near 0 g, then the impact spikes.',
+  'keras-litert-export': 'Illustration: the export path. The call is the one in the keras.io guide.',
+  'snapdragon-speed': 'Illustration: work moves from the CPU to the NPU and DSP, quantized so less data crosses the memory bus.',
+};
+let kind: string | null = null;
+if (['damaged-barcodes', 'barcode-reader'].includes(id)) kind = 'barcode';
+else if (['face-recognition'].includes(id)) kind = 'face-rec';
+else if (['attention-detection', 'face-attention'].includes(id)) kind = 'face-att';
+else if (['behavioural-identification', 'which-hand'].includes(id)) kind = 'hand';
+else if (id === 'drop-detection') kind = 'drop';
+else if (id === 'glm53-one-gpu' && e?.chart) kind = 'chart';
+else if (id === 'keras-litert-export') kind = 'export';
+else if (id === 'snapdragon-speed') kind = 'npu';
+else if (id === 'rl-alpha-labs' && tiers) kind = 'tiers';
+
+const cap =
+  kind === 'chart' && e?.chart
+    ? `Drawn from the repository's measurements (read ${e.chart.as_of}). ${e.chart.note ?? ''}`
+    : kind === 'tiers' && tiers
+      ? `Drawn from rlalphalabs.com (read ${tiers.as_of}): ${tiers.what}.`
+      : CAPTIONS[id];
+---
+{kind && (
+  <figure>
+    <div class:list={['fig', { 'fig-big': big }]}>
+      {kind === 'barcode' && <BarcodeDamage big={big} />}
+      {kind === 'face-rec' && <FaceLandmarks variant="recognition" big={big} />}
+      {kind === 'face-att' && <FaceLandmarks variant="attention" big={big} />}
+      {kind === 'hand' && <HandTrace big={big} />}
+      {kind === 'drop' && <DropTrace big={big} />}
+      {kind === 'chart' && e?.chart && <DecodeChart chart={e.chart} big={big} />}
+      {kind === 'export' && <ExportPipeline big={big} />}
+      {kind === 'npu' && <NpuChip big={big} />}
+      {kind === 'tiers' && tiers && <DotGrid value={tiers.value} yes="index fund ahead after costs and tax" no="the other tier" big={big} />}
+    </div>
+    {caption && cap && <figcaption>{cap}</figcaption>}
+  </figure>
+)}

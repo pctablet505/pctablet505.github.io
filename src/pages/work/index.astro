@@ -1,0 +1,51 @@
+---
+import Base from '../../layouts/Base.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import { AREA_META, AREA_ORDER, isCaseStudy, work, workIn } from '../../lib/site';
+
+const all = work();
+const cases = all.filter(isCaseStudy).length;
+---
+<Base title="Work" description={`${all.length} projects in computer vision, sensor ML, performance and inference, and independent research: case studies first.`}>
+  <header class="wrap entry-head">
+    <p class="eyebrow">Work</p>
+    <h1>{all.length} projects, four areas</h1>
+    <p class="lede">
+      The strongest work sits at the top of each area as cards; everything else is one line below it.
+      {cases > 0 && ` ${cases} ${cases === 1 ? 'has a full case study' : 'have full case studies'}: problem, approach, results.`}
+    </p>
+    <ul class="chips">
+      {AREA_ORDER.map((a) => (
+        <li><a class="chip" data-area={a} href={`#${a}`} style="text-decoration:none"><span class="dot" />{AREA_META[a].label} · {workIn(a).length}</a></li>
+      ))}
+    </ul>
+  </header>
+  {AREA_ORDER.map((a) => {
+    const es = workIn(a);
+    const top = es.filter((e) => e.priority < 3);
+    const rest = es.filter((e) => e.priority === 3);
+    return (
+      <section class="section" id={a} data-area={a}>
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow"><span class="dot" style="display:inline-block;margin-right:.4rem" />{es.length} projects</p>
+              <h2>{AREA_META[a].label}</h2>
+              <p>{AREA_META[a].blurb}</p>
+            </div>
+          </div>
+          <div class="grid two">
+            {top.map((e) => <WorkCard entry={e} feature={e.priority === 1} />)}
+          </div>
+          {rest.length > 0 && (
+            <div style="margin-top:2rem">
+              <h3 style="margin-bottom:.75rem">Also in {AREA_META[a].label.toLowerCase()}</h3>
+              <ul class="list">{rest.map((e) => <EntryRow entry={e} />)}</ul>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  })}
+</Base>

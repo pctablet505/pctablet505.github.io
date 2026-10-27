@@ -1,0 +1,158 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/newsreader';
+import '../styles/global.css';
+import Lamp from '../components/Lamp.astro';
+import { identity, linksAt } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  section?: string;
+}
+const { title, description, section } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site).href;
+const fullTitle = title ? `${title} · ${identity.handle}` : `${identity.handle} (${identity.name}): ${identity.headline}`;
+const desc = description ?? `${identity.headline}. ${identity.lede ?? ''}`.trim();
+const nav = [
+  ['Work', '/work/'],
+  ['Experience', '/experience/'],
+  ['Demos', '/demos/'],
+  ['Writing', '/writing/'],
+  ['Notes', '/notes/'],
+  ['About', '/about/'],
+];
+const current = section ?? Astro.url.pathname;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': new URL('/#person', site).href,
+  name: identity.name,
+  alternateName: identity.handle,
+  url: new URL('/', site).href,
+  jobTitle: 'Machine learning engineer',
+  description: desc,
+  knowsAbout: [
+    'Computer vision', 'Biometrics', 'Sensor ML', 'On-device AI', 'Model optimization', 'Quantization',
+    'LLM inference', 'Keras', 'LiteRT',
+  ],
+  sameAs: identity.links.map((l) => l.url),
+};
+const built = new Date().toISOString().slice(0, 10);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="Profile for AI tools" />
+    <link rel="alternate" type="application/json" href="/profile.json" title="Profile as JSON" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={identity.handle} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/social.png', site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+        } catch (e) {}
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/" aria-label={`${identity.handle}, home`}>
+          <Lamp />
+          {identity.handle}
+        </a>
+        <nav class="nav" aria-label="Main">
+          {nav.map(([label, href]) => (
+            <a href={href} aria-current={current.startsWith(href) ? 'page' : undefined}>{label}</a>
+          ))}
+        </nav>
+        <div class="tools">
+          <a class="icon-btn" href="/search/" aria-label="Search the site">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          </a>
+          <button class="icon-btn" id="theme" type="button" aria-label="Switch theme">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" data-pagefind-body>
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <div class="cols">
+          <div>
+            <h2>{identity.handle}</h2>
+            <p>{identity.name}. {identity.headline}.</p>
+            <ul>
+              {identity.email && <li><a href={`mailto:${identity.email}`}>{identity.email}</a></li>}
+              {linksAt(1).map((l) => <li><a href={l.url}>{l.label}</a></li>)}
+            </ul>
+          </div>
+          <div>
+            <h2>Explore</h2>
+            <ul>
+              <li><a href="/work/">Work</a></li>
+              <li><a href="/experience/">Experience</a></li>
+              <li><a href="/open-source/">Open source</a></li>
+              <li><a href="/demos/">Demos</a></li>
+              <li><a href="/writing/">Writing</a></li>
+              <li><a href="/notes/">Notes</a></li>
+              <li><a href="/certificates/">Education and certificates</a></li>
+              <li><a href="/about/">About</a></li>
+            </ul>
+          </div>
+          <div>
+            <h2>Elsewhere</h2>
+            <ul>
+              {linksAt(2).map((l) => <li><a href={l.url}>{l.label}</a></li>)}
+              <li><a href="/profile.json">profile.json</a></li>
+              <li><a href="/llms.txt">llms.txt</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="fine">
+          Every fact on this site comes from one file, <a href="https://github.com/pctablet505/pctablet505.github.io/blob/main/PROFILE.md">PROFILE.md</a>. Built {built}.
+        </p>
+      </div>
+    </footer>
+    <script>
+      const btn = document.getElementById('theme');
+      const root = document.documentElement;
+      const isDark = () =>
+        root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      const label = () => btn?.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+      label();
+      btn?.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        label();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import Fig from '../../components/Fig.astro';
+import { byPriority, entryHref, section } from '../../lib/site';
+
+const demos = byPriority(section('Demos'));
+---
+<Base title="Demos lab" description="In-browser demos of on-device vision and sensing: a damaged barcode reader, which hand holds the phone, and face attention on camera.">
+  <header class="wrap entry-head">
+    <p class="eyebrow">Demos lab</p>
+    <h1>Ideas you can try</h1>
+    <p class="lede">
+      Each demo is rebuilt from scratch with public techniques, never from employer code or data. Today each page shows how
+      it works; the live versions are being built and will be linked here.
+    </p>
+  </header>
+  <section class="wrap" style="padding-bottom:4rem">
+    <div class="grid two">
+      {demos.map((d) => (
+        <article class="card feature">
+          <Fig id={d.id} />
+          <div class="body">
+            <div class="meta"><span class="chip">{d.status === 'live' ? 'Live' : 'Planned'}</span></div>
+            <h3><a href={entryHref(d)}>{d.title}</a></h3>
+            <p class="one-line">{d.summary.split('. ')[0]}.</p>
+            <div class="foot"><span>{d.related.length} related project{d.related.length === 1 ? '' : 's'}</span><span class="go">Open →</span></div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Base>

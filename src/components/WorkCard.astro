@@ -1,0 +1,30 @@
+---
+import type { Entry } from '../lib/profile';
+import { AREA_META, STATUS_LABEL, entryHref, fmtSpan, isCaseStudy, jobLabel, readMinutes } from '../lib/site';
+import Fig from './Fig.astro';
+import Depth from './Depth.astro';
+
+interface Props {
+  entry: Entry;
+  feature?: boolean;
+}
+const { entry: e, feature = false } = Astro.props;
+const area = e.area ? AREA_META[e.area] : undefined;
+const href = entryHref(e);
+const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : isCaseStudy(e) ? 3 : e.summary ? 2 : 1;
+---
+<article class:list={['card', { feature }]} data-area={e.area}>
+  {feature && <Fig id={e.id} />}
+  <div class={feature ? 'body' : undefined} style={feature ? undefined : 'display:contents'}>
+    <div class="meta">
+      {area && <span class="chip"><span class="dot" />{area.label}</span>}
+      <span>{jobLabel(e.org)}{fmtSpan(e) && ` · ${fmtSpan(e)}`}</span>
+    </div>
+    <h3><a href={href}>{e.title}</a></h3>
+    {e.one_line && <p class="one-line">{e.one_line}</p>}
+    <div class="foot">
+      <span><Depth level={level} /> {level >= 3 ? `Case study · ${readMinutes(e)} min` : level === 2 ? 'Summary' : 'Short entry'}</span>
+      <span class="go">{e.status ? STATUS_LABEL[e.status] : ''} →</span>
+    </div>
+  </div>
+</article>

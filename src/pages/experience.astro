@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import EntryRow from '../components/EntryRow.astro';
+import { md } from '../lib/md';
+import { byArea, byDate, fmtSpan, identity, section, work, workAt } from '../lib/site';
+
+const jobs = byDate(section('Experience'));
+const personal = work().filter((e) => e.org === 'personal');
+const independent = byArea(personal.filter((e) => e.priority < 3));
+const since = Math.min(...personal.map((e) => Number((e.start ?? e.date ?? '9999').slice(0, 4))));
+---
+<Base title="Experience" description="Experience timeline: on-device computer vision, biometrics and sensor ML at Samsung R&D Institute India and Qualcomm, then open-source ML frameworks and tools.">
+  <header class="wrap entry-head">
+    <p class="eyebrow">Experience</p>
+    <h1>Where the work was done</h1>
+    <p class="lede">Each role, then the work from it. Cards are the projects worth opening; the rest is listed below them.</p>
+    {identity.resume && <div class="btn-row" style="margin-top:1.25rem"><a class="btn" href={identity.resume}>Resume (PDF)</a></div>}
+  </header>
+  <section class="wrap" style="padding-bottom:3rem">
+    <ol class="timeline">
+      {jobs.map((j) => {
+        const items = workAt(j.id);
+        const top = items.filter((e) => e.priority < 3);
+        const rest = items.filter((e) => e.priority === 3);
+        return (
+          <li id={j.id}>
+            <div class="when">{fmtSpan(j)} · {j.location}</div>
+            <h2 style="margin:.35rem 0 .25rem">{j.title_field}</h2>
+            <p class="muted" style="margin:0 0 .75rem;font-weight:600">{j.org}</p>
+            <div class="prose" style="margin-bottom:1.25rem"><Fragment set:html={md(j.summary)} /></div>
+            {top.length > 0 && <div class="grid two" style="margin-bottom:1rem">{top.map((e) => <WorkCard entry={e} />)}</div>}
+            {rest.length > 0 && <ul class="list">{rest.map((e) => <EntryRow entry={e} showOrg={false} />)}</ul>}
+          </li>
+        );
+      })}
+      <li id="independent">
+        <div class="when">{since} – now · alongside the jobs</div>
+        <h2 style="margin:.35rem 0 .75rem">Independent work</h2>
+        <p class="lede" style="margin-bottom:1.25rem">An independent research lab, an LLM served from one GPU, and the tools built along the way.</p>
+        <div class="grid two">{independent.map((e) => <WorkCard entry={e} />)}</div>
+        <p style="margin-top:1rem"><a class="text-link" href="/work/#projects">All independent projects →</a></p>
+      </li>
+    </ol>
+    <p class="note">Education, certificates and awards are on <a class="text-link" href="/certificates/">their own page</a>.</p>
+  </section>
+</Base>
