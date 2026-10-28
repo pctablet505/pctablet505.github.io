@@ -2,22 +2,19 @@
 import Base from '../../layouts/Base.astro';
 import WorkCard from '../../components/WorkCard.astro';
 import EntryRow from '../../components/EntryRow.astro';
-import { AREA_META, AREA_ORDER, isCaseStudy, work, workIn } from '../../lib/site';
-
-const all = work();
-const cases = all.filter(isCaseStudy).length;
+import { AREA_META, AREA_ORDER, workIn } from '../../lib/site';
 ---
-<Base title="Work" description={`${all.length} projects in computer vision, sensor ML, performance and inference, and independent research: case studies first.`}>
+<Base title="Work" description="Projects in computer vision, sensor ML, performance and inference, and independent research: case studies first.">
   <header class="wrap entry-head">
     <p class="eyebrow">Work</p>
-    <h1>{all.length} projects, four areas</h1>
+    <h1>Every project, by area</h1>
     <p class="lede">
-      The strongest work sits at the top of each area as cards; everything else is one line below it.
-      {cases > 0 && ` ${cases} ${cases === 1 ? 'has a full case study' : 'have full case studies'}: problem, approach, results.`}
+      The strongest work sits at the top of each area as cards; everything else is one line below it. Some cards open
+      into a full case study: problem, approach, results.
     </p>
     <ul class="chips">
       {AREA_ORDER.map((a) => (
-        <li><a class="chip" data-area={a} href={`#${a}`} style="text-decoration:none"><span class="dot" />{AREA_META[a].label} · {workIn(a).length}</a></li>
+        <li><a class="chip" data-area={a} href={`#${a}`} style="text-decoration:none"><span class="dot" />{AREA_META[a].label}</a></li>
       ))}
     </ul>
   </header>
@@ -30,7 +27,6 @@ const cases = all.filter(isCaseStudy).length;
         <div class="wrap">
           <div class="section-head">
             <div>
-              <p class="eyebrow"><span class="dot" style="display:inline-block;margin-right:.4rem" />{es.length} projects</p>
               <h2>{AREA_META[a].label}</h2>
               <p>{AREA_META[a].blurb}</p>
             </div>
