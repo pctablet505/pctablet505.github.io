@@ -803,6 +803,51 @@ figcaption {
   border-radius: var(--radius);
 }
 
+/* Charts from a published report: only the copy that matches the theme shows. */
+.report-chart {
+  padding: 1rem;
+}
+.report-chart img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.report-chart.card {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  padding: 4%;
+}
+.report-chart.card img {
+  height: 100%;
+  object-fit: contain;
+}
+.report-chart .theme-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .report-chart .theme-light {
+    display: none;
+  }
+  :root:not([data-theme='light']) .report-chart .theme-dark {
+    display: block;
+  }
+}
+:root[data-theme='dark'] .report-chart .theme-light {
+  display: none;
+}
+:root[data-theme='dark'] .report-chart .theme-dark {
+  display: block;
+}
+.report-figure {
+  margin: 1.75rem 0;
+}
+.report-figure .report-chart {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
 /* Timeline */
 .timeline {
   list-style: none;

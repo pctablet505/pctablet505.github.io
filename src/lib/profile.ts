@@ -70,6 +70,14 @@ export interface Closed {
   as_of: string;
   ideas: { idea: string; why: string }[];
 }
+// Charts from a published report, kept in src/assets/<dir>/light/ and /dark/; the first one is the entry's preview.
+export interface Report {
+  title: string;
+  source: string;
+  date: string;
+  dir: string;
+  charts: { file: string; alt: string }[];
+}
 export interface Entry {
   section: SectionName;
   id: string;
@@ -102,6 +110,7 @@ export interface Entry {
   live_url?: string;
   figure?: Figure;
   chart?: Chart;
+  report?: Report;
   closed?: Closed;
 }
 export interface Identity {
@@ -241,6 +250,7 @@ function toEntry(section: SectionName, block: Block): Entry {
     figure: f.figure as Figure | undefined,
     chart: f.chart ? { ...(f.chart as Chart), as_of: String((f.chart as Chart).as_of ?? '') } : undefined,
     closed: f.closed ? { ...(f.closed as Closed), as_of: String((f.closed as Closed).as_of ?? '') } : undefined,
+    report: f.report ? { ...(f.report as Report), date: String((f.report as Report).date ?? '') } : undefined,
   };
 }
 
@@ -319,6 +329,15 @@ function check(p: Profile): string[] {
       const count = e.numbers.find((n) => n.id === 'closed');
       if (count && Array.isArray(c.ideas) && Number(count.value) !== c.ideas.length) {
         at(e, `number "closed" says ${count.value}, but closed lists ${c.ideas.length} ideas`);
+      }
+    }
+    if (e.report) {
+      const r = e.report;
+      if (!r.title || !String(r.source).startsWith('https://') || !/^\d{4}-\d{2}-\d{2}$/.test(r.date) || !r.dir) {
+        at(e, 'report needs a title, an https source, a date and a dir');
+      }
+      if (!Array.isArray(r.charts) || !r.charts.length || r.charts.some((c) => !c?.file || !c?.alt)) {
+        at(e, 'report charts need a file and an alt text each');
       }
     }
     for (const l of e.links) if (!l.label || !/^https?:\/\//.test(l.url ?? '')) at(e, `bad link ${JSON.stringify(l)}`);
