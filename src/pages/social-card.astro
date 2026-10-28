@@ -1,13 +1,16 @@
 ---
 // The 1280 x 640 link-preview card, drawn from PROFILE.md. public/social.png is a screenshot of this page; the README
 // says how to refresh it after the slogan changes. Not linked, not in the sitemap or the search index.
-// Laid out like the LinkedIn banner: the lamp, the slogan, and the handle signed at the lower right. It carries no job
-// title, so the card does not date.
+// The slogan leads with the first word of each line in bold, the focus labels sit under it, and the name and the handle
+// sign the foot. It carries no job title, so the card does not date.
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import { identity } from '../lib/site';
 
-const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
+const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/).map((line) => {
+  const [key, ...rest] = line.split(' ');
+  return { key, rest: rest.join(' ') };
+});
 ---
 <html lang="en">
   <head>
@@ -22,11 +25,14 @@ const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
         <rect x="42" y="152" width="36" height="25" rx="6" fill="#cbd5e1" />
         <circle cx="60" cy="218" r="44" fill="#fbbf24" />
       </svg>
-      <div class="slogan">{slogan.map((line) => <div>{line}</div>)}</div>
+      <div class="slogan">{slogan.map(({ key, rest }) => <div><b>{key}</b>{` ${rest}`}</div>)}</div>
+      <div class="focus">
+        {identity.focus.map((f, i) => <>{i > 0 && <span class="sep">·</span>}<span>{f}</span></>)}
+      </div>
       <div class="rule"></div>
-      <div class="sign">
-        <div class="handle">{identity.handle}</div>
+      <div class="foot">
         <div class="name">{identity.name}</div>
+        <div class="handle">{identity.handle}</div>
       </div>
     </div>
   </body>
@@ -44,45 +50,68 @@ const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
     height: 640px;
     overflow: hidden;
     background:
-      radial-gradient(circle at 156px 218px, rgb(251 191 36 / 22%), transparent 300px),
+      radial-gradient(circle at 140px 218px, rgb(251 191 36 / 22%), transparent 260px),
       linear-gradient(135deg, #1e2230 0%, #0f172a 70%);
     color: #f8fafc;
+    font-family: 'Inter Variable', sans-serif;
   }
   .lamp {
     position: absolute;
-    left: 96px;
+    left: 80px;
     top: 0;
     width: 120px;
     height: 280px;
   }
-  /* The middle line sits level with the bulb. */
+  /* Bold keeps the emphasis in one colour family; the middle line sits level with the bulb. */
   .slogan {
     position: absolute;
-    left: 272px;
-    top: 76px;
-    font: 700 88px/1.08 'Inter Variable', sans-serif;
-    letter-spacing: -0.02em;
+    left: 256px;
+    top: 92px;
+    font-size: 60px;
+    font-weight: 400;
+    line-height: 1.16;
+    letter-spacing: -0.01em;
+    color: #cbd5e1;
+  }
+  .slogan b {
+    font-weight: 800;
+    color: #f8fafc;
+  }
+  .focus {
+    position: absolute;
+    left: 256px;
+    top: 332px;
+    display: flex;
+    gap: 12px;
+    font-size: 28px;
+    color: #cbd5e1;
+  }
+  .focus .sep {
+    color: #475569;
   }
   .rule {
     position: absolute;
-    left: 272px;
+    left: 256px;
     right: 64px;
-    top: 436px;
+    top: 452px;
     height: 1px;
     background: #334155;
   }
-  .sign {
+  .foot {
     position: absolute;
+    left: 256px;
     right: 64px;
-    top: 466px;
-    text-align: right;
-  }
-  .handle {
-    font: 700 52px/1 'JetBrains Mono Variable', monospace;
+    top: 484px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   }
   .name {
-    margin-top: 14px;
-    font: 400 28px/1 'Inter Variable', sans-serif;
+    font-size: 30px;
     color: #cbd5e1;
+  }
+  .handle {
+    font: 700 64px/1 'JetBrains Mono Variable', monospace;
+    letter-spacing: -0.02em;
   }
 </style>

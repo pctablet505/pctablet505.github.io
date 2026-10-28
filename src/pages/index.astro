@@ -19,6 +19,13 @@ const notes = byPriority(section('Notes')).slice(0, 4);
 const oss = profile.byId.get('oss-summary');
 const ossNums = oss?.numbers ?? [];
 const total = work().length;
+// The Contact section leads with LinkedIn, where most people reach out now; email and the other main links follow.
+const linkedin = identity.links.find((l) => l.url.includes('linkedin.com'));
+const contacts = [
+  ...(linkedin ? [{ label: linkedin.label, href: linkedin.url }] : []),
+  ...(identity.email ? [{ label: identity.email, href: `mailto:${identity.email}` }] : []),
+  ...identity.links.filter((l) => l.priority === 1 && l !== linkedin).map((l) => ({ label: l.label, href: l.url })),
+];
 ---
 <Base>
   <section class="wrap hero">
@@ -185,8 +192,7 @@ const total = work().length;
       <h2>Working on on-device ML, computer vision or fast inference?</h2>
       <p class="lede">I am glad to talk about roles, collaborations and hard problems where a model has to fit.</p>
       <div class="btn-row">
-        {identity.email && <a class="btn primary" href={`mailto:${identity.email}`}>{identity.email}</a>}
-        {identity.links.filter((l) => l.priority === 1).map((l) => <a class="btn" href={l.url}>{l.label}</a>)}
+        {contacts.map((c, i) => <a class={i === 0 ? 'btn primary' : 'btn'} href={c.href}>{c.label}</a>)}
       </div>
     </div>
   </section>

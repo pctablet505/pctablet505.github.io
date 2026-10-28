@@ -10,6 +10,8 @@ name: Rahul Kumar
 # The slogan, used on every profile; the lede is the short story under it, and the lamp is the symbol.
 headline: "Big models. Small places. Real numbers"
 lede: "The model you need rarely fits where it has to run, and the number you are shown is rarely the one that decides. I work on both: vision and sensing on phones, large models on one GPU, and trading research after costs and tax."
+# Four short labels under the slogan on the link-preview card, in the slogan's order.
+focus: [LLM inference, Computer vision, On-device AI, Trading research]
 location: India
 # The numbers the home page leads with, as entry-id.number-id: one per beat of the slogan.
 proof: [glm53-one-gpu.decode, damaged-barcodes.read-rate, drop-detection.parameters, rl-alpha-labs.tiers]

@@ -54,3 +54,8 @@ test('a growth line without a numeric rate fails', () => {
   const bad = broken('{label: "NIFTY 500 index fund", rate: 11.67}', '{label: "NIFTY 500 index fund", rate: "11.67%"}');
   assert.throws(() => parseProfile(bad), /rl-alpha-labs: chart growth needs/);
 });
+
+test('a fifth focus label fails', () => {
+  const bad = broken('focus: [LLM inference, Computer vision, On-device AI, Trading research]', 'focus: [LLM inference, Computer vision, On-device AI, Trading research, Profiling]');
+  assert.throws(() => parseProfile(bad), /Identity: focus takes at most four labels/);
+});
