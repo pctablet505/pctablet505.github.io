@@ -50,7 +50,7 @@ See [damaged barcodes](/work/damaged-barcodes/), [face recognition](/work/face-r
 [drop detection](/work/drop-detection/).
 
 #### Projects of my own
-[RL Alpha Labs](/work/rl-alpha-labs/) is my research into automated trading on Indian stocks: an idea stays only if it
+[RL Alpha Labs](/work/rl-alpha-labs/) is automated trading on Indian stocks: an idea stays only if it
 beats an index fund after costs and tax. [Porchlamp](/work/porchlamp/) ranks open-source projects by what happens to a
 stranger's pull request, not by their stars.
 
@@ -989,7 +989,7 @@ status: research
 start: 2025-05
 end: present
 priority: 1
-one_line: "Automated trading research on Indian stocks, where a strategy counts only if it beats an index fund after real costs and tax."
+one_line: "Automated trading on Indian stocks, where a strategy counts only if it beats an index fund after real costs and tax."
 skills: [quantitative research, reinforcement learning, JAX, statistics, backtesting, Python]
 numbers:
   - id: closed
