@@ -3,6 +3,8 @@ import { loadProfile, type Entry, type Num, type SectionName } from './profile';
 
 export const profile = loadProfile();
 export const identity = profile.identity;
+// The slogan's parts, one per line and without full stops: they are not sentences.
+export const sloganLines = identity.headline.split(/,\s*/).map((s) => s.charAt(0).toUpperCase() + s.slice(1));
 
 export const AREA_META = {
   vision: {

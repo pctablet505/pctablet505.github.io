@@ -7,11 +7,12 @@ export and tool that uses it changes with it. Format: [docs/PROFILE-FORMAT.md](d
 ```yaml
 handle: pctablet505
 name: Rahul Kumar
-# The slogan, used on every profile; the lede is the short story under it, and the lamp is the symbol.
-headline: "Big models. Small places. Real numbers"
-lede: "The model you need rarely fits where it has to run, and the number you are shown is rarely the one that decides. I work on both: vision and sensing on phones, large models on one GPU, and trading research after costs and tax."
+# The slogan, used on every profile; the lede is the short story under it, and the lamp is the symbol. Its three parts
+# are not sentences: written inline with commas, and shown one per line without full stops.
+headline: "Big models, small places, real numbers"
+lede: "The model you need rarely fits where it has to run, and the number you are shown is rarely the one that decides. I work on both: vision and sensing on phones, large models on one GPU, and automated trading after costs and tax."
 # Four short labels under the slogan on the link-preview card, in the slogan's order.
-focus: [LLM inference, Computer vision, On-device AI, Trading research]
+focus: [LLM inference, Computer vision, On-device AI, Automated trading]
 location: India
 # The numbers the home page leads with, as entry-id.number-id: one per beat of the slogan.
 proof: [glm53-one-gpu.decode, damaged-barcodes.read-rate, drop-detection.parameters, rl-alpha-labs.tiers]
@@ -44,9 +45,9 @@ DSPs, built the path that exports Keras models to phones, and serve a language m
 that one GPU.
 
 **Real numbers.** A backtest's best run, a benchmark's peak and a project's stars are the flattering numbers. RL Alpha
-Labs, my trading research on Indian stocks, counts an idea only if it beats an index fund after costs and tax, and writes
-down why each closed idea failed. Porchlamp ranks open-source projects by what happens to a stranger's pull request, not
-by stars.
+Labs, my automated trading research on Indian stocks, counts an idea only if it beats an index fund after costs and tax,
+and writes down why each closed idea failed. Porchlamp ranks open-source projects by what happens to a stranger's pull
+request, not by stars.
 
 How I work: measure first, change one thing, measure again, and write down what did not work. The lamp is for that last
 part: a light left on for the next person who checks.

@@ -96,10 +96,11 @@ link, if any), `image` (a file in `src/assets/`, if any). Open source entries: `
 (the knowledge base: technical notes and docs that live elsewhere, linked rather than copied): `id`, `priority`,
 `venue`, `url`, `related`, and `date` if known.
 
-Identity (no entries, one yaml block): `handle`, `name`, `headline` (the short line the home page leads with),
-`lede` (one or two sentences under it), `focus` (at most four short labels under the slogan on the link-preview
-card), `location`, `email`, `links` (each with a `priority`), `photo`, `resume`,
-`languages`, and `proof`: the numbers the home page leads with, written as `entry-id.number-id`.
+Identity (no entries, one yaml block): `handle`, `name`, `headline` (the slogan the home page leads with, written
+inline with commas; the home page and the card show one part per line), `lede` (one or two sentences under it),
+`focus` (at most four short labels under the slogan on the link-preview card), `location`, `email`, `links` (each
+with a `priority`), `photo`, `resume`, `languages`, and `proof`: the numbers the home page leads with, written as
+`entry-id.number-id`.
 
 ## 3. Sections, in file order
 

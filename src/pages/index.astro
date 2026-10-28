@@ -5,13 +5,12 @@ import WorkCard from '../components/WorkCard.astro';
 import Fig from '../components/Fig.astro';
 import EntryRow from '../components/EntryRow.astro';
 import {
-  AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section, work,
-  workIn,
+  AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section,
+  sloganLines, work, workIn,
 } from '../lib/site';
 
 const proof = identity.proof.map(numberRef);
 const featured = byAreaInTurn(work().filter((e) => e.priority === 1));
-const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
 const jobs = byDate(section('Experience'));
 const demos = byPriority(section('Demos'));
 const writing = byDate(section('Writing')).slice(0, 4);
@@ -36,7 +35,7 @@ const contacts = [
       <span aria-hidden="true">·</span>
       <span>{identity.name}, machine learning engineer, {identity.location}</span>
     </div>
-    <h1 class="display">{slogan.map((line) => <span class="slogan-line">{line}</span>)}</h1>
+    <h1 class="display">{sloganLines.map((line) => <span class="slogan-line">{line}</span>)}</h1>
     <p class="lede">{identity.lede}</p>
     <div class="btn-row">
       <a class="btn primary" href="/work/">See all {total} projects →</a>
