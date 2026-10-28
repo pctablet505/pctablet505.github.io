@@ -18,6 +18,11 @@ const notes = byPriority(section('Notes')).slice(0, 4);
 const oss = profile.byId.get('oss-summary');
 const ossNums = oss?.numbers ?? [];
 const total = work().length;
+// The first word of each slogan line is bold, as on the link-preview card.
+const slogan = sloganLines.map((line) => {
+  const [key, ...rest] = line.split(' ');
+  return { key, rest: rest.join(' ') };
+});
 // The Contact section leads with LinkedIn, where most people reach out now; email and the other main links follow.
 const linkedin = identity.links.find((l) => l.url.includes('linkedin.com'));
 const contacts = [
@@ -35,7 +40,7 @@ const contacts = [
       <span aria-hidden="true">·</span>
       <span>{identity.name}, machine learning engineer, {identity.location}</span>
     </div>
-    <h1 class="display">{sloganLines.map((line) => <span class="slogan-line">{line}</span>)}</h1>
+    <h1 class="display">{slogan.map(({ key, rest }) => <span class="slogan-line"><b>{key}</b>{` ${rest}`}</span>)}</h1>
     <p class="lede">{identity.lede}</p>
     <div class="btn-row">
       <a class="btn primary" href="/work/">See all {total} projects →</a>

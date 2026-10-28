@@ -597,6 +597,9 @@ a.stat-src:hover {
 .slogan-line {
   display: block;
 }
+.slogan-line b {
+  font-weight: 800;
+}
 .hero .lede {
   margin-top: 1.25rem;
 }
