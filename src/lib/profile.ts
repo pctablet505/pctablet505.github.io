@@ -358,6 +358,11 @@ function check(p: Profile): string[] {
     const [eid, nid] = ref.split('.');
     if (!p.byId.get(eid)?.numbers.some((n) => n.id === nid)) errs.push(`PROFILE.md: Identity: proof "${ref}" points nowhere`);
   }
+  // About links to the site's own work and demo pages must point at an entry that exists.
+  for (const [, kind, eid] of p.about.matchAll(/\]\(\/(work|demos)\/([^/)]+)\/?\)/g)) {
+    const want = kind === 'work' ? 'Work' : 'Demos';
+    if (p.byId.get(eid)?.section !== want) errs.push(`PROFILE.md: About: link /${kind}/${eid}/ points nowhere`);
+  }
   return errs;
 }
 

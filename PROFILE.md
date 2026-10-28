@@ -33,26 +33,37 @@ languages: [English, Hindi]
 
 ## About
 
-I'm Rahul Kumar, and I publish as pctablet505.
+I make models fit where they have to run, then check what they really do.
 
-Two problems run through my work. The model you need rarely fits where it has to run, and the number you are shown is
-rarely the one that decides.
+### What I work on
 
-**Big models, small places.** I build computer vision and sensing that run on phones and cameras: reading damaged
-barcodes, recognising faces in a crowd, proctoring exams, noticing when attention drifts, catching a falling phone, and
-telling who is holding a phone from the way they hold it. I fit camera and generative-imaging models onto phone NPUs and
-DSPs, built the path that exports Keras models to phones, and serve a language model larger than my GPU's memory from
-that one GPU.
+#### Large models and fast frameworks
+I serve a language model bigger than my GPU's memory from that one GPU. In open-source Keras, I made the PyTorch backend
+faster and added one call that turns a trained model into a file a phone can run. See
+[GLM-5.3-Flash on one GPU](/work/glm53-one-gpu/), [Keras on PyTorch](/work/keras-pytorch-speed/) and
+[LiteRT export](/work/keras-litert-export/).
 
-**Real numbers.** A backtest's best run, a benchmark's peak and a project's stars are the flattering numbers. RL Alpha
-Labs, my automated trading research on Indian stocks, counts an idea only if it beats an index fund after costs and tax,
-and writes down why each closed idea failed. Porchlamp ranks open-source projects by what happens to a stranger's pull
-request, not by stars.
+#### On-device vision and sensing
+These models run on the device itself, with no server to lean on. They read badly damaged barcodes and recognise many
+faces at once. From touch and motion, they can tell which hand holds a phone, who is using it, and when it is falling.
+See [damaged barcodes](/work/damaged-barcodes/), [face recognition](/work/face-recognition/) and
+[drop detection](/work/drop-detection/).
 
-How I work: measure first, change one thing, measure again, and write down what did not work. The lamp is for that last
-part: a light left on for the next person who checks.
+#### Projects of my own
+[RL Alpha Labs](/work/rl-alpha-labs/) is my research into automated trading on Indian stocks: an idea stays only if it
+beats an index fund after costs and tax. [Porchlamp](/work/porchlamp/) ranks open-source projects by what happens to a
+stranger's pull request, not by their stars.
 
-(Draft. Background and life outside work to come.)
+### How I work
+
+- **Measure first.** I profile before changing anything, change one thing at a time, and time the commit before and
+  after.
+- **Report the number that decides.** For trading, returns after costs and tax; for speed, the setting that ships, not
+  the best run.
+- **One cause per change.** Fixes go upstream as small pull requests, each easy to review and easy to revert.
+- **Write down what failed.** Every closed idea and dead end keeps its reason, so nobody has to find it out twice.
+
+The lamp in the logo stands for that last habit: a light left on for whoever checks next.
 
 ## Experience
 

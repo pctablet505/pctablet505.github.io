@@ -41,7 +41,9 @@ Parsing, in order:
    heading starts a named section of the entry, up to the next `#### `, `### ` or `## `. The sections are optional
    (an entry with none is a short entry, not a case study); when present they use the five names above, in that
    order.
-4. Identity has a yaml block directly under its H2 and no entries. About is prose under its H2 and no entries.
+4. Identity has a yaml block directly under its H2 and no entries. About is Markdown under its H2 and no entries: its
+   first paragraph is the About page's title, then `### ` headings start the page's sections, and a section's `#### `
+   parts show as cards. Links to the site's own pages are written `/work/<id>/` or `/demos/<id>/`.
 
 Text is Markdown. Links inside text are fine. No HTML.
 
@@ -115,7 +117,8 @@ with a `priority`), `photo`, `resume`, `languages`, and `proof`: the numbers the
 2. The build stops, and the live site stays as it was, on: an unknown section, an entry without a yaml block, a YAML
    error, a missing required field, a bad id, date, priority, area or status value, a duplicate id, an id reference
    that points nowhere, a `checked` number without an https source and `as_of`, a `chart` or `closed` list with a
-   missing part, a `closed` count that disagrees with its list, and a measurement in a Work or Experience entry's text
+   missing part, a `closed` count that disagrees with its list, an About link to a work or demo page that does not
+   exist, and a measurement in a Work or Experience entry's text
    that is not in its `numbers`. A measurement is a number with a unit or a sign (`%`, `x`, `ms`, `s`, `tokens/s`,
    `GiB`, `GB`, `MB`, `M`, `k`, a trailing `+`) or with a thousands comma; bare numbers such as versions ("Llama 3.1")
    are not checked. The message names the entry and the line.

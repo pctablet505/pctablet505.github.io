@@ -64,3 +64,8 @@ test('a fifth focus label fails', () => {
   const bad = broken('focus: [LLM inference, Computer vision, On-device AI, Automated trading]', 'focus: [LLM inference, Computer vision, On-device AI, Automated trading, Profiling]');
   assert.throws(() => parseProfile(bad), /Identity: focus takes at most four labels/);
 });
+
+test('an About link to a work page that does not exist fails', () => {
+  const bad = broken('[Porchlamp](/work/porchlamp/)', '[Porchlamp](/work/porch-lamp/)');
+  assert.throws(() => parseProfile(bad), /About: link \/work\/porch-lamp\/ points nowhere/);
+});
