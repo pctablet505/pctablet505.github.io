@@ -7,12 +7,12 @@ export and tool that uses it changes with it. Format: [docs/PROFILE-FORMAT.md](d
 ```yaml
 handle: pctablet505
 name: Rahul Kumar
-# Placeholder until the final positioning line lands.
-headline: "On-device ML engineer for perception and sensing"
-lede: "Computer vision, biometrics and motion-sensor ML that run on phones. I make models smaller and faster, and measure what each change bought."
+# The brand line, as on the LinkedIn banner and the GitHub bio.
+headline: "Smaller, faster ML models"
+lede: "Lately I served an LLM larger than my GPU's memory from that one GPU, built the path that exports Keras models to phones, and started RL Alpha Labs, automated trading research on Indian stocks. Before that, I built vision and motion-sensing models for phones."
 location: India
-# The numbers the home page leads with, as entry-id.number-id.
-proof: [damaged-barcodes.read-rate, face-recognition.accuracy, drop-detection.parameters, glm53-one-gpu.decode, oss-summary.merged]
+# The numbers the home page leads with, as entry-id.number-id: the newest work first.
+proof: [glm53-one-gpu.decode, oss-summary.merged, rl-alpha-labs.tiers, damaged-barcodes.read-rate]
 # The live site's contact address; confirm before launch.
 email: "work.rahul126@gmail.com"
 links:
@@ -39,8 +39,8 @@ phone from the way they hold it. Then I fitted camera and generative-imaging mod
 Since 2025 I have worked on open-source ML frameworks and tools: the LiteRT export path in Keras and KerasHub, Llama 3.1
 in KerasHub, Keras speed on PyTorch, and now XProf, the open-source ML profiler.
 
-On my own time I run RL Alpha Labs, a one-person research lab that tests trading ideas on Indian stocks and keeps only
-what beats an index fund after costs and tax, writing down why each closed idea failed. I built Porchlamp, which ranks
+On my own time I run RL Alpha Labs, automated trading research that tests ideas on Indian stocks and keeps only what
+beats an index fund after costs and tax, writing down why each closed idea failed. I built Porchlamp, which ranks
 open-source projects by how they treat a stranger's pull request. And I serve a language model larger than my GPU's
 memory from that one GPU.
 
@@ -898,7 +898,7 @@ status: research
 start: 2025-05
 end: present
 priority: 1
-one_line: "A one-person research lab for Indian stocks, where a trading idea counts only if it beats an index fund after real costs and tax."
+one_line: "Automated trading research on Indian stocks, where a strategy counts only if it beats an index fund after real costs and tax."
 skills: [quantitative research, reinforcement learning, JAX, statistics, backtesting, Python]
 numbers:
   - id: closed
@@ -923,6 +923,34 @@ links:
   - {label: rlalphalabs.com, url: "https://rlalphalabs.com/"}
   - {label: Ideas we closed, url: "https://rlalphalabs.com/notes/ideas-we-closed/"}
 related: [servedeck, flakehound]
+chart:
+  title: "₹1 lakh held from 2006, after costs and tax"
+  source: "https://rlalphalabs.com/"
+  as_of: 2026-10-28
+  note: "Each line grows at the yearly rate the study reports for it; the real paths were bumpier. The basket's band spans its capital tiers."
+  growth:
+    from: 2006
+    years: 20.73
+    start: "₹1 lakh"
+    lines:
+      - {label: "NIFTY 500 index fund", rate: 11.67}
+      - {label: "Self-held 300-stock basket", rate: 10.48, high: 10.93}
+closed:
+  source: "https://rlalphalabs.com/notes/ideas-we-closed/"
+  as_of: 2026-10-28
+  ideas:
+    - {idea: "A hand-picked basket of large stocks instead of an index fund", why: "costs and taxes"}
+    - {idea: "Intraday chart-pattern setups", why: "costs and taxes"}
+    - {idea: "Order-book signals over seconds to minutes", why: "costs and taxes"}
+    - {idea: "Trading other public filing feeds on their own", why: "costs and taxes"}
+    - {idea: "Reinforcement-learning agents trading on daily prices", why: "no edge, or only luck"}
+    - {idea: "A bigger machine-learning model to rank stocks", why: "no edge, or only luck"}
+    - {idea: "Buying after a big news-driven jump", why: "no edge, or only luck"}
+    - {idea: "Commodity price shocks to predict company results", why: "no edge, or only luck"}
+    - {idea: "Writing options on the index for income", why: "no edge, or only luck"}
+    - {idea: "Buying stocks announced for addition to a major index", why: "the market got there first"}
+    - {idea: "An AI model reading company filings to forecast earnings surprises", why: "AI that fell short of the bar"}
+    - {idea: "An AI model mapping which companies supply which, from annual reports", why: "AI that fell short of the bar"}
 ```
 Every idea, from reinforcement-learning agents in JAX to simple rules, is tested on point-in-time NSE data with delisted
 companies kept in, and counts only if it beats an index fund after real costs and tax. Twelve are closed so far, each
@@ -1303,7 +1331,7 @@ venue: rlalphalabs.com
 url: "https://rlalphalabs.com/notes/how-we-run-ai-agents/"
 related: [rl-alpha-labs, agent-workflow]
 ```
-The rules for running a one-person research lab with AI agents, and the mistake behind each rule.
+How the lab's AI agents are run: each rule, and the mistake behind it.
 
 ### Export a KerasHub vision model and run it on Android
 ```yaml

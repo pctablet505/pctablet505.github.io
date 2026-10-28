@@ -6,14 +6,15 @@ interface Props {
   big?: boolean;
 }
 const { chart, big = false } = Astro.props;
-const max = Math.max(...chart.bars.map((b) => b.value)) * 1.08;
+const bars = chart.bars!;
+const max = Math.max(...bars.map((b) => b.value)) * 1.08;
 const LX = 196;
 const RX = 452;
 const top = 30;
-const step = (240 - top) / chart.bars.length;
+const step = (240 - top) / bars.length;
 const bw = (v: number) => ((RX - LX) * v) / max;
 ---
-<svg viewBox="0 0 480 270" role="img" aria-label={`${chart.title}: ${chart.bars.map((b) => `${b.label} ${b.value}`).join('; ')}.`} class:list={['dc', { big }]}>
+<svg viewBox="0 0 480 270" role="img" aria-label={`${chart.title}: ${bars.map((b) => `${b.label} ${b.value}`).join('; ')}.`} class:list={['dc', { big }]}>
   <defs>
     <pattern id="dc-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <rect width="6" height="6" fill="var(--surface)" />
@@ -21,13 +22,13 @@ const bw = (v: number) => ((RX - LX) * v) / max;
     </pattern>
   </defs>
   <text x="24" y="20" class="t">{chart.title}</text>
-  {chart.bars.map((b, i) => {
+  {bars.map((b, i) => {
     const y = top + i * step + 8;
     const h = step - 16;
     return (
       <g class="row" style={`--d:${i * 0.12}s`}>
         <text x={LX - 10} y={y + h / 2 + 4} text-anchor="end" class:list={['lbl', { off: b.off }]}>{b.label}</text>
-        <rect class="bar" x={LX} y={y} width={bw(b.value)} height={h} rx="4" fill={b.off ? 'url(#dc-hatch)' : i === chart.bars.length - 2 ? 'var(--performance)' : 'var(--ink-3)'} opacity={b.off ? 0.7 : 1} />
+        <rect class="bar" x={LX} y={y} width={bw(b.value)} height={h} rx="4" fill={b.off ? 'url(#dc-hatch)' : i === bars.length - 2 ? 'var(--performance)' : 'var(--ink-3)'} opacity={b.off ? 0.7 : 1} />
         <text x={LX + bw(b.value) + 6} y={y + h / 2 + 4} class:list={['val', { off: b.off }]}>{b.value.toFixed(2)}</text>
       </g>
     );

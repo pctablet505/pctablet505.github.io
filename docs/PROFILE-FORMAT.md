@@ -73,7 +73,8 @@ Work entries add:
 | `numbers` | if it has any | List; see below. |
 | `figure` | no | `{src: ..., alt: ..., made: ...}`. `made` says how the picture was produced, e.g. "drawn by code from the README's benchmark table". A figure is drawn from data or labelled as an illustration; never a fake result. |
 | `demo` | no | The id of a Demos entry. |
-| `chart` | no | Data for a chart the site draws: `title`, `source` (https), `as_of`, `note`, and `bars`, a list of `{label, value}` (add `off: true` for a setup that was measured but not used). The values are the source's exact numbers; `numbers` may round them for text. |
+| `chart` | no | Data for a chart the site draws: `title`, `source` (https), `as_of`, `note`, and one of: `bars`, a list of `{label, value}` (add `off: true` for a setup that was measured but not used); or `growth`, `{from, years, start, lines}`: an amount (`start`, such as `"₹1 lakh"`) grown for `years` from the year `from`, one line per `{label, rate}` in percent a year (add `high` for a range, drawn as a band). The values are the source's exact numbers; `numbers` may round them for text. |
+| `closed` | no | The ideas a research project tested and closed: `source` (https), `as_of`, and `ideas`, a list of `{idea, why}`. If the entry has a number with id `closed`, its value must equal the number of ideas. |
 
 Each item in `numbers`:
 
@@ -110,10 +111,11 @@ Identity (no entries, one yaml block): `handle`, `name`, `headline` (the short l
    text; nowhere else. Pages, notes and other tools refer to it by id.
 2. The build stops, and the live site stays as it was, on: an unknown section, an entry without a yaml block, a YAML
    error, a missing required field, a bad id, date, priority, area or status value, a duplicate id, an id reference
-   that points nowhere, a `checked` number without an https source and `as_of`, and a measurement in a Work or
-   Experience entry's text that is not in its `numbers`. A measurement is a number with a unit or a sign (`%`, `x`,
-   `ms`, `s`, `tokens/s`, `GiB`, `GB`, `MB`, `M`, `k`, a trailing `+`) or with a thousands comma; bare numbers such as
-   versions ("Llama 3.1") are not checked. The message names the entry and the line.
+   that points nowhere, a `checked` number without an https source and `as_of`, a `chart` or `closed` list with a
+   missing part, a `closed` count that disagrees with its list, and a measurement in a Work or Experience entry's text
+   that is not in its `numbers`. A measurement is a number with a unit or a sign (`%`, `x`, `ms`, `s`, `tokens/s`,
+   `GiB`, `GB`, `MB`, `M`, `k`, a trailing `+`) or with a thousands comma; bare numbers such as versions ("Llama 3.1")
+   are not checked. The message names the entry and the line.
 3. YAML: quote any value that contains `: ` or starts with a symbol; `one_line`, `value` and URLs are always quoted.
 4. Notes and articles (the site's `notes/` folder) are writing, not facts: when they mention the owner's work they
    link to the entry instead of restating its numbers.

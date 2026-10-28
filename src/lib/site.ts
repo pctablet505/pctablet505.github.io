@@ -23,7 +23,8 @@ export const AREA_META = {
   },
 } as const;
 export type Area = keyof typeof AREA_META;
-export const AREA_ORDER: Area[] = ['vision', 'sensing', 'performance', 'projects'];
+// The current work first.
+export const AREA_ORDER: Area[] = ['performance', 'projects', 'vision', 'sensing'];
 
 export const STATUS_LABEL: Record<string, string> = {
   shipped: 'Shipped',
@@ -48,12 +49,10 @@ export const byPriority = (es: Entry[]): Entry[] =>
 
 export const byDate = (es: Entry[]): Entry[] => [...es].sort((a, b) => sortKey(b).localeCompare(sortKey(a)));
 
-const AREA_RANK = ['vision', 'sensing', 'performance', 'projects'];
-// Vision and sensing first: more than half of the work.
 export const byArea = (es: Entry[]): Entry[] =>
   [...es].sort(
     (a, b) =>
-      AREA_RANK.indexOf(a.area ?? '') - AREA_RANK.indexOf(b.area ?? '') ||
+      AREA_ORDER.indexOf(a.area as Area) - AREA_ORDER.indexOf(b.area as Area) ||
       a.priority - b.priority ||
       sortKey(b).localeCompare(sortKey(a)),
   );

@@ -28,6 +28,9 @@ const job = e.org && e.org !== 'personal' ? profile.byId.get(e.org) : undefined;
 const src = `https://github.com/pctablet505/pctablet505.github.io/blob/main/PROFILE.md#L${e.line}`;
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : e.parts.length ? 3 : e.summary ? 2 : 1;
+const closedGroups = [...Map.groupBy(e.closed?.ideas ?? [], (i) => i.why)].map(
+  ([why, ideas]) => [why, ideas.map((i) => i.idea)] as const,
+);
 ---
 <Base title={e.title} description={e.one_line} section="/work/">
   <article data-area={area}>
@@ -60,6 +63,18 @@ const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : e.parts.length ?
               <Fragment set:html={md(p.md)} />
             </section>
           ))}
+          {e.closed && (
+            <section id="ideas-closed">
+              <h2>Ideas closed so far</h2>
+              {closedGroups.map(([why, ideas]) => (
+                <>
+                  <h3>{why.charAt(0).toUpperCase() + why.slice(1)}</h3>
+                  <ul>{ideas.map((i) => <li>{i}</li>)}</ul>
+                </>
+              ))}
+              <p>From <a href={e.closed.source}>{new URL(e.closed.source).host}</a>, read {e.closed.as_of}.</p>
+            </section>
+          )}
         </div>
         {more.length > 0 && (
           <section style="margin-top:3.5rem">
@@ -72,7 +87,10 @@ const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : e.parts.length ?
         {e.parts.length > 0 && (
           <div>
             <h2>On this page</h2>
-            <ul>{e.parts.map((p) => <li><a href={`#${slug(p.name)}`}>{p.name}</a></li>)}</ul>
+            <ul>
+              {e.parts.map((p) => <li><a href={`#${slug(p.name)}`}>{p.name}</a></li>)}
+              {e.closed && <li><a href="#ideas-closed">Ideas closed so far</a></li>}
+            </ul>
           </div>
         )}
         {demo && (

@@ -62,7 +62,13 @@ export interface Chart {
   source: string;
   as_of: string;
   note?: string;
-  bars: { label: string; value: number; off?: boolean }[];
+  bars?: { label: string; value: number; off?: boolean }[];
+  growth?: { from: number; years: number; start: string; lines: { label: string; rate: number; high?: number }[] };
+}
+export interface Closed {
+  source: string;
+  as_of: string;
+  ideas: { idea: string; why: string }[];
 }
 export interface Entry {
   section: SectionName;
@@ -96,6 +102,7 @@ export interface Entry {
   live_url?: string;
   figure?: Figure;
   chart?: Chart;
+  closed?: Closed;
 }
 export interface Identity {
   handle: string;
@@ -232,6 +239,7 @@ function toEntry(section: SectionName, block: Block): Entry {
     live_url: str(f.live_url),
     figure: f.figure as Figure | undefined,
     chart: f.chart ? { ...(f.chart as Chart), as_of: String((f.chart as Chart).as_of ?? '') } : undefined,
+    closed: f.closed ? { ...(f.closed as Closed), as_of: String((f.closed as Closed).as_of ?? '') } : undefined,
   };
 }
 
@@ -288,8 +296,28 @@ function check(p: Profile): string[] {
       if (!c.title || !String(c.source).startsWith('https://') || !/^\d{4}-\d{2}-\d{2}$/.test(c.as_of)) {
         at(e, 'chart needs a title, an https source and an as_of date');
       }
-      if (!Array.isArray(c.bars) || !c.bars.length || c.bars.some((b) => !b.label || typeof b.value !== 'number')) {
+      if (!c.bars === !c.growth) at(e, 'chart needs either bars or growth');
+      if (c.bars && (!Array.isArray(c.bars) || !c.bars.length || c.bars.some((b) => !b.label || typeof b.value !== 'number'))) {
         at(e, 'chart bars need a label and a numeric value each');
+      }
+      const g = c.growth;
+      const badLine = (l: { label: string; rate: number; high?: number }) =>
+        !l.label || typeof l.rate !== 'number' || (l.high !== undefined && !(typeof l.high === 'number' && l.high > l.rate));
+      if (g && (!Number.isInteger(g.from) || !(g.years > 0) || !/\d/.test(String(g.start ?? '')) || !Array.isArray(g.lines) || !g.lines.length || g.lines.some(badLine))) {
+        at(e, 'chart growth needs a from year, years above 0, a start amount, and lines with a label and a numeric rate each (high above rate)');
+      }
+    }
+    if (e.closed) {
+      const c = e.closed;
+      if (!String(c.source).startsWith('https://') || !/^\d{4}-\d{2}-\d{2}$/.test(c.as_of)) {
+        at(e, 'closed needs an https source and an as_of date');
+      }
+      if (!Array.isArray(c.ideas) || !c.ideas.length || c.ideas.some((i) => !i.idea || !i.why)) {
+        at(e, 'closed ideas need an idea and a why each');
+      }
+      const count = e.numbers.find((n) => n.id === 'closed');
+      if (count && Array.isArray(c.ideas) && Number(count.value) !== c.ideas.length) {
+        at(e, `number "closed" says ${count.value}, but closed lists ${c.ideas.length} ideas`);
       }
     }
     for (const l of e.links) if (!l.label || !/^https?:\/\//.test(l.url ?? '')) at(e, `bad link ${JSON.stringify(l)}`);

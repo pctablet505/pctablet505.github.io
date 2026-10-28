@@ -1,0 +1,314 @@
+---
+// Drawn from data: each line grows the chart's start amount at a yearly rate from PROFILE.md, and a line with a
+// `high` rate becomes a band. The tape under the chart lists the ideas the entry closed, also from PROFILE.md.
+import type { Chart, Closed } from '../lib/profile';
+interface Props {
+  chart: Chart;
+  closed?: Closed;
+  verdict?: string;
+  big?: boolean;
+}
+const { chart, closed, verdict, big = false } = Astro.props;
+const g = chart.growth!;
+const amountText = g.start.match(/\d+(?:\.\d+)?/)![0];
+const amount = Number(amountText);
+const money = (v: string) => g.start.replace(amountText, v);
+
+const X0 = 24;
+const X1 = 296;
+const YTOP = 56;
+const YBOT = 214;
+const N = 60;
+// One loop: the lines draw in the first 18%, hold, and fade out in the last 6%.
+const LOOP = '16s';
+const R = 0.18;
+const grow = (rate: number, t: number) => amount * (1 + rate / 100) ** t;
+const ends = g.lines.flatMap((l) => [grow(l.rate, g.years), ...(l.high ? [grow(l.high, g.years)] : [])]);
+const vmax = Math.ceil(Math.max(...ends) / 2) * 2;
+const X = (t: number) => X0 + ((X1 - X0) * t) / g.years;
+const Y = (v: number) => YBOT - ((YBOT - YTOP) * v) / vmax;
+type Pt = readonly [number, number];
+const curve = (rate: number): Pt[] =>
+  Array.from({ length: N + 1 }, (_, i) => {
+    const t = (g.years * i) / N;
+    return [X(t), Y(grow(rate, t))] as const;
+  });
+const path = (pts: Pt[]) => 'M' + pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L');
+// Share of the line's length at each sample, so a dot follows the line at the pace the clip reveals it.
+const shares = (pts: Pt[]) => {
+  const acc = [0];
+  for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  return acc.map((a) => a / acc[acc.length - 1]);
+};
+const keyTimes = [...Array.from({ length: N + 1 }, (_, i) => (R * i) / N), 1].map((k) => k.toFixed(4)).join(';');
+const COLORS = ['var(--projects)', 'var(--bulb)', 'var(--sensing)'];
+const lines = g.lines.map((l, i) => {
+  const lo = curve(l.rate);
+  const hi = l.high ? curve(l.high) : undefined;
+  const mid = hi ? lo.map(([x, y], j) => [x, (y + hi[j][1]) / 2] as const) : lo;
+  const endLo = grow(l.rate, g.years);
+  const endHi = l.high ? grow(l.high, g.years) : undefined;
+  return {
+    ...l,
+    color: COLORS[i % COLORS.length],
+    d: path(lo),
+    dHi: hi && path(hi),
+    band: hi && `${path([...hi, ...[...lo].reverse()])}Z`,
+    dMid: path(mid),
+    keyPoints: [...shares(mid), 1].map((k) => k.toFixed(4)).join(';'),
+    endY: mid[N][1],
+    endTop: (hi ?? lo)[N][1],
+    endBottom: lo[N][1],
+    value: endHi ? money(`${endLo.toFixed(1)}–${endHi.toFixed(1)}`) : money(endLo.toFixed(1)),
+  };
+});
+// End labels, pushed apart when two lines end close together.
+const labelY = new Map<string, number>();
+let prev = -Infinity;
+for (const l of [...lines].sort((a, b) => a.endY - b.endY)) {
+  prev = Math.max(l.endY, prev + 34);
+  labelY.set(l.label, prev);
+}
+const ticks = [amount, vmax / 2, vmax];
+const pillW = verdict ? verdict.length * 5.9 + 22 : 0;
+
+// The tape: one item per closed idea, spaced by character count (the font is monospaced).
+const CW = 6;
+const TAPE_X = 122;
+let w = 0;
+const items = (closed?.ideas ?? []).map((i) => {
+  const x = w;
+  w += (`▼ ${i.idea} · ${i.why}`.length + 5) * CW;
+  return { ...i, x };
+});
+const tapeSeconds = Math.round(w / 28);
+const id = big ? 'gc-big' : 'gc-card';
+const label = [
+  `${chart.title}.`,
+  ...lines.map((l) => `${l.label}: ${l.rate}%${l.high ? `–${l.high}%` : ''} a year, ${l.value} after ${g.years} years.`),
+  verdict ? `${verdict}.` : '',
+  closed ? `${closed.ideas.length} ideas closed: ${closed.ideas.map((i) => `${i.idea} (${i.why})`).join('; ')}.` : '',
+].join(' ');
+---
+<svg viewBox="0 0 480 270" role="img" aria-label={label} class:list={['gc', { big }]}>
+  <defs>
+    <clipPath id={`${id}-reveal`}>
+      <rect x={X0 - 6} y="0" width={X1 - X0 + 12} height="236">
+        <animate attributeName="width" values={`0;${X1 - X0 + 12};${X1 - X0 + 12}`} keyTimes={`0;${R};1`} dur={LOOP} repeatCount="indefinite" />
+      </rect>
+    </clipPath>
+    <linearGradient id={`${id}-fade`} x1="0" x2="1">
+      <stop offset="0" style="stop-color:var(--surface);stop-opacity:1" />
+      <stop offset="1" style="stop-color:var(--surface);stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <text x="24" y="24" class="t">{chart.title}</text>
+  {ticks.map((v) => (
+    <g>
+      <line x1={X0} x2={X1} y1={Y(v)} y2={Y(v)} class:list={['grid', { base: v === amount }]} />
+      {v !== amount && <text x={X0} y={Y(v) - 5} class="ax">{money(String(v))}</text>}
+    </g>
+  ))}
+  <text x={X0} y={Y(amount) + 17} class="ax">{g.from}</text>
+  <text x={X1} y={Y(amount) + 17} class="ax" text-anchor="end">{Math.floor(g.from + g.years)}</text>
+
+  <g class="anim">
+    <g class="reveal">
+      {lines.map((l) => (
+        <g>
+          {l.band && <path d={l.band} fill={l.color} class="band" />}
+          {l.dHi && <path d={l.dHi} stroke={l.color} class="edge" />}
+          <path d={l.d} stroke={l.color} class:list={[l.dHi ? 'edge' : 'line']} />
+        </g>
+      ))}
+    </g>
+    <line x1={X0} x2={X0} y1={YTOP - 8} y2={Y(amount)} class="scan">
+      <animateTransform attributeName="transform" type="translate" values={`0 0;${X1 - X0} 0;${X1 - X0} 0`} keyTimes={`0;${R};1`} dur={LOOP} repeatCount="indefinite" />
+      <animate attributeName="opacity" values={`0.55;0.55;0;0`} keyTimes={`0;${R};${R + 0.02};1`} dur={LOOP} repeatCount="indefinite" />
+    </line>
+    {lines.map((l) => (
+      <g class="head">
+        <circle r="7" fill={l.color} opacity="0.25" />
+        <circle r="3.5" fill={l.color} />
+        <animateMotion path={l.dMid} keyPoints={l.keyPoints} keyTimes={keyTimes} calcMode="linear" dur={LOOP} repeatCount="indefinite" />
+      </g>
+    ))}
+    {lines.map((l) => <circle cx={X1} cy={l.endY} r="3.5" fill={l.color} class="still" />)}
+    <g class="ends">
+      {lines.map((l) => (
+        <g>
+          {l.band && <line x1={X1} x2={X1} y1={l.endTop} y2={l.endBottom} stroke={l.color} class="range" />}
+          <circle cx={X1 + 14} cy={labelY.get(l.label)! - 9} r="3.5" fill={l.color} />
+          <text x={X1 + 22} y={labelY.get(l.label)! - 5} class="name">{l.label}</text>
+          <text x={X1 + 22} y={labelY.get(l.label)! + 11} class="val">{l.value}</text>
+        </g>
+      ))}
+    </g>
+    {verdict && (
+      <g class="pill">
+        <rect x={X0 + 4} y={YTOP + 12} width={pillW} height="24" rx="12" />
+        <text x={X0 + 4 + pillW / 2} y={YTOP + 28} text-anchor="middle">{verdict}</text>
+      </g>
+    )}
+  </g>
+
+  {closed && (
+    <g class="ticker">
+      <rect x="0" y="236" width="480" height="34" class="band-bg" />
+      <line x1="0" x2="480" y1="236" y2="236" class="rule" />
+      <g class="tape" style={`--w:${w};--t:${tapeSeconds}s`}>
+        {[0, w].map((off) =>
+          items.map((i) => (
+            <text x={TAPE_X + off + i.x} y="257" class="item"><tspan class="dn">▼</tspan> {i.idea} <tspan class="why">· {i.why}</tspan></text>
+          )),
+        )}
+      </g>
+      <rect x="0" y="237" width={TAPE_X - 10} height="33" class="band-bg" />
+      <rect x={TAPE_X - 10} y="237" width="24" height="33" fill={`url(#${id}-fade)`} />
+      <text x="16" y="257" class="badge">{closed.ideas.length} CLOSED</text>
+    </g>
+  )}
+</svg>
+
+<style>
+  .t {
+    font: 600 12px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .ax {
+    font: 500 9.5px var(--font-mono);
+    fill: var(--ink-3);
+  }
+  .grid {
+    stroke: var(--line-2);
+    stroke-width: 1;
+    opacity: 0.7;
+  }
+  .grid.base {
+    stroke-dasharray: 3 4;
+  }
+  .line,
+  .edge {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .line {
+    stroke-width: 2.6;
+  }
+  .edge {
+    stroke-width: 1.4;
+  }
+  .band {
+    opacity: 0.28;
+  }
+  .scan {
+    stroke: var(--ink-3);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+  }
+  .range {
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .name {
+    font: 600 10.5px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .val {
+    font: 650 13px var(--font-mono);
+    fill: var(--ink);
+  }
+  .pill rect {
+    fill: var(--surface);
+    stroke: var(--projects);
+    stroke-width: 1.2;
+  }
+  .pill text {
+    font: 600 10.5px var(--font-sans);
+    fill: var(--ink);
+  }
+  .band-bg {
+    fill: var(--surface);
+  }
+  .rule {
+    stroke: var(--line);
+  }
+  .item {
+    font: 500 10px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .item .why {
+    fill: var(--ink-3);
+  }
+  .dn,
+  .badge {
+    fill: var(--down);
+  }
+  .badge {
+    font: 700 10px var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+  .still {
+    display: none;
+  }
+  /* The CSS fades share the 16 s loop and the 18% draw of the SMIL animations above. */
+  .anim {
+    animation: gc-layer 16s linear infinite;
+  }
+  .ends {
+    animation: gc-ends 16s linear infinite;
+  }
+  .pill {
+    animation: gc-pill 16s linear infinite;
+  }
+  @keyframes gc-layer {
+    94% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes gc-ends {
+    0%, 18% { opacity: 0; }
+    22%, 100% { opacity: 1; }
+  }
+  @keyframes gc-pill {
+    0%, 22% { opacity: 0; }
+    26%, 100% { opacity: 1; }
+  }
+  .tape {
+    animation: gc-tape var(--t) linear infinite;
+  }
+  .gc:hover .tape {
+    animation-play-state: paused;
+  }
+  @keyframes gc-tape {
+    to {
+      transform: translateX(calc(var(--w) * -1px));
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .gc:not(.big) .reveal {
+      clip-path: url(#gc-card-reveal);
+    }
+    .gc.big .reveal {
+      clip-path: url(#gc-big-reveal);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .anim,
+    .ends,
+    .pill {
+      animation: none;
+    }
+    .scan,
+    .head {
+      display: none;
+    }
+    .still {
+      display: inline;
+    }
+    .tape {
+      animation: none;
+    }
+  }
+</style>

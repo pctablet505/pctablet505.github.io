@@ -44,3 +44,13 @@ test('an entry without its yaml block fails', () => {
   const bad = broken('### Daily Tracker\n```yaml\n', '### Daily Tracker\n\n');
   assert.throws(() => parseProfile(bad), /must be a ```yaml block|code fence \(```\) is never closed/);
 });
+
+test('a closed list that disagrees with its count fails', () => {
+  const bad = broken('    - {idea: "Intraday chart-pattern setups", why: "costs and taxes"}\n', '');
+  assert.throws(() => parseProfile(bad), /rl-alpha-labs: number "closed" says 12, but closed lists 11 ideas/);
+});
+
+test('a growth line without a numeric rate fails', () => {
+  const bad = broken('{label: "NIFTY 500 index fund", rate: 11.67}', '{label: "NIFTY 500 index fund", rate: "11.67%"}');
+  assert.throws(() => parseProfile(bad), /rl-alpha-labs: chart growth needs/);
+});
