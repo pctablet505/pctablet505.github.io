@@ -5,7 +5,7 @@ import Fig from '../components/Fig.astro';
 import EntryRow from '../components/EntryRow.astro';
 import {
   AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section,
-  sloganLines, work, workIn,
+  sloganLines, work,
 } from '../lib/site';
 
 const proof = identity.proof.map(numberRef);
@@ -16,7 +16,6 @@ const writing = byDate(section('Writing')).slice(0, 4);
 const notes = byPriority(section('Notes')).slice(0, 4);
 const oss = profile.byId.get('oss-summary');
 const ossNums = oss?.numbers ?? [];
-const total = work().length;
 // The first word of each slogan line is bold, as on the link-preview card.
 const slogan = sloganLines.map((line) => {
   const [key, ...rest] = line.split(' ');
@@ -42,7 +41,7 @@ const contacts = [
       <h1 class="display">{slogan.map(({ key, rest }) => <span class="slogan-line"><b>{key}</b>{` ${rest}`}</span>)}</h1>
       <p class="lede">{identity.lede}</p>
       <div class="btn-row">
-        <a class="btn primary" href="/work/">See all {total} projects →</a>
+        <a class="btn primary" href="/work/">See all projects →</a>
         {identity.resume && <a class="btn" href={identity.resume}>Resume (PDF)</a>}
         <a class="btn" href="/about/">About me</a>
         {identity.email && <a class="btn" href={`mailto:${identity.email}`}>Email</a>}
@@ -65,14 +64,13 @@ const contacts = [
       <div class="section-head">
         <div>
           <p class="eyebrow">What I work on</p>
-          <h2>Four areas, one habit: measure what each change bought</h2>
+          <h2>One habit in every area: measure what each change bought</h2>
         </div>
         <a class="more" href="/work/">All work →</a>
       </div>
       <div class="grid four">
         {AREA_ORDER.map((a) => (
           <a class="card area-card" data-area={a} href={`/work/#${a}`} style="text-decoration:none">
-            <span class="count">{workIn(a).length}</span>
             <h3>{AREA_META[a].label}</h3>
             <p class="one-line">{AREA_META[a].blurb}</p>
           </a>
@@ -89,7 +87,7 @@ const contacts = [
           <h2>The work I would show first</h2>
           <p>Each card opens the full story: the problem, what I did, the result, and where the number comes from.</p>
         </div>
-        <a class="more" href="/work/">{total - featured.length} more projects →</a>
+        <a class="more" href="/work/">All projects →</a>
       </div>
       <div class="grid two">
         {featured.map((e) => <WorkCard entry={e} feature />)}
