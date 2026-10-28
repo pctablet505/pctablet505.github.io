@@ -326,9 +326,14 @@ function check(p: Profile): string[] {
       if (!Array.isArray(c.ideas) || !c.ideas.length || c.ideas.some((i) => !i.idea || !i.why)) {
         at(e, 'closed ideas need an idea and a why each');
       }
+      // "12" must match the list exactly; a floor, "12+", needs at least that many listed.
       const count = e.numbers.find((n) => n.id === 'closed');
-      if (count && Array.isArray(c.ideas) && Number(count.value) !== c.ideas.length) {
-        at(e, `number "closed" says ${count.value}, but closed lists ${c.ideas.length} ideas`);
+      if (count && Array.isArray(c.ideas)) {
+        const [, n, floor] = /^(\d+)(\+?)$/.exec(count.value) ?? [];
+        const listed = c.ideas.length;
+        if (n === undefined || (floor ? listed < Number(n) : listed !== Number(n))) {
+          at(e, `number "closed" says ${count.value}, but closed lists ${listed} ideas`);
+        }
       }
     }
     if (e.report) {

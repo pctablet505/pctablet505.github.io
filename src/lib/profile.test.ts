@@ -29,7 +29,7 @@ test('a demo id that points nowhere fails', () => {
 
 test('a checked number without its date fails', () => {
   const bad = broken(
-    '    source: "https://rlalphalabs.com/notes/ideas-we-closed/"\n    as_of: 2026-10-27\n',
+    '    source: "https://rlalphalabs.com/notes/ideas-we-closed/"\n    as_of: 2026-10-28\n',
     '    source: "https://rlalphalabs.com/notes/ideas-we-closed/"\n',
   );
   assert.throws(() => parseProfile(bad), /checked number "closed" needs an https source and as_of/);
@@ -47,7 +47,12 @@ test('an entry without its yaml block fails', () => {
 
 test('a closed list that disagrees with its count fails', () => {
   const bad = broken('    - {idea: "Intraday chart-pattern setups", why: "costs and taxes"}\n', '');
-  assert.throws(() => parseProfile(bad), /rl-alpha-labs: number "closed" says 12, but closed lists 11 ideas/);
+  assert.throws(() => parseProfile(bad), /rl-alpha-labs: number "closed" says 12\+, but closed lists 11 ideas/);
+});
+
+test('a closed floor below the list passes, and an exact count must match', () => {
+  assert.doesNotThrow(() => parseProfile(broken('value: "12+"', 'value: "10+"')));
+  assert.throws(() => parseProfile(broken('value: "12+"', 'value: "13"')), /says 13, but closed lists 12 ideas/);
 });
 
 test('a growth line without a numeric rate fails', () => {

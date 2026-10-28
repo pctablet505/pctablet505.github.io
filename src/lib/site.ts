@@ -117,6 +117,9 @@ export function numberRef(ref: string): { entry: Entry; num: Num } {
   return { entry, num: entry.numbers.find((n) => n.id === nid)! };
 }
 
+// A checked floor ("100+") stays true as the count grows, so it links the live list instead of a read date.
+export const isFloor = (n: Num): boolean => n.status === 'checked' && /^\d[\d,]*\+$/.test(n.value);
+
 export const work = () => section('Work');
 export const workIn = (area: Area) => byPriority(work().filter((e) => e.area === area));
 export const workAt = (org: string) => byPriority(work().filter((e) => e.org === org));

@@ -689,7 +689,7 @@ numbers:
 Models tuned for the phone's NPU and DSP ran 3x faster, and quantization-aware training cut the memory bandwidth of
 high-fidelity image-processing models by 75%.
 
-### Keras on PyTorch: 15 fixes merged, compiled generation 11.6x faster
+### Keras on PyTorch: compiled generation 11.6x faster
 ```yaml
 id: keras-pytorch-speed
 org: google
@@ -698,7 +698,7 @@ status: merged
 start: 2026-07
 end: 2026-10
 priority: 1
-one_line: "Traced why Keras on PyTorch ran about 9x slower than plain PyTorch, and merged 15 fixes upstream, one root cause each."
+one_line: "Traced why Keras on PyTorch ran about 9x slower than plain PyTorch, and merged the fixes upstream, one root cause each."
 skills: [performance analysis, PyTorch, torch.compile, JAX, Keras, cProfile, benchmarking, Python]
 numbers:
   - id: compiled
@@ -777,8 +777,8 @@ eagerly.
   TensorFlow and NumPy backends gained too.
 
 #### Results
-15 pull requests are merged. Between Keras master on July 18 and on October 15, compiled 32-token generation got 11.6x
-faster and eager generation 1.21x faster. Graph breaks per forward pass fell from 20 to 0, and Python calls per forward
+By the progress report of October 18, 15 pull requests were merged. Between Keras master on July 18 and on October 15,
+compiled 32-token generation got 11.6x faster and eager generation 1.21x faster. Graph breaks per forward pass fell from 20 to 0, and Python calls per forward
 pass fell 12 to 23% on all four backends. The
 [progress report](https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051) times every pull request on
 its own; its interactive version on DEV is under Links.
@@ -993,11 +993,11 @@ one_line: "Automated trading on Indian stocks, where a strategy counts only if i
 skills: [quantitative research, reinforcement learning, JAX, statistics, backtesting, Python]
 numbers:
   - id: closed
-    value: "12"
+    value: "12+"
     what: trading ideas tested and closed, each with its reason
     status: checked
     source: "https://rlalphalabs.com/notes/ideas-we-closed/"
-    as_of: 2026-10-27
+    as_of: 2026-10-28
   - id: basket-cost
     value: "2.14%"
     what: yearly loss to rebalancing costs and tax for a self-held 300-stock basket, over 20.73 years
@@ -1044,7 +1044,7 @@ closed:
     - {idea: "An AI model mapping which companies supply which, from annual reports", why: "AI that fell short of the bar"}
 ```
 Every idea, from reinforcement-learning agents in JAX to simple rules, is tested on point-in-time NSE data with delisted
-companies kept in, and counts only if it beats an index fund after real costs and tax. Twelve are closed so far, each
+companies kept in, and counts only if it beats an index fund after real costs and tax. At least 12 are closed, each
 with its reason. Even a self-held basket of 300 stocks lost 2.14% a year to costs and tax, and the index fund came out
 ahead in 69 of 70 tiers of capital and breadth. Paper trading only; no live money.
 
@@ -1059,7 +1059,7 @@ counted. The question the lab asks of every idea is whether it still wins after 
 - **Ideas of every size.** From reinforcement-learning agents trained in JAX to simple rules.
 
 #### Results
-Twelve ideas are closed so far, each with its reason. Holding a 300-stock basket directly lost 2.14% a year to costs and
+At least 12 ideas are closed, each with its reason. Holding a 300-stock basket directly lost 2.14% a year to costs and
 tax over twenty years, and the index fund came out ahead in 69 of 70 tiers of capital and breadth.
 
 #### What did not work
@@ -1075,7 +1075,7 @@ status: live
 start: 2026-04
 end: present
 priority: 2
-one_line: "Ranks open-source projects by what happens to a stranger's pull request, following 1,442,863 pull requests to 11,000 projects."
+one_line: "Shows which open-source projects reply to, review and merge a stranger's pull request, so contributors spend their effort where it will land."
 skills: [data pipelines, GitHub API, statistics, static sites, Android]
 numbers:
   - id: prs
@@ -1105,10 +1105,10 @@ numbers:
 links:
   - {label: porchlamp.org, url: "https://porchlamp.org/"}
 ```
-A side project built for fun, out of a struggle every outside contributor knows: a pull request nobody answers. It
-follows 1,442,863 pull requests from 227,260 outside contributors to 11,000 projects. In the 27 October 2026 snapshot,
-13.6% of active projects left most outside pull requests with no human reply for two weeks, and stars barely predicted
-which ones.
+A side project built for fun, out of a struggle every outside contributor knows: a pull request nobody answers. Its
+27 October 2026 snapshot followed 1,442,863 pull requests from 227,260 outside contributors to 11,000 projects. In that
+snapshot, 13.6% of active projects left most outside pull requests with no human reply for two weeks, and stars barely
+predicted which ones.
 
 ### Servedeck
 ```yaml
@@ -1257,23 +1257,23 @@ id: oss-summary
 priority: 1
 numbers:
   - id: merged
-    value: "100"
+    value: "100+"
     what: merged pull requests in projects I do not own
     status: checked
     source: "https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+-user%3Apctablet505&type=pullrequests"
-    as_of: 2026-10-27
+    as_of: 2026-10-28
   - id: projects
-    value: "38"
+    value: "38+"
     what: projects with at least one merged pull request
     status: checked
     source: "https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+-user%3Apctablet505&type=pullrequests"
-    as_of: 2026-10-27
+    as_of: 2026-10-28
   - id: keras
-    value: "64"
-    what: merged in Keras (45) and KerasHub (19)
+    value: "64+"
+    what: merged in Keras and KerasHub
     status: checked
-    source: "https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+-user%3Apctablet505&type=pullrequests"
-    as_of: 2026-10-27
+    source: "https://github.com/search?q=is%3Apr+author%3Apctablet505+is%3Amerged+repo%3Akeras-team%2Fkeras+repo%3Akeras-team%2Fkeras-hub&type=pullrequests"
+    as_of: 2026-10-28
 ```
 Most of the work is in Keras and KerasHub; the rest is fixes across the Python and ML tooling people use every day.
 

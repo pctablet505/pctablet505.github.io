@@ -11,7 +11,7 @@ const upstream = byPriority(work().filter((e) => e.status === 'merged'));
 const proposed = byPriority(work().filter((e) => e.status === 'proposed'));
 const allPrs = oss?.numbers.find((n) => n.id === 'merged')?.source;
 ---
-<Base title="Open source" description="Merged pull requests in Keras, KerasHub and Python and ML tooling, counted live from GitHub and dated.">
+<Base title="Open source" description="Merged pull requests in Keras, KerasHub and Python and ML tooling, with the live list on GitHub.">
   <header class="wrap entry-head">
     <p class="eyebrow">Open source</p>
     <h1>Merged upstream</h1>

@@ -1,8 +1,8 @@
 ---
-// One number with what it measures and where it comes from: a checked number links its public source; a reported
-// number says who reported it.
+// One number with what it measures and where it comes from: a checked number links its public source (a floor, its
+// live list); a reported number says who reported it.
 import type { Num } from '../lib/profile';
-import { fmtDate } from '../lib/site';
+import { fmtDate, isFloor } from '../lib/site';
 
 interface Props {
   num: Num;
@@ -15,7 +15,9 @@ const from = num.source === 'owner' ? 'my account' : `my ${num.source}`;
 <div class="num">
   <div class="stat-value">{num.value}</div>
   <div class="stat-what">{num.what}{context && <span class="muted"> · {context}</span>}</div>
-  {num.status === 'checked' ? (
+  {isFloor(num) ? (
+    <a class="stat-src" href={num.source} title="At least this many; the source keeps the live list"><span class="ok">●</span> live list ↗</a>
+  ) : num.status === 'checked' ? (
     <a class="stat-src" href={num.source} title="Re-read at this public source"><span class="ok">●</span> checked {fmtDate(num.as_of)} · source</a>
   ) : (
     <span class="stat-src" title="No public source to check; reported by me">○ reported, from {from}</span>
