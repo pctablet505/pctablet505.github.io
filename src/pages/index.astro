@@ -4,8 +4,8 @@ import WorkCard from '../components/WorkCard.astro';
 import Fig from '../components/Fig.astro';
 import EntryRow from '../components/EntryRow.astro';
 import {
-  AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section,
-  sloganLines, work,
+  AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, isFloor, numberRef, profile,
+  section, sloganLines, work,
 } from '../lib/site';
 
 const proof = identity.proof.map(numberRef);
@@ -156,7 +156,7 @@ const contacts = [
           <div class="num">
             <div class="stat-value">{n.value}</div>
             <div class="stat-what">{n.what}</div>
-            <a class="stat-src" href={n.source}><span class="ok">●</span> checked {n.as_of}</a>
+            <a class="stat-src" href={n.source}><span class="ok">●</span> {isFloor(n) ? 'live list ↗' : `checked ${n.as_of}`}</a>
           </div>
         ))}
       </div>
