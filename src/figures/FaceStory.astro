@@ -1,0 +1,397 @@
+---
+// The stepped figure for the face-recognition case study. Faces drawn from simple curves are found, turned into
+// embeddings and matched through a tree index; then the cameras it was tested on, and the apps built on it. The
+// numbers come from PROFILE.md; the embedding cells and scatter positions are drawn to show the idea, not data.
+import { CLOSED, face, line } from '../lib/faces';
+import { num, sides } from '../lib/stories';
+
+const [scanTime, treeTime] = sides(num('face-recognition', 'lookup'));
+const users = num('face-recognition', 'users');
+const accuracy = num('face-recognition', 'accuracy');
+const fps = num('face-recognition', 'fps');
+
+const people = [
+  { cx: 96, cy: 116, s: 0.78, turned: false, tag: 'known', old: true },
+  { cx: 222, cy: 108, s: 0.86, turned: false, tag: 'known', old: true },
+  { cx: 324, cy: 140, s: 0.44, turned: false, tag: 'known', old: false },
+  { cx: 404, cy: 112, s: 0.64, turned: true, tag: 'unknown', old: false },
+].map((p) => ({ ...p, f: face(p.cx, p.cy, p.s), box: { x: p.cx - 62 * p.s * (p.turned ? 0.78 : 1), y: p.cy - 52 * p.s, w: 124 * p.s * (p.turned ? 0.78 : 1), h: 128 * p.s } }));
+const turnT = (p: { cx: number; cy: number }) => `translate(${p.cx} ${p.cy}) scale(0.72 1) skewY(-7) translate(${-p.cx} ${-p.cy})`;
+
+const big = face(92, 128, 0.95);
+// Sixteen cells standing for the embedding's numbers: shades from a fixed hash, not a real face's values.
+const cells = Array.from({ length: 16 }, (_, k) => {
+  const h = Math.abs(Math.sin((k + 1) * 12.9898) * 43758.5453) % 1;
+  return { x: 196 + (k % 4) * 17, y: 92 + Math.floor(k / 4) * 17, o: 0.25 + 0.75 * h };
+});
+const clusters = [
+  { cx: 350, cy: 92, c: 'var(--ink-3)' },
+  { cx: 420, cy: 140, c: 'var(--vision)' },
+  { cx: 352, cy: 182, c: 'var(--ink-3)' },
+];
+const dots = clusters.flatMap((c, j) =>
+  Array.from({ length: 6 }, (_, k) => {
+    const a = (k / 6) * Math.PI * 2 + j;
+    const r = 9 + (k % 3) * 5;
+    return { x: c.cx + r * Math.cos(a), y: c.cy + r * Math.sin(a), c: c.c };
+  }),
+);
+
+const tree: { x: number; y: number; px?: number; py?: number; on: boolean }[] = [];
+(function grow(x: number, y: number, depth: number, spread: number, on: boolean, px?: number, py?: number) {
+  tree.push({ x, y, px, py, on });
+  if (depth === 3) return;
+  grow(x - spread, y + 36, depth + 1, spread / 2, on && depth % 2 === 0, x, y);
+  grow(x + spread, y + 36, depth + 1, spread / 2, on && depth % 2 === 1, x, y);
+})(356, 72, 0, 52, true);
+const rows = Array.from({ length: 9 }, (_, k) => k);
+
+const cams = [
+  { name: 'photo', x: 22, kind: 'clean' },
+  { name: 'front camera', x: 136, kind: 'noise' },
+  { name: 'back camera', x: 250, kind: 'bright' },
+  { name: 'video', x: 364, kind: 'blur' },
+];
+const camFace = (x: number) => face(x + 47, 112, 0.42);
+const noise = Array.from({ length: 70 }, (_, k) => {
+  const h1 = Math.abs(Math.sin(k * 78.233) * 43758.5453) % 1;
+  const h2 = Math.abs(Math.sin(k * 39.425 + 2) * 43758.5453) % 1;
+  return { x: 4 + h1 * 86, y: 4 + h2 * 92 };
+});
+---
+<svg viewBox="0 0 480 270" data-stage="1" role="img" aria-label="Animated illustration in six steps: every face in a frame is found, each face becomes a list of numbers, a tree index finds the match in a few steps instead of comparing every stored face, known and unknown faces are told apart, the engine is tested on different cameras, and it serves several apps." class="fs">
+  <defs>
+    <filter id="fs-blur" x="-20%" y="-10%" width="140%" height="120%"><feGaussianBlur stdDeviation="2.4 0" /></filter>
+  </defs>
+
+  <!-- 1 Find every face -->
+  <g class="st s1">
+    <rect x="16" y="18" width="448" height="214" rx="12" fill="var(--surface)" stroke="var(--line-2)" />
+    {people.map((p) => (
+      <g transform={p.turned ? turnT(p) : undefined}>
+        {p.f.groups.map((g, i) => <path d={line(g, CLOSED.has(i))} fill="none" stroke="var(--line-2)" stroke-width="1.1" />)}
+        {p.f.groups.flat().map(([x, y]) => <circle cx={x} cy={y} r={1.4 + p.s} fill="var(--ink-3)" />)}
+      </g>
+    ))}
+    {people.filter((p) => p.old).map((p) => (
+      <rect class="old" x={p.box.x} y={p.box.y} width={p.box.w} height={p.box.h} rx="6" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="6 4" />
+    ))}
+    {people.map((p, k) => (
+      <rect class="found" x={p.box.x} y={p.box.y} width={p.box.w} height={p.box.h} rx="6" fill="none" stroke="var(--vision)" stroke-width="2.6" style={`animation-delay:${(2.8 + k * 0.35).toFixed(2)}s`} />
+    ))}
+    <text x="30" y="254" class="note n-old">old detector: missed faces</text>
+    <text x="450" y="254" text-anchor="end" class="note strong n-new">new detector: found them</text>
+  </g>
+
+  <!-- 2 Turn a face into numbers -->
+  <g class="st s2">
+    {big.groups.map((g, i) => <path d={line(g, CLOSED.has(i))} fill="none" stroke="var(--line-2)" stroke-width="1.2" />)}
+    {big.groups.flat().map(([x, y]) => <circle cx={x} cy={y} r="2.2" fill="var(--vision)" />)}
+    <path class="arr a2" d="M160 128 H 186 M178 121 L 186 128 L 178 135" fill="none" stroke="var(--ink-3)" stroke-width="2" />
+    {cells.map((c, k) => <rect class="cell" x={c.x} y={c.y} width="14" height="14" rx="2" fill="var(--vision)" fill-opacity={c.o.toFixed(2)} style={`animation-delay:${(0.8 + k * 0.08).toFixed(2)}s`} />)}
+    <text x="229" y="176" text-anchor="middle" class="note n2a">embedding</text>
+    <path class="arr a2b" d="M272 128 H 298 M290 121 L 298 128 L 290 135" fill="none" stroke="var(--ink-3)" stroke-width="2" />
+    <g class="scatter">
+      <rect x="306" y="52" width="158" height="164" rx="10" fill="var(--surface)" stroke="var(--line-2)" />
+      {dots.map((d) => <circle cx={d.x} cy={d.y} r="3.4" fill={d.c} />)}
+    </g>
+    <circle class="newdot" cx="420" cy="140" r="5.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.5" />
+    <text x="385" y="236" text-anchor="middle" class="note n2b">close to the same person</text>
+  </g>
+
+  <!-- 3 Search in steps, not one by one -->
+  <g class="st s3">
+    <text x="240" y="26" text-anchor="middle" class="note strong">{users} registered users</text>
+    <rect x="20" y="40" width="200" height="184" rx="10" fill="var(--surface)" stroke="var(--line-2)" />
+    <text x="120" y="60" text-anchor="middle" class="k">one by one</text>
+    {rows.map((k) => (
+      <g>
+        <circle cx="44" cy={78 + k * 16} r="5" fill="var(--line-2)" />
+        <rect x="56" y={74 + k * 16} width="140" height="8" rx="4" fill="var(--line)" />
+      </g>
+    ))}
+    <rect class="sweep" x="30" y="72" width="180" height="12" rx="6" fill="var(--down)" fill-opacity="0.22" />
+    <text x="120" y="246" text-anchor="middle" class="time t-slow">{scanTime} per lookup</text>
+    <rect x="252" y="40" width="208" height="184" rx="10" fill="var(--surface)" stroke="var(--line-2)" />
+    <text x="356" y="60" text-anchor="middle" class="k">tree index</text>
+    {tree.filter((n) => n.px !== undefined).map((n) => (
+      <line x1={n.px} y1={n.py} x2={n.x} y2={n.y} stroke={n.on ? 'var(--vision)' : 'var(--line-2)'} stroke-width={n.on ? 3 : 1.2} class={n.on ? 'path-on' : ''} />
+    ))}
+    {tree.map((n) => <circle cx={n.x} cy={n.y} r="5.5" fill={n.on ? 'var(--vision)' : 'var(--surface)'} stroke={n.on ? 'var(--vision)' : 'var(--line-2)'} />)}
+    <text x="356" y="246" text-anchor="middle" class="time t-fast">{treeTime} per lookup</text>
+  </g>
+
+  <!-- 4 Known, or unknown -->
+  <g class="st s4">
+    <rect x="16" y="18" width="448" height="214" rx="12" fill="var(--surface)" stroke="var(--line-2)" />
+    {people.map((p, k) => (
+      <g class={`who w${k}`} style={`animation-delay:${(0.4 + k * 0.5).toFixed(2)}s`}>
+        <g transform={p.turned ? turnT(p) : undefined}>
+          {p.f.groups.map((g, i) => <path d={line(g, CLOSED.has(i))} fill="none" stroke="var(--line-2)" stroke-width="1.1" />)}
+          {p.f.groups.flat().map(([x, y]) => <circle cx={x} cy={y} r={1.4 + p.s} fill="var(--ink-3)" />)}
+        </g>
+        <rect x={p.box.x} y={p.box.y} width={p.box.w} height={p.box.h} rx="6" fill="none" stroke={p.tag === 'known' ? 'var(--vision)' : 'var(--accent)'} stroke-width="2.6" />
+        <text x={p.cx} y={p.box.y + p.box.h + 16} text-anchor="middle" class={p.tag === 'known' ? 'tag' : 'tag unseen'}>{p.tag}</text>
+      </g>
+    ))}
+    <text x="240" y="254" text-anchor="middle" class="note">the nearest stored face names the person; close to none means unknown</text>
+  </g>
+
+  <!-- 5 Every camera is different -->
+  <g class="st s5">
+    <text x="240" y="34" text-anchor="middle" class="note strong">photos are the easy case</text>
+    {cams.map((c, k) => (
+      <g class="cam" style={`animation-delay:${(0.3 + k * 0.55).toFixed(2)}s`}>
+        <rect x={c.x} y="52" width="94" height="104" rx="8" fill={c.kind === 'bright' ? '#f8fafc' : 'var(--surface)'} stroke="var(--line-2)" />
+        <g filter={c.kind === 'blur' ? 'url(#fs-blur)' : undefined} opacity={c.kind === 'bright' ? 0.55 : 1}>
+          {camFace(c.x).groups.map((g, i) => <path d={line(g, CLOSED.has(i))} fill="none" stroke="var(--line-2)" stroke-width="1" />)}
+          {camFace(c.x).groups.flat().map(([x, y]) => <circle cx={x} cy={y} r="1.5" fill="var(--vision)" />)}
+        </g>
+        {c.kind === 'noise' && noise.map((n) => <circle cx={c.x + n.x} cy={52 + n.y} r="0.9" fill="var(--ink-3)" opacity="0.55" />)}
+        <text x={c.x + 47} y="176" text-anchor="middle" class="k">{c.name}</text>
+        <text x={c.x + 47} y="204" text-anchor="middle" class="ok-mark">✓</text>
+      </g>
+    ))}
+    <text x="240" y="246" text-anchor="middle" class="note n5">checked on live camera feeds and recordings, not only on photos</text>
+  </g>
+
+  <!-- 6 One engine, many apps -->
+  <g class="st s6">
+    <g class="dev d0">
+      <rect x="44" y="52" width="58" height="104" rx="10" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+      <rect x="62" y="58" width="22" height="4" rx="2" fill="var(--line-2)" />
+      <circle cx="73" cy="104" r="14" fill="none" stroke="var(--vision)" stroke-width="2" />
+      <text x="73" y="178" text-anchor="middle" class="k">Android</text>
+    </g>
+    <g class="dev d1">
+      <rect x="150" y="62" width="128" height="80" rx="6" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+      <path d="M136 148 H 292 L 284 158 H 144 Z" fill="var(--line-2)" />
+      <circle cx="214" cy="102" r="14" fill="none" stroke="var(--vision)" stroke-width="2" />
+      <text x="214" y="178" text-anchor="middle" class="k">Windows, Linux</text>
+    </g>
+    <g class="dev d2">
+      <rect x="326" y="50" width="120" height="96" rx="10" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+      <rect x="338" y="62" width="44" height="34" rx="4" fill="none" stroke="var(--vision)" stroke-width="2" />
+      <text x="360" y="84" text-anchor="middle" class="ok-mark small">✓</text>
+      <rect x="390" y="64" width="46" height="6" rx="3" fill="var(--line-2)" />
+      <rect x="390" y="76" width="38" height="6" rx="3" fill="var(--line-2)" />
+      <rect x="338" y="108" width="98" height="8" rx="4" fill="var(--line)" />
+      <rect x="338" y="122" width="76" height="8" rx="4" fill="var(--line)" />
+      <text x="386" y="168" text-anchor="middle" class="k">exam proctoring</text>
+    </g>
+    <g class="stat st0">
+      <rect x="40" y="204" width="196" height="30" rx="15" />
+      <text x="138" y="224" text-anchor="middle">{accuracy} on our own test set</text>
+    </g>
+    <g class="stat st1">
+      <rect x="246" y="204" width="196" height="30" rx="15" />
+      <text x="344" y="224" text-anchor="middle">{fps} on edge devices</text>
+    </g>
+  </g>
+</svg>
+
+<style>
+  .note {
+    font: 500 11.5px var(--font-sans);
+    fill: var(--ink-3);
+  }
+  .note.strong {
+    font-weight: 650;
+    fill: var(--ink-2);
+  }
+  .k {
+    font: 500 11px var(--font-mono);
+    fill: var(--ink-3);
+  }
+  .tag {
+    font: 700 11px var(--font-mono);
+    fill: var(--vision);
+  }
+  .tag.unseen {
+    fill: var(--accent);
+  }
+  .time {
+    font: 700 14px var(--font-mono);
+  }
+  .t-slow {
+    fill: var(--down);
+  }
+  .t-fast {
+    fill: var(--vision);
+  }
+  .ok-mark {
+    font: 700 18px var(--font-sans);
+    fill: var(--ok);
+  }
+  .ok-mark.small {
+    font-size: 15px;
+  }
+  .stat rect {
+    fill: var(--surface);
+    stroke: var(--vision);
+  }
+  .stat text {
+    font: 650 11px var(--font-mono);
+    fill: var(--vision);
+  }
+
+  .st {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1,
+  svg[data-stage='2'] .s2,
+  svg[data-stage='3'] .s3,
+  svg[data-stage='4'] .s4,
+  svg[data-stage='5'] .s5,
+  svg[data-stage='6'] .s6 {
+    animation: fs-in 0.45s ease both;
+  }
+  @keyframes fs-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fs-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* 1 */
+  .old,
+  .found,
+  .n-old,
+  .n-new {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .old {
+    animation: fs-old 2.4s ease 0.5s both;
+  }
+  svg[data-stage='1'] .n-old {
+    animation: fs-show 0.4s ease 0.5s both;
+  }
+  svg[data-stage='1'] .found {
+    animation: fs-show 0.35s ease both;
+  }
+  svg[data-stage='1'] .n-new {
+    animation: fs-show 0.4s ease 4.3s both;
+  }
+  @keyframes fs-old {
+    0% { opacity: 0; }
+    15%, 75% { opacity: 1; }
+    100% { opacity: 0.25; }
+  }
+
+  /* 2 */
+  .cell,
+  .a2,
+  .a2b,
+  .n2a,
+  .n2b,
+  .scatter,
+  .newdot {
+    opacity: 0;
+  }
+  svg[data-stage='2'] .a2 {
+    animation: fs-show 0.4s ease 0.4s both;
+  }
+  svg[data-stage='2'] .cell {
+    animation: fs-show 0.2s ease both;
+  }
+  svg[data-stage='2'] .n2a {
+    animation: fs-show 0.4s ease 2.2s both;
+  }
+  svg[data-stage='2'] .a2b,
+  svg[data-stage='2'] .scatter {
+    animation: fs-show 0.5s ease 2.7s both;
+  }
+  svg[data-stage='2'] .newdot {
+    animation: fs-land 1.4s ease-in-out 3.4s both;
+  }
+  svg[data-stage='2'] .n2b {
+    animation: fs-show 0.4s ease 4.9s both;
+  }
+  @keyframes fs-land {
+    0% { opacity: 0; transform: translate(-120px, -20px); }
+    20% { opacity: 1; }
+    100% { opacity: 1; transform: translate(0, 0); }
+  }
+
+  /* 3 */
+  .sweep {
+    opacity: 0;
+  }
+  .path-on {
+    stroke-dasharray: 80;
+    stroke-dashoffset: 80;
+  }
+  .t-slow,
+  .t-fast {
+    opacity: 0;
+  }
+  svg[data-stage='3'] .sweep {
+    animation: fs-sweep 0.9s linear 0.5s 5 both;
+  }
+  svg[data-stage='3'] .t-slow {
+    animation: fs-show 0.4s ease 5s both;
+  }
+  svg[data-stage='3'] .path-on {
+    animation: fs-walk 1.6s ease-in-out 1.2s both;
+  }
+  svg[data-stage='3'] .t-fast {
+    animation: fs-show 0.4s ease 3s both;
+  }
+  @keyframes fs-sweep {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(128px); }
+  }
+  @keyframes fs-walk {
+    from { stroke-dashoffset: 80; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* 4 */
+  .who {
+    opacity: 0;
+  }
+  svg[data-stage='4'] .who {
+    animation: fs-show 0.45s ease both;
+  }
+
+  /* 5 */
+  .cam,
+  .n5 {
+    opacity: 0;
+  }
+  .cam .ok-mark {
+    opacity: 0;
+  }
+  svg[data-stage='5'] .cam {
+    animation: fs-show 0.45s ease both;
+  }
+  svg[data-stage='5'] .cam .ok-mark {
+    animation: fs-show 0.35s ease 3s both;
+  }
+  svg[data-stage='5'] .n5 {
+    animation: fs-show 0.45s ease 3.6s both;
+  }
+
+  /* 6 */
+  .dev,
+  .stat {
+    opacity: 0;
+  }
+  svg[data-stage='6'] .d0 {
+    animation: fs-show 0.45s ease 0.3s both;
+  }
+  svg[data-stage='6'] .d1 {
+    animation: fs-show 0.45s ease 0.9s both;
+  }
+  svg[data-stage='6'] .d2 {
+    animation: fs-show 0.45s ease 1.6s both;
+  }
+  svg[data-stage='6'] .st0 {
+    animation: fs-show 0.45s ease 2.8s both;
+  }
+  svg[data-stage='6'] .st1 {
+    animation: fs-show 0.45s ease 3.3s both;
+  }
+</style>

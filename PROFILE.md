@@ -136,19 +136,39 @@ status: built
 start: 2022-07
 end: 2024-08
 priority: 1
-one_line: "Raised the share of damaged barcodes a phone reads from 70% to 90%, with models trained on 10M+ synthetic images."
+one_line: "Read 90%+ of damaged barcodes correctly on its damaged test set, where a commercial scanning SDK read 70%, with models trained on 10M+ synthetic images."
 skills: [YOLO, Mask R-CNN, U-Net, ResNet, synthetic data, OpenCV, TFLite, Android, Kotlin, Python]
 numbers:
   - id: read-rate
-    value: "70% → 90%"
-    what: damaged barcodes read correctly
+    value: "70% → 90%+"
+    what: damaged barcodes read correctly on the damaged synthetic test set, a commercial scanning SDK against this reader
     status: reported
-    source: resume
+    source: owner
   - id: synthetic-images
     value: "10M+"
     what: synthetic training images
     status: reported
     source: resume
+  - id: formats
+    value: "10+"
+    what: 1D barcode formats
+    status: reported
+    source: owner
+  - id: scan-clean
+    value: "under 100 ms"
+    what: per scan of an undamaged code
+    status: reported
+    source: owner
+  - id: scan-damaged
+    value: "up to 350 ms"
+    what: per scan of a damaged code, depending on the damage
+    status: reported
+    source: owner
+  - id: model-size
+    value: "under 1 MB"
+    what: per model, on a Galaxy S21 FE
+    status: reported
+    source: owner
 demo: barcode-reader
 ```
 Knox Capture lets a phone do an enterprise barcode scanner's job. On industrial sites the codes are blurred, partly
@@ -160,16 +180,23 @@ Industrial barcodes arrive blurred, partly covered, at an angle or under glare. 
 returns a wrong code, and a wrong code is the costly failure.
 
 #### Approach
-- **Data first.** A synthetic-data engine draws barcodes and then damages them on purpose: blur, occlusion, bending
-  and reflections, each drawn from a probability model. 10M+ images in all.
-- **A chain of small models.** YOLO finds the barcode, Mask R-CNN cuts it out, a U-Net restores the damaged bars, a
-  ResNet names the barcode type, then the decoder reads it.
-- **Knowing when to stop.** Every detection carries a confidence score, so the system declines to restore a code that
-  is beyond recovery instead of guessing.
-- **On the phone.** Android, the hardware-accelerated camera, TensorFlow Lite.
+- **Data first.** A synthetic-data engine writes random strings that follow each format's rules and draws them as
+  barcodes. Then it damages them on purpose: blur, lines, spots, glare, reflections, tears and scratches, each drawn
+  from a probability model. Perspective, curvature and lighting make each one a camera view, blended onto photos of
+  real objects. 10M+ images in all.
+- **Labels that stay true.** The hardest part: every transform also moves the labels, the bounding box and the
+  barcode's outer and inner rectangles. Algebra and trigonometry set how far a code can turn, move or zoom before a
+  label leaves the picture.
+- **A chain of small models.** YOLO finds the barcode, Mask R-CNN cuts it out, a U-Net trained pixel to pixel restores
+  the damaged bars, a classifier names the format among 10+ 1D formats, then an open-source decoder reads it.
+- **Knowing when to stop.** Every read carries a confidence score. A wrong read costs far more than no read, so a code
+  beyond recovery is refused instead of guessed.
+- **On the phone.** Android, the hardware-accelerated camera and TensorFlow Lite, mostly on a Galaxy S21 FE: each model under
+  1 MB, under 100 ms per scan for an undamaged code and up to 350 ms for a damaged one.
 
 #### Results
-Damaged barcodes read rose from 70% to 90%. Declining hopeless codes cut wrong reads.
+On the damaged synthetic test set, 90%+ of codes were read correctly, where a commercial scanning SDK read 70%. Real
+photos were checked too, by hand, on a smaller set. Refusing hopeless codes cut wrong reads.
 
 ### Recognising many faces at once on edge devices
 ```yaml
@@ -185,7 +212,7 @@ skills: [face detection, face embeddings, YOLO, ONNX, OpenCV, embedding search, 
 numbers:
   - id: accuracy
     value: "99.2%"
-    what: recognition accuracy on edge devices
+    what: recognition accuracy on our own test set
     status: reported
     source: LinkedIn
   - id: fps
@@ -220,6 +247,11 @@ in place missed faces, and searching a growing set of registered people one by o
 - **Search in steps, not one by one.** Face search moved from a linear scan to an O(log n) index, so a lookup grows with
   the logarithm of the number of people, not with the number itself.
 - **Run anywhere.** Android, Windows and Linux, with Python, OpenCV and ONNX.
+- **Test on live feeds.** Photos are the easy case. Front and back phone cameras and video each behaved differently,
+  so the engine was checked on live camera feeds and recordings, not only on photos.
+- **One engine, many apps.** A desktop app finds every registered face in photos and video, and an Android app does it
+  on the live camera. The exam-proctoring platform is one app built on it. I was the engine's only researcher and
+  developer.
 
 #### Results
 99.2% accuracy at 30+ FPS on edge devices, and 1,200 ms to 87 ms per lookup across 10,000+ registered users.
@@ -426,22 +458,27 @@ Teaching material: the parts of an object detector, built up on a dataset of dra
 id: behavioural-identification
 org: samsung
 area: sensing
-status: built
+status: shipped
 priority: 1
-one_line: "Told which hand holds a phone, and who is using it, from touch and motion signals, at about 87% accuracy with no deep learning."
+one_line: "Told which hand holds a phone, right 90%+ of the time over 30+ seconds, and who holds it, without deep learning."
 skills: [behavioural biometrics, sensor fusion, anomaly detection, Android]
 numbers:
-  - id: accuracy
+  - id: hand
+    value: "90%+ over 30+ s"
+    what: accuracy at telling which hand holds the phone, without deep learning
+    status: reported
+    source: owner
+  - id: hand-short
     value: "87%"
-    what: accuracy, about, without deep learning
+    what: the same, about, over shorter windows
     status: reported
     source: owner
 demo: which-hand
 ```
 An Android service that works out in real time whether the phone is in the left or right hand, then combines that with
 swipes, taps, walking pattern and other sensor signals to keep checking who is using the phone. When the pattern looks
-wrong it can restrict access: against theft, or when a colleague or family member picks the phone up. About 87%
-accuracy, without deep learning.
+wrong it can restrict access: against theft, or when a colleague or family member picks the phone up. It names the
+hand 90%+ of the time over 30+ seconds of use, and about 87% over shorter windows, without deep learning.
 
 #### Problem
 A phone checks who you are once, at unlock. After that, whoever holds it has the same access: a thief, or a colleague or
@@ -457,14 +494,15 @@ family member who picks it up.
 - **No deep learning.** The models are small enough to run all the time on the phone.
 
 #### Results
-About 87% accuracy, without deep learning.
+90%+ accuracy at telling the hand over 30+ seconds of use, and about 87% over shorter windows, without deep learning.
+Used in a deliberately odd way, to break it, it could still be fooled in some cases.
 
 ### Phone drop detection in under 22 parameters
 ```yaml
 id: drop-detection
 org: samsung
 area: sensing
-status: built
+status: shipped
 start: 2023-03
 end: 2023-05
 priority: 1
@@ -487,9 +525,10 @@ numbers:
     status: reported
     source: owner
 ```
-Detects a drop, estimates how far the phone fell, tells how hard the surface was, and tells a drop from a catch. The
-deep-learning model it replaced was accurate but heavy; engineered features from the motion sensors and a small
-statistical model did the job and saved over 95% of the power, at a small cost in accuracy (97% to 95.2%).
+Detects a drop, estimates how far the phone fell, and sorts the surface into a hard surface, a soft bed or another
+surface. It also tells a real drop from a phone tossed in the air and caught. The deep-learning model it replaced was
+accurate but heavy; features from the motion sensors alone and a small statistical model did the job and saved over
+95% of the power, at a small cost in accuracy (97% to 95.2%).
 
 #### Problem
 A drop detector has to listen to the motion sensors all the time, so every bit of compute costs battery. The existing
@@ -498,8 +537,10 @@ model had millions of parameters.
 #### Approach
 - **Use the physics.** A falling phone reads close to zero g until it hits something; how long that lasts gives the
   height, and the impact says how hard the surface was.
-- **Engineer the features.** Sensor fusion turns the raw motion signals into a handful of features that carry those
-  facts, and tell a drop from a catch.
+- **Engineer the features.** Sensor fusion turns the motion signals, and nothing else, into a handful of features
+  that carry those facts.
+- **Not every fall is a drop.** A phone tossed in the air and caught is in free fall too, but a catch slows it gently,
+  with no impact spike, so it is not counted.
 - **Keep the model tiny.** Small statistical models on those features, under 22 parameters in all.
 
 #### Results
@@ -518,8 +559,12 @@ priority: 2
 one_line: "A phone that detects a car crash from its sensors and sends an SOS to chosen contacts."
 skills: [sensor fusion, statistical models, rare-event data, Android]
 ```
-Real crash data is rare, so I collected what is not a crash: rash driving, thrown phones, loud music, films. A
-statistical model on the phone's sensors learned to tell those apart from a crash.
+The phone reads its accelerometer, gyroscope, pressure and sound together. A statistical model with heuristics sorts
+normal driving, rash driving and the extreme cases that could be crashes, and was tuned against each kind of false
+alarm. Sound and pressure catch an airbag opening; the motion sensors catch a roll, a fall or toppling.
+
+Real crash data is rare, so crashes were simulated with a toy car carrying a phone, and everything that is not a crash
+was collected for real: rash driving, thrown phones, loud music, films.
 
 ### GLM-5.3-Flash on one GPU
 ```yaml

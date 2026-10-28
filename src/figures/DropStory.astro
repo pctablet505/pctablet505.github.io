@@ -1,0 +1,329 @@
+---
+// The stepped figure for the drop-detection case study. The free-fall part of every trace is computed from the physics
+// of a 1 m fall (t = sqrt(2h/g)); the impact shapes for each surface and the toss-and-catch are drawn to show the idea,
+// not recorded. The model, power and accuracy numbers come from PROFILE.md.
+import { num, sides } from '../lib/stories';
+
+const G = 9.81;
+const H = 1.0;
+const tFall = Math.sqrt((2 * H) / G);
+const t0 = 0.3;
+const tImpact = t0 + tFall;
+const T = 1.5;
+const X0 = 150;
+const X1 = 462;
+const Y0 = 204;
+const PX = (Y0 - 40) / 6;
+const x = (t: number) => X0 + (t / T) * (X1 - X0);
+const y = (a: number) => Y0 - Math.min(a, 6) * PX;
+const wig = (t: number, amp: number) => amp * (Math.sin(t * 61.3) * 0.6 + Math.sin(t * 23.7 + 1.3) * 0.4);
+const path = (from: number, to: number, a: (t: number) => number, step = 0.004) => {
+  const p: string[] = [];
+  for (let t = from; t <= to + 1e-9; t += step) p.push(`${x(t).toFixed(1)} ${y(a(t)).toFixed(1)}`);
+  return 'M' + p.join(' L');
+};
+// After the impact: a ring whose height and decay depend on the surface.
+const ring = (peak: number, decay: number) => (t: number) => {
+  const s = t - tImpact;
+  return 1 + peak * Math.exp(-s / decay) * Math.abs(Math.cos(s * 90)) + wig(t, 0.04 * Math.exp(-s / 0.4));
+};
+const rest = path(0, t0, (t) => 1 + wig(t, 0.05));
+const fall = path(t0, tImpact, (t) => 0.04 + Math.abs(wig(t, 0.02)));
+const surfaces = [
+  { name: 'hard surface', after: path(tImpact, T, ring(5.2, 0.03)) },
+  { name: 'soft bed', after: path(tImpact, T, ring(1.3, 0.09)) },
+  { name: 'other surface', after: path(tImpact, T, ring(3, 0.05)) },
+];
+// Toss and catch: a push up, the flight near 0 g, then a catch that slows the phone over a tenth of a second.
+const toss = path(0, T, (t) => {
+  if (t < 0.25) return 1 + wig(t, 0.05);
+  if (t < 0.33) return 1 + 0.9 * Math.sin(((t - 0.25) / 0.08) * Math.PI);
+  if (t < 0.9) return 0.04 + Math.abs(wig(t, 0.02));
+  if (t < 1.02) return 1 + 0.75 * Math.sin(((t - 0.9) / 0.12) * Math.PI);
+  return 1 + wig(t, 0.04);
+});
+const ticks = [0, 1, 2, 3, 4, 5, 6];
+// Step 3's small panels: the whole trace squeezed to 30% of its height about y = 168 (it then spans 129.6 to 178.8),
+// then moved into the k-th panel, whose drawing band starts at 38 + 66k.
+const squeeze = (k: number) => `translate(0 ${(38 + k * 66 - 129.6).toFixed(1)}) translate(0 168) scale(1 0.3) translate(0 -168)`;
+
+const [paramsBefore, paramsAfter] = sides(num('drop-detection', 'parameters'));
+const power = num('drop-detection', 'power');
+const [accBefore, accAfter] = sides(num('drop-detection', 'accuracy'));
+const powerLeft = 1 - parseFloat(power) / 100;
+const grid = Array.from({ length: 12 * 22 }, (_, k) => ({ x: 34 + (k % 22) * 7.4, y: 52 + Math.floor(k / 22) * 7.4 }));
+---
+<svg viewBox="0 0 480 270" data-stage="1" role="img" aria-label="Animated illustration in six steps: a phone at rest reads 1 g; in free fall it reads near 0 g, and the fall time gives the height; the impact's shape tells a hard surface from a soft bed; a toss and catch has no impact spike, so it is not a drop; features from the motion sensors; and a model of under 22 parameters replacing one of millions." class="ds">
+  <defs>
+    <g id="ds-phone">
+      <rect x="-17" y="-30" width="34" height="60" rx="7" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" />
+      <rect x="-6" y="-25" width="12" height="3" rx="1.5" fill="var(--line-2)" />
+    </g>
+    <g id="ds-axes">
+      {ticks.map((g) => (
+        <g>
+          <line x1={X0} x2={X1} y1={y(g)} y2={y(g)} stroke="var(--line)" stroke-width="1" />
+          <text x={X0 - 8} y={y(g) + 4} text-anchor="end" font-size="10" fill="var(--ink-3)" font-family="JetBrains Mono Variable, ui-monospace, monospace">{g}g</text>
+        </g>
+      ))}
+    </g>
+  </defs>
+
+  <!-- 1 At rest -->
+  <g class="st s1">
+    <rect x="20" y="70" width="86" height="8" rx="2" fill="var(--line-2)" />
+    <use href="#ds-phone" transform="translate(64 40)" />
+    <use href="#ds-axes" />
+    <path class="draw" d={rest} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+    <text x={x(t0 / 2)} y={y(1) - 14} text-anchor="middle" class="lbl">about 1 g</text>
+  </g>
+
+  <!-- 2 Free fall -->
+  <g class="st s2">
+    <rect x="20" y="70" width="86" height="8" rx="2" fill="var(--line-2)" />
+    <use href="#ds-phone" class="faller" transform="translate(64 40)" />
+    <use href="#ds-axes" />
+    <rect class="shade" x={x(t0)} y="36" width={x(tImpact) - x(t0)} height={Y0 - 36} fill="var(--sensing)" fill-opacity="0.12" />
+    <path d={rest} fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+    <path class="draw" d={fall} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+    <text x={(x(t0) + x(tImpact)) / 2} y={y(0) - 14} text-anchor="middle" class="lbl">near 0 g</text>
+    <text x={X0} y="26" class="lbl strong eq">free fall t = {tFall.toFixed(2)} s → h = g·t²/2 ≈ {H.toFixed(1)} m</text>
+  </g>
+
+  <!-- 3 Impact, and what the surface was -->
+  <g class="st s3">
+    <rect x="16" y="234" width="96" height="6" rx="2" fill="var(--line-2)" />
+    <use href="#ds-phone" transform="translate(64 204) rotate(90)" />
+    <g class="main">
+      <use href="#ds-axes" />
+      <path d={rest + ' ' + fall.replace('M', 'L')} fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+      <path class="draw" d={surfaces[0].after} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+      <text x={x(tImpact) + 14} y={y(4.6)} class="lbl">impact</text>
+    </g>
+    <g class="classes">
+      {surfaces.map((s, k) => (
+        <g class={`cls c${k}`} style={`animation-delay:${(3.9 + k * 0.45).toFixed(2)}s`}>
+          <rect x="140" y={34 + k * 66} width="324" height="58" rx="8" fill="var(--surface)" stroke={k === 0 ? 'var(--sensing)' : 'var(--line-2)'} stroke-width={k === 0 ? 2 : 1} />
+          <path d={rest + ' ' + fall.replace('M', 'L') + ' ' + s.after.replace('M', 'L')} fill="none" stroke={k === 0 ? 'var(--sensing)' : 'var(--ink-3)'} stroke-width="1.6" vector-effect="non-scaling-stroke" transform={squeeze(k)} />
+          <text x="152" y={34 + k * 66 + 20} class={k === 0 ? 'lbl strong' : 'lbl'}>{s.name}</text>
+          {k === 0 && <text x="452" y={34 + 20} text-anchor="end" class="lbl strong">this drop</text>}
+        </g>
+      ))}
+    </g>
+  </g>
+
+  <!-- 4 Not every fall is a drop -->
+  <g class="st s4">
+    <path d="M30 236 C 46 214, 84 214, 100 236 Z" fill="var(--line-2)" />
+    <text x="65" y="256" text-anchor="middle" class="lbl">hand</text>
+    <use href="#ds-phone" class="tosser" transform="translate(65 200)" />
+    <use href="#ds-axes" />
+    <path class="draw" d={toss} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="2.4" />
+    <text x={x(0.6)} y={y(0) - 14} text-anchor="middle" class="lbl">in the air</text>
+    <text x={x(0.96)} y={y(2.2)} text-anchor="middle" class="lbl">caught gently</text>
+    <text x={X1} y="26" text-anchor="end" class="lbl strong verdict">no impact spike: not a drop</text>
+  </g>
+
+  <!-- 5 Motion sensors only -->
+  <g class="st s5">
+    <use href="#ds-axes" />
+    <path d={rest + ' ' + fall.replace('M', 'L') + ' ' + surfaces[0].after.replace('M', 'L')} fill="none" stroke="var(--sensing)" stroke-width="2.2" />
+    {[
+      { name: 'fall time', a: t0, b: tImpact, yy: y(0.6) },
+      { name: 'ringing', a: tImpact + 0.04, b: tImpact + 0.26, yy: y(5) },
+      { name: 'settling', a: tImpact + 0.3, b: T - 0.02, yy: y(2) },
+    ].map((f, k) => (
+      <g class="feat" style={`animation-delay:${(0.6 + (k === 0 ? 0 : k + 1) * 0.7).toFixed(2)}s`}>
+        <path d={`M${x(f.a)} ${f.yy + 6} V ${f.yy} H ${x(f.b)} V ${f.yy + 6}`} fill="none" stroke="var(--accent)" stroke-width="2" />
+        <text x={(x(f.a) + x(f.b)) / 2} y={f.yy - 6} text-anchor="middle" class="lbl strong">{f.name}</text>
+      </g>
+    ))}
+    <g class="feat" style="animation-delay:1.3s">
+      <circle cx={x(tImpact)} cy={y(6)} r="4.5" fill="none" stroke="var(--accent)" stroke-width="2" />
+      <text x={x(tImpact) - 10} y={y(6) + 4} text-anchor="end" class="lbl strong">peak</text>
+    </g>
+    <g class="chip ch5">
+      <rect x="16" y="104" width="112" height="56" rx="10" />
+      <text x="72" y="128" text-anchor="middle">motion</text>
+      <text x="72" y="146" text-anchor="middle">sensors only</text>
+    </g>
+  </g>
+
+  <!-- 6 A model under 22 parameters -->
+  <g class="st s6">
+    <text x="34" y="36" class="lbl strong">model size</text>
+    <g class="big">
+      {grid.map((c) => <rect x={c.x} y={c.y} width="6" height="6" rx="1" fill="var(--ink-3)" opacity="0.5" />)}
+    </g>
+    <text x="34" y="160" class="lbl">deep network: {paramsBefore}</text>
+    <rect class="tiny" x="34" y="176" width="14" height="14" rx="2" fill="var(--sensing)" />
+    <text x="56" y="188" class="lbl strong tiny-l">this model: {paramsAfter}</text>
+    <text x="34" y="214" class="note">not to scale</text>
+    <text x="268" y="36" class="lbl strong">power</text>
+    <rect x="268" y="52" width="190" height="22" rx="5" fill="var(--ink-3)" opacity="0.5" />
+    <text x="268" y="90" class="lbl">before</text>
+    <rect x="268" y="104" width="190" height="22" rx="5" fill="var(--surface)" stroke="var(--line)" />
+    <rect class="pw" x="268" y="104" width={190 * powerLeft} height="22" rx="5" fill="var(--sensing)" style={`--full:${(1 / powerLeft).toFixed(3)}`} />
+    <text x="268" y="142" class="lbl strong">after: {power} less</text>
+    <g class="chip acc">
+      <rect x="268" y="170" width="190" height="44" rx="10" />
+      <text x="363" y="190" text-anchor="middle">accuracy</text>
+      <text x="363" y="206" text-anchor="middle">{accBefore} → {accAfter}</text>
+    </g>
+  </g>
+</svg>
+
+<style>
+  .lbl {
+    font: 500 11.5px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .lbl.strong {
+    font: 650 11.5px var(--font-mono);
+    fill: var(--ink);
+  }
+  .note {
+    font: 500 10.5px var(--font-sans);
+    fill: var(--ink-3);
+  }
+  .chip rect {
+    fill: var(--surface);
+    stroke: var(--sensing);
+  }
+  .chip text {
+    font: 650 12px var(--font-mono);
+    fill: var(--sensing);
+  }
+
+  .st {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1,
+  svg[data-stage='2'] .s2,
+  svg[data-stage='3'] .s3,
+  svg[data-stage='4'] .s4,
+  svg[data-stage='5'] .s5,
+  svg[data-stage='6'] .s6 {
+    animation: ds-in 0.45s ease both;
+  }
+  @keyframes ds-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes ds-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  @keyframes ds-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* 1 */
+  svg[data-stage='1'] .s1 .draw {
+    animation: ds-draw 1.6s ease-out 0.6s both;
+  }
+
+  /* 2 */
+  .eq,
+  .shade {
+    opacity: 0;
+  }
+  svg[data-stage='2'] .faller {
+    animation: ds-fall 0.9s cubic-bezier(0.5, 0, 1, 1) 0.8s both;
+  }
+  svg[data-stage='2'] .s2 .draw {
+    animation: ds-draw 0.9s linear 0.8s both;
+  }
+  svg[data-stage='2'] .shade {
+    animation: ds-show 0.4s ease 1.8s both;
+  }
+  svg[data-stage='2'] .eq {
+    animation: ds-show 0.5s ease 2.6s both;
+  }
+  @keyframes ds-fall {
+    from { transform: translate(64px, 40px); }
+    to { transform: translate(64px, 196px); }
+  }
+
+  /* 3 */
+  .classes .cls {
+    opacity: 0;
+  }
+  svg[data-stage='3'] .s3 .draw {
+    animation: ds-draw 0.8s ease-out 0.4s both;
+  }
+  svg[data-stage='3'] .main {
+    animation: ds-fade 0.5s ease 3.4s both;
+  }
+  svg[data-stage='3'] .cls {
+    animation: ds-show 0.45s ease both;
+  }
+  @keyframes ds-fade {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* 4 */
+  .verdict {
+    opacity: 0;
+  }
+  svg[data-stage='4'] .tosser {
+    animation: ds-toss 1.6s ease-in-out 0.5s both;
+  }
+  svg[data-stage='4'] .s4 .draw {
+    animation: ds-draw 1.6s linear 0.5s both;
+  }
+  svg[data-stage='4'] .verdict {
+    animation: ds-show 0.5s ease 2.6s both;
+  }
+  @keyframes ds-toss {
+    0% { transform: translate(65px, 200px); }
+    45% { transform: translate(65px, 62px); }
+    90%, 100% { transform: translate(65px, 200px); }
+  }
+
+  /* 5 */
+  .feat,
+  .ch5 {
+    opacity: 0;
+  }
+  svg[data-stage='5'] .ch5 {
+    animation: ds-show 0.45s ease 0.2s both;
+  }
+  svg[data-stage='5'] .feat {
+    animation: ds-show 0.45s ease both;
+  }
+
+  /* 6 */
+  .tiny,
+  .tiny-l,
+  .acc {
+    opacity: 0;
+  }
+  .pw {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+  svg[data-stage='6'] .big rect {
+    animation: ds-show 0.6s ease 0.2s both;
+  }
+  svg[data-stage='6'] .tiny,
+  svg[data-stage='6'] .tiny-l {
+    animation: ds-show 0.45s ease 1.6s both;
+  }
+  svg[data-stage='6'] .pw {
+    animation: ds-shrink 1.4s ease-in-out 2.4s both;
+  }
+  svg[data-stage='6'] .acc {
+    animation: ds-show 0.45s ease 4.2s both;
+  }
+  @keyframes ds-shrink {
+    from { transform: scaleX(var(--full)); }
+    to { transform: scaleX(1); }
+  }
+</style>

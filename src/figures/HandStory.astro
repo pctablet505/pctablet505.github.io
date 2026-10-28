@@ -1,0 +1,348 @@
+---
+// The stepped figure for the behavioural-identification case study. The thumb's arc, the taps and the tilt are example
+// cues of a one-handed grip, drawn from its geometry, not the model's inputs; the trait bars and the match line are
+// drawn to show the idea, not data. The two accuracies come from PROFILE.md.
+import { num } from '../lib/stories';
+
+const W = 110;
+const H = 196;
+const Y0 = 30;
+function arc(x0: number, side: number, r = 112): string {
+  const cx = side === 1 ? x0 - 6 : x0 + W + 6;
+  const cy = Y0 + H + 4;
+  const pts: string[] = [];
+  for (let a = 22; a <= 78; a += 2) {
+    const t = (a * Math.PI) / 180;
+    pts.push(`${(cx + side * r * Math.cos(t)).toFixed(1)} ${(cy - r * Math.sin(t)).toFixed(1)}`);
+  }
+  return 'M' + pts.join(' L');
+}
+function taps(x0: number, side: number): [number, number][] {
+  const base: [number, number][] = [[22, 150], [34, 128], [18, 118], [44, 160], [30, 98], [40, 140]];
+  return base.map(([dx, dy]) => [side === 1 ? x0 + dx : x0 + W - dx, Y0 + dy]);
+}
+function tilt(x0: number, side: number): string {
+  const pts: string[] = [];
+  for (let i = 0; i <= 40; i++) {
+    const px = x0 + (i / 40) * W;
+    const py = 246 - side * 3 - Math.sin(i / 3.2) * 3 - side * (i / 40) * 2;
+    pts.push(`${px.toFixed(1)} ${py.toFixed(1)}`);
+  }
+  return 'M' + pts.join(' L');
+}
+const phones = [
+  { hand: 'left hand', x0: 52, side: 1 },
+  { hand: 'right hand', x0: 318, side: -1 },
+];
+const one = { x0: 34, side: -1 };
+const radii = [80, 89, 98, 107, 116];
+
+const long = num('behavioural-identification', 'hand').match(/^(\S+) over (\S+) s$/)!;
+const short = num('behavioural-identification', 'hand-short');
+const pct = (v: string) => parseFloat(v) / 100;
+const bars = [
+  { name: 'shorter windows', v: short, about: true, y: 92 },
+  { name: `${long[2]} seconds of use`, v: long[1], about: false, y: 150 },
+];
+const traits = ['hand', 'swipes', 'taps', 'walking pattern'];
+const owner = [0.82, 0.64, 0.74, 0.58];
+const other = [0.3, 0.86, 0.36, 0.8];
+---
+<svg viewBox="0 0 480 270" data-stage="1" role="img" aria-label="Animated illustration in six steps: touch and motion show which hand holds the phone, for example in a thumb swipe's curve, where taps land and how the phone tilts; evidence adds up over 30 seconds of use; each person's handling pattern differs; when the pattern stops matching the owner, access is limited; small models run all the time." class="hs">
+  <defs>
+    <g id="hs-phone">
+      <rect x="0" y="0" width={W} height={H} rx="16" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+      <rect x="42" y="8" width="26" height="5" rx="2.5" fill="var(--line-2)" />
+    </g>
+  </defs>
+
+  <!-- 1 The thumb draws an arc -->
+  <g class="st s1">
+    {phones.map((p, k) => (
+      <g>
+        <use href="#hs-phone" transform={`translate(${p.x0} ${Y0})`} />
+        <path class="swipe" d={arc(p.x0, p.side)} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="5" stroke-linecap="round" style={`animation-delay:${0.5 + k * 1.8}s`} />
+        <text x={p.x0 + W / 2} y="20" text-anchor="middle" class="cap">{p.hand}</text>
+      </g>
+    ))}
+    <text x="240" y="132" text-anchor="middle" class="note n1">curves the other way</text>
+  </g>
+
+  <!-- 2 Taps and tilt -->
+  <g class="st s2">
+    {phones.map((p, k) => (
+      <g>
+        <use href="#hs-phone" transform={`translate(${p.x0} ${Y0})`} />
+        <path d={arc(p.x0, p.side)} fill="none" stroke="var(--sensing)" stroke-width="5" stroke-linecap="round" opacity="0.35" />
+        {taps(p.x0, p.side).map(([tx, ty], i) => (
+          <circle class="tap" cx={tx} cy={ty} r="6" fill="var(--sensing)" style={`animation-delay:${(0.4 + k * 1.2 + i * 0.22).toFixed(2)}s`} />
+        ))}
+        <path class="tilt" d={tilt(p.x0, p.side)} fill="none" stroke="var(--ink-3)" stroke-width="1.8" />
+        <text x={p.x0 + W / 2} y="20" text-anchor="middle" class="cap">{p.hand}</text>
+      </g>
+    ))}
+    <text x="240" y="122" text-anchor="middle" class="note n2a">where taps land</text>
+    <text x="240" y="262" text-anchor="middle" class="note n2b">how the phone tilts</text>
+  </g>
+
+  <!-- 3 Evidence adds up -->
+  <g class="st s3">
+    <use href="#hs-phone" transform={`translate(${one.x0} ${Y0})`} />
+    {radii.map((r, k) => (
+      <path class="ev" d={arc(one.x0, one.side, r)} fill="none" stroke="var(--sensing)" stroke-width="3.5" stroke-linecap="round" opacity="0.7" style={`animation-delay:${(0.3 + k * 0.55).toFixed(2)}s`} />
+    ))}
+    {taps(one.x0, one.side).map(([tx, ty], i) => (
+      <circle class="ev" cx={tx} cy={ty} r="5" fill="var(--sensing)" opacity="0.7" style={`animation-delay:${(0.55 + i * 0.5).toFixed(2)}s`} />
+    ))}
+    <text x="200" y="40" class="k">accuracy at telling the hand</text>
+    {bars.map((b, k) => (
+      <g>
+        <text x="200" y={b.y - 8} class="who">{b.name}</text>
+        <rect x="200" y={b.y} width="210" height="26" rx="6" fill="var(--surface)" stroke="var(--line)" />
+        <rect class={`grow g${k}`} x="200" y={b.y} width={210 * pct(b.v)} height="26" rx="6" />
+        <text x="410" y={b.y - 8} text-anchor="end" class="val">{b.about ? `about ${b.v}` : b.v}</text>
+      </g>
+    ))}
+    <text x="200" y="220" class="note n3">more swipes and taps, more evidence</text>
+  </g>
+
+  <!-- 4 Who is holding it? -->
+  <g class="st s4">
+    {[
+      { who: 'the owner', vals: owner, x: 24, ok: true },
+      { who: 'someone else', vals: other, x: 252, ok: false },
+    ].map((c, j) => (
+      <g class={`card c${j}`}>
+        <rect x={c.x} y="34" width="204" height="176" rx="12" fill="var(--surface)" stroke="var(--line-2)" />
+        <text x={c.x + 16} y="58" class="who">{c.who}</text>
+        {traits.map((t, i) => (
+          <g>
+            <text x={c.x + 16} y={86 + i * 32} class="k">{t}</text>
+            <rect x={c.x + 16} y={92 + i * 32} width="172" height="8" rx="4" fill="var(--line)" />
+            <rect class="trait" x={c.x + 16} y={92 + i * 32} width={172 * c.vals[i]} height="8" rx="4" fill={c.ok ? 'var(--sensing)' : 'var(--ink-3)'} style={`animation-delay:${(0.4 + j * 1.6 + i * 0.25).toFixed(2)}s`} />
+          </g>
+        ))}
+      </g>
+    ))}
+    <text x="240" y="240" text-anchor="middle" class="note strong n4">a different pattern from the owner's</text>
+  </g>
+
+  <!-- 5 Keep checking -->
+  <g class="st s5">
+    <text x="40" y="40" class="k">match with the owner</text>
+    <line x1="40" x2="440" y1="132" y2="132" stroke="var(--line-2)" stroke-dasharray="5 4" />
+    <text x="440" y="126" text-anchor="end" class="k">enough to trust</text>
+    <path class="match" d="M40 78 C 90 74, 140 82, 200 76 S 240 80, 250 80 C 270 82, 280 176, 300 182 S 380 186, 440 184" pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="3" />
+    <text x="120" y="66" class="note">the owner</text>
+    <text x="440" y="206" text-anchor="end" class="note">someone else picks it up</text>
+    <g class="lock">
+      <rect x="196" y="196" width="88" height="46" rx="10" fill="var(--surface)" stroke="var(--down)" stroke-width="2" />
+      <path d="M226 214 v -6 a 14 14 0 0 1 28 0 v 6" fill="none" stroke="var(--down)" stroke-width="3" />
+      <rect x="220" y="214" width="40" height="22" rx="4" fill="var(--down)" />
+      <text x="240" y="262" text-anchor="middle" class="note strong">access limited</text>
+    </g>
+  </g>
+
+  <!-- 6 Small models, always on -->
+  <g class="st s6">
+    <rect x="60" y="64" width="104" height="52" rx="8" fill="none" stroke="var(--ink-2)" stroke-width="3" />
+    <rect x="164" y="80" width="8" height="20" rx="2" fill="var(--ink-2)" />
+    <rect class="charge" x="68" y="72" width="88" height="36" rx="4" fill="var(--sensing)" />
+    <text x="112" y="140" text-anchor="middle" class="who">runs all the time</text>
+    <g class="chip">
+      <rect x="248" y="68" width="190" height="44" rx="22" />
+      <text x="343" y="96" text-anchor="middle">no deep learning</text>
+    </g>
+    <text x="240" y="196" text-anchor="middle" class="note strong n6">used in a deliberately odd way, it could still be fooled</text>
+  </g>
+</svg>
+
+<style>
+  .cap {
+    font: 500 12px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .k {
+    font: 500 11px var(--font-mono);
+    fill: var(--ink-3);
+  }
+  .who {
+    font: 650 12.5px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .val {
+    font: 700 13px var(--font-mono);
+    fill: var(--ink);
+  }
+  .note {
+    font: 500 11.5px var(--font-sans);
+    fill: var(--ink-3);
+  }
+  .note.strong {
+    font-weight: 650;
+    fill: var(--ink-2);
+  }
+  .grow {
+    fill: var(--sensing);
+  }
+  .chip rect {
+    fill: var(--surface);
+    stroke: var(--sensing);
+  }
+  .chip text {
+    font: 650 13px var(--font-mono);
+    fill: var(--sensing);
+  }
+
+  .st {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1,
+  svg[data-stage='2'] .s2,
+  svg[data-stage='3'] .s3,
+  svg[data-stage='4'] .s4,
+  svg[data-stage='5'] .s5,
+  svg[data-stage='6'] .s6 {
+    animation: hs-in 0.45s ease both;
+  }
+  @keyframes hs-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes hs-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* 1 */
+  .swipe {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .n1 {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .swipe {
+    animation: hs-draw 1.2s ease-out both;
+  }
+  svg[data-stage='1'] .n1 {
+    animation: hs-show 0.45s ease 3.8s both;
+  }
+  @keyframes hs-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* 2 */
+  .tap,
+  .tilt,
+  .n2a,
+  .n2b {
+    opacity: 0;
+  }
+  .tap {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  svg[data-stage='2'] .tap {
+    animation: hs-tap 0.4s ease-out both;
+  }
+  svg[data-stage='2'] .n2a {
+    animation: hs-show 0.45s ease 2.6s both;
+  }
+  svg[data-stage='2'] .tilt {
+    animation: hs-show 0.45s ease 3.4s both;
+  }
+  svg[data-stage='2'] .n2b {
+    animation: hs-show 0.45s ease 3.8s both;
+  }
+  @keyframes hs-tap {
+    from { opacity: 0; transform: scale(0.3); }
+    to { opacity: 0.75; transform: scale(1); }
+  }
+
+  /* 3 */
+  .ev,
+  .n3 {
+    opacity: 0;
+  }
+  .grow {
+    transform-box: fill-box;
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  svg[data-stage='3'] .ev {
+    animation: hs-ev 0.4s ease both;
+  }
+  svg[data-stage='3'] .g0 {
+    animation: hs-grow 1.2s ease-out 1.4s both;
+  }
+  svg[data-stage='3'] .g1 {
+    animation: hs-grow 1.4s ease-out 3.6s both;
+  }
+  svg[data-stage='3'] .n3 {
+    animation: hs-show 0.45s ease 5.4s both;
+  }
+  @keyframes hs-ev {
+    from { opacity: 0; }
+    to { opacity: 0.7; }
+  }
+  @keyframes hs-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* 4 */
+  .trait {
+    transform-box: fill-box;
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  .c1,
+  .n4 {
+    opacity: 0;
+  }
+  svg[data-stage='4'] .trait {
+    animation: hs-grow 0.6s ease-out both;
+  }
+  svg[data-stage='4'] .c1 {
+    animation: hs-show 0.45s ease 1.6s both;
+  }
+  svg[data-stage='4'] .n4 {
+    animation: hs-show 0.45s ease 4.2s both;
+  }
+
+  /* 5 */
+  .match {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .lock {
+    opacity: 0;
+  }
+  svg[data-stage='5'] .match {
+    animation: hs-draw 3s linear 0.4s both;
+  }
+  svg[data-stage='5'] .lock {
+    animation: hs-show 0.45s ease 3.6s both;
+  }
+
+  /* 6 */
+  .chip,
+  .n6 {
+    opacity: 0;
+  }
+  svg[data-stage='6'] .chip {
+    animation: hs-show 0.45s ease 1.2s both;
+  }
+  svg[data-stage='6'] .n6 {
+    animation: hs-show 0.45s ease 2.8s both;
+  }
+  svg[data-stage='6'] .charge {
+    animation: hs-pulse 1.6s ease-in-out 0.3s 3 both;
+  }
+  @keyframes hs-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+</style>

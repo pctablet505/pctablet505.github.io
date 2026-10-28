@@ -1,0 +1,252 @@
+---
+// A long figure told in steps. The drawing shows one step at a time, keyed on its svg's data-stage attribute, with that
+// step's caption below; readers can pause, step back or skip ahead. It plays only while on screen, and never plays by
+// itself for readers who ask for reduced motion: they step through, and each step shows its end state.
+import type { Stage } from '../lib/stories';
+
+interface Props {
+  stages: Stage[];
+  caption?: string;
+}
+const { stages, caption } = Astro.props;
+const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
+---
+<figure class="story" data-stages={JSON.stringify(stages)}>
+  <div class="fig fig-big"><slot /></div>
+  <div class="story-panel">
+    <p class="story-step"><span class="story-count">1 of {stages.length}</span><strong class="story-title">{stages[0].title}</strong></p>
+    <p class="story-text">{stages[0].text}</p>
+    <div class="story-bar" aria-hidden="true"><i></i></div>
+    <div class="story-controls">
+      <button type="button" class="story-btn story-prev" aria-label="Previous step">‹</button>
+      <button type="button" class="story-btn story-play" aria-label="Play">Play</button>
+      <button type="button" class="story-btn story-next" aria-label="Next step">›</button>
+      <ol class="story-dots">
+        {stages.map((s, k) => (
+          <li><button type="button" class="story-dot" aria-label={`Step ${k + 1}: ${s.title}`} aria-current={k === 0 ? 'step' : undefined} /></li>
+        ))}
+      </ol>
+      <span class="story-len">{stages.length} steps · {seconds} s</span>
+    </div>
+  </div>
+  <noscript>
+    <ol class="story-all">{stages.map((s) => <li><strong>{s.title}.</strong> {s.text}</li>)}</ol>
+  </noscript>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<script>
+  import { barDelay, frozen, go as step, running, see, start, toggle } from '../lib/storyclock';
+
+  type Stage = { title: string; text: string; ms: number };
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  for (const root of document.querySelectorAll<HTMLElement>('.story')) {
+    const svg = root.querySelector('svg');
+    const stages: Stage[] = JSON.parse(root.dataset.stages ?? '[]');
+    if (!svg || !stages.length) continue;
+    const pick = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const title = pick('.story-title');
+    const text = pick('.story-text');
+    const count = pick('.story-count');
+    const play = pick<HTMLButtonElement>('.story-play');
+    const bar = pick<HTMLElement>('.story-bar i');
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('.story-dot')];
+    let c = start(stages[0].ms, reduce.matches);
+    let timer = 0;
+    let since = 0; // when the clock last started running
+    const elapsed = () => performance.now() - since;
+
+    function fill() {
+      bar.style.animation = 'none';
+      void bar.offsetWidth;
+      bar.style.animation = `story-fill ${stages[c.i].ms}ms linear ${barDelay(c, stages[c.i].ms)}ms forwards`;
+    }
+    function sync() {
+      clearTimeout(timer);
+      root.toggleAttribute('data-hold', !c.wanted);
+      root.toggleAttribute('data-frozen', frozen(c));
+      play.textContent = c.wanted ? 'Pause' : 'Play';
+      play.setAttribute('aria-label', c.wanted ? 'Pause' : 'Play');
+      // Read each new step aloud only when the reader moves by hand, not every few seconds while it plays.
+      text.setAttribute('aria-live', c.wanted ? 'off' : 'polite');
+      if (running(c)) {
+        since = performance.now();
+        timer = window.setTimeout(() => go(c.i + 1), c.left);
+      }
+    }
+    function go(n: number) {
+      c = step(c, n, stages);
+      const { i } = c;
+      // Take the step away and give it back, so its animations start from the beginning.
+      svg!.removeAttribute('data-stage');
+      void svg!.getBoundingClientRect();
+      svg!.setAttribute('data-stage', String(i + 1));
+      title.textContent = stages[i].title;
+      text.textContent = stages[i].text;
+      count.textContent = `${i + 1} of ${stages.length}`;
+      dots.forEach((d, k) => (k === i ? d.setAttribute('aria-current', 'step') : d.removeAttribute('aria-current')));
+      fill();
+      sync();
+    }
+    play.addEventListener('click', () => {
+      c = toggle(c, elapsed());
+      if (c.wanted) fill();
+      sync();
+    });
+    pick('.story-prev').addEventListener('click', () => go(c.i - 1));
+    pick('.story-next').addEventListener('click', () => go(c.i + 1));
+    dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
+    new IntersectionObserver(
+      ([entry]) => {
+        c = see(c, entry.isIntersecting, elapsed());
+        sync();
+      },
+      { threshold: 0.35 },
+    ).observe(root);
+    svg.setAttribute('data-stage', '1');
+    fill();
+    sync();
+    root.setAttribute('data-ready', '');
+  }
+</script>
+
+<style>
+  .story-panel {
+    margin-top: 0.85rem;
+  }
+  .story-step {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    margin: 0;
+  }
+  .story-count {
+    font: 500 0.75rem var(--font-mono);
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .story-title {
+    font-size: 1rem;
+  }
+  .story-text {
+    margin: 0.3rem 0 0.7rem;
+    color: var(--ink-2);
+    min-height: 3.2em;
+  }
+  .story-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .story-bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--accent);
+  }
+  .story[data-hold] .story-bar i {
+    animation: none !important;
+    width: 0;
+  }
+  .story-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.65rem;
+  }
+  .story-btn {
+    min-width: 2.4rem;
+    height: 2.2rem;
+    padding: 0 0.7rem;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    font: 600 0.85rem var(--font-sans);
+    cursor: pointer;
+  }
+  .story-btn:hover {
+    border-color: var(--accent);
+  }
+  .story-play {
+    min-width: 4.6rem;
+  }
+  .story-dots {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0 0 0 0.1rem;
+    padding: 0;
+  }
+  /* Each dot is small, but the button around it is a full 24px target. */
+  .story-dot {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+  .story-dot::before {
+    content: '';
+    width: 0.7rem;
+    height: 0.7rem;
+    box-sizing: border-box;
+    border: 1px solid var(--ink-3);
+    border-radius: 50%;
+  }
+  .story-dot[aria-current]::before {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  /* Without the script the buttons would do nothing, so they show only once it runs; the steps are listed instead. */
+  .story:not([data-ready]) .story-bar,
+  .story:not([data-ready]) .story-controls {
+    display: none;
+  }
+  .story-all {
+    margin: 0.4rem 0 0;
+    padding-left: 1.2rem;
+    color: var(--ink-2);
+  }
+  .story-len {
+    margin-left: auto;
+    font: 500 0.75rem var(--font-mono);
+    color: var(--ink-3);
+  }
+  .story-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .story-dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  /* Paused or off screen: the drawing holds where it is. */
+  .story[data-frozen] :global(svg *),
+  .story[data-frozen] .story-bar i {
+    animation-play-state: paused !important;
+  }
+  @keyframes story-fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  /* Reduced motion: every step shows its end state at once; the reader steps through by hand. */
+  @media (prefers-reduced-motion: reduce) {
+    .story :global(svg *) {
+      animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition: none !important;
+    }
+  }
+</style>

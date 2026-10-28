@@ -1,0 +1,555 @@
+---
+// The stepped figure for the damaged-barcode case study. A real EAN-13 code is written, damaged on purpose, placed on
+// an object as a photo, found, cut out, restored, named and read; a code beyond repair is refused. Every bar comes from
+// the EAN-13 tables and every number from PROFILE.md; the confidence meters show high and low only, never a score.
+import { bars, ean13 } from '../lib/ean13';
+import { num, sides } from '../lib/stories';
+
+const CODE = '5901234123457';
+const LW = 240;
+const LH = 150;
+const IN = { x: 20, y: 14, w: 200, h: 108 };
+const B = bars(ean13(CODE), IN.x, IN.w);
+const barH = (guard: boolean) => (guard ? IN.h : IN.h - 10);
+
+// The placed label: the same drawing turned, sheared and scaled onto the box face.
+const T = { x: 150, y: 78, rot: -7, skew: -14, s: 0.68 };
+const rad = (d: number) => (d * Math.PI) / 180;
+function place(x: number, y: number): [number, number] {
+  const sx = x * T.s;
+  const sy = y * T.s;
+  const kx = sx + Math.tan(rad(T.skew)) * sy;
+  const c = Math.cos(rad(T.rot));
+  const s = Math.sin(rad(T.rot));
+  return [T.x + kx * c - sy * s, T.y + kx * s + sy * c];
+}
+const pts = (p: [number, number][]) => p.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+const labelCorners = [place(0, 0), place(LW, 0), place(LW, LH), place(0, LH)];
+const face = [place(-26, -22), place(LW + 26, -22), place(LW + 26, LH + 22), place(-26, LH + 22)];
+const lift = (p: [number, number]): [number, number] => [p[0] + 24, p[1] - 18];
+const top = [face[0], face[1], lift(face[1]), lift(face[0])];
+const side = [face[1], lift(face[1]), lift(face[2]), face[2]];
+const xs = labelCorners.map((p) => p[0]);
+const ys = labelCorners.map((p) => p[1]);
+const yolo = { x: Math.min(...xs) - 8, y: Math.min(...ys) - 8, w: Math.max(...xs) - Math.min(...xs) + 16, h: Math.max(...ys) - Math.min(...ys) + 16 };
+const placed = `translate(${T.x} ${T.y}) rotate(${T.rot}) skewX(${T.skew}) scale(${T.s})`;
+
+const DAMAGE = ['blur', 'lines', 'spots', 'glare', 'reflection', 'tear', 'scratch'];
+let cx = 0;
+const chips = DAMAGE.map((name) => {
+  const w = name.length * 6.6 + 16;
+  const c = { name, x: cx, w };
+  cx += w + 8;
+  return c;
+});
+const chipX0 = (480 - (cx - 8)) / 2;
+
+const FORMATS = ['EAN-13', 'UPC-A', 'Code 128', 'Code 39', 'ITF', 'Codabar', 'more'];
+const slices = Array.from({ length: 12 }, (_, k) => k);
+
+const [sdk, ours] = sides(num('damaged-barcodes', 'read-rate'));
+const pct = (v: string) => parseFloat(v) / 100;
+const specs = [
+  `${num('damaged-barcodes', 'scan-clean')} a scan`,
+  `${num('damaged-barcodes', 'scan-damaged')} damaged`,
+  `each model ${num('damaged-barcodes', 'model-size')}`,
+];
+// Pill widths follow the text (the mono face is 0.6 em wide: 6.6 at 11px), so a longer figure never spills out.
+let sx = 0;
+const specChips = specs.map((s) => {
+  const c = { s, x: sx, w: s.length * 6.6 + 16 };
+  sx += c.w + 6;
+  return c;
+});
+const specX0 = (480 - (sx - 6)) / 2;
+const formats = num('damaged-barcodes', 'formats');
+const images = num('damaged-barcodes', 'synthetic-images');
+const MONO = 'JetBrains Mono Variable, ui-monospace, SFMono-Regular, Menlo, monospace';
+---
+<svg viewBox="0 0 480 270" data-stage="1" role="img" aria-label="Animated illustration in eight steps: a barcode is written from a random string, damaged on purpose, placed on an object as a photo, found, cut out, restored, named, and read; a code beyond repair is refused. Last, the reader against a commercial SDK." class="bs">
+  <defs>
+    <filter id="bs-blur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="1.7" /></filter>
+    <radialGradient id="bs-glare" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96" />
+      <stop offset="65%" stop-color="#ffffff" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <g id="bs-clean">
+      <rect width={LW} height={LH} rx="8" fill="#ffffff" stroke="#cbd5e1" />
+      {B.map((b) => <rect x={b.x} y={IN.y} width={b.w} height={barH(b.guard)} fill="#0f172a" />)}
+      <text x={LW / 2} y={LH - 12} text-anchor="middle" font-family={MONO} font-size="13" letter-spacing="2" fill="#0f172a">5 901234 123457</text>
+    </g>
+    <g id="bs-d-blur">
+      <rect x={IN.x - 4} y={IN.y - 4} width={IN.w + 8} height={IN.h + 6} fill="#ffffff" opacity="0.55" />
+      <g filter="url(#bs-blur)">{B.map((b) => <rect x={b.x} y={IN.y} width={b.w} height={barH(b.guard)} fill="#0f172a" opacity="0.8" />)}</g>
+    </g>
+    <g id="bs-d-lines">
+      <line x1="8" x2="232" y1="44" y2="40" stroke="#ffffff" stroke-width="3.5" />
+      <line x1="8" x2="232" y1="90" y2="95" stroke="#ffffff" stroke-width="2.5" />
+      <line x1="152" x2="149" y1="8" y2="128" stroke="#0f172a" stroke-width="2.6" />
+    </g>
+    <g id="bs-d-spots" fill="#a8a29e">
+      <circle cx="58" cy="34" r="6" /><circle cx="104" cy="70" r="4.5" /><circle cx="176" cy="96" r="7" /><circle cx="70" cy="104" r="3.5" /><circle cx="204" cy="30" r="4" />
+    </g>
+    <ellipse id="bs-d-glare" cx="168" cy="52" rx="48" ry="30" fill="url(#bs-glare)" />
+    <polygon id="bs-d-reflection" points="66,0 96,0 46,150 16,150" fill="#ffffff" opacity="0.45" />
+    <polygon id="bs-d-tear" points="196,150 231,150 240,141 240,104 226,114 231,124 214,130 219,141" fill="#e2e8f0" stroke="#94a3b8" />
+    <g id="bs-d-scratch" fill="none" stroke="#78716c" stroke-width="1.3">
+      <path d="M30 120 C 70 88, 110 98, 150 62" /><path d="M120 26 C 140 44, 170 50, 214 46" />
+    </g>
+    <g id="bs-damaged">
+      <use href="#bs-clean" /><use href="#bs-d-blur" /><use href="#bs-d-lines" /><use href="#bs-d-spots" /><use href="#bs-d-glare" />
+      <use href="#bs-d-reflection" /><use href="#bs-d-tear" /><use href="#bs-d-scratch" />
+    </g>
+    <g id="bs-hopeless">
+      <use href="#bs-clean" />
+      <path d="M44 20 C 90 2, 176 8, 196 44 C 214 78, 180 130, 122 132 C 70 134, 26 112, 32 72 C 34 50, 34 30, 44 20 Z" fill="#78716c" />
+    </g>
+    {slices.map((k) => (
+      <clipPath id={`bs-slice-${k}`}><rect x={(LW / slices.length) * k} y="0" width={LW / slices.length + 0.6} height={LH} /></clipPath>
+    ))}
+    <g id="bs-photo">
+      <rect x="30" y="16" width="420" height="200" rx="10" fill="var(--surface)" stroke="var(--line-2)" />
+      <polygon points={pts(top)} fill="#e8d2ad" stroke="#b08d57" />
+      <polygon points={pts(side)} fill="#c9a774" stroke="#b08d57" />
+      <polygon points={pts(face)} fill="#d6b98c" stroke="#b08d57" />
+    </g>
+  </defs>
+
+  <!-- 1 Make the data -->
+  <g class="st s1">
+    <text x="116" y="94" text-anchor="middle" class="note">a random string, valid for its format</text>
+    <rect x="28" y="104" width="176" height="40" rx="8" fill="var(--surface)" stroke="var(--line-2)" />
+    <text x="116" y="130" text-anchor="middle" class="code">{CODE.split('').map((ch, k) => <tspan class="ch" style={`animation-delay:${0.3 + k * 0.17}s`}>{ch}</tspan>)}</text>
+    <path class="arrow a1" d="M212 124 H 244 M236 117 L 244 124 L 236 131" fill="none" stroke="var(--ink-3)" stroke-width="2" />
+    <g transform="translate(254 52) scale(0.9)">
+      <rect width={LW} height={LH} rx="8" fill="#ffffff" stroke="#cbd5e1" />
+      {B.map((b) => <rect class="bar" x={b.x} y={IN.y} width={b.w} height={barH(b.guard)} fill="#0f172a" style={`animation-delay:${(2.9 + ((b.x - IN.x) / IN.w) * 1.6).toFixed(2)}s`} />)}
+      <text class="dg" x={LW / 2} y={LH - 12} text-anchor="middle" font-family={MONO} font-size="13" letter-spacing="2" fill="#0f172a">5 901234 123457</text>
+    </g>
+    <text x="362" y="212" text-anchor="middle" class="note n1">drawn from the EAN-13 tables</text>
+  </g>
+
+  <!-- 2 Damage it on purpose -->
+  <g class="st s2">
+    <g transform="translate(120 34)">
+      <use href="#bs-clean" />
+      {DAMAGE.map((d, k) => <use href={`#bs-d-${d}`} class="dm" style={`animation-delay:${(0.4 + k * 0.62).toFixed(2)}s`} />)}
+    </g>
+    {chips.map((c, k) => (
+      <g class="chip" style={`animation-delay:${(0.4 + k * 0.62).toFixed(2)}s`}>
+        <rect x={chipX0 + c.x} y="212" width={c.w} height="24" rx="12" />
+        <text x={chipX0 + c.x + c.w / 2} y="228" text-anchor="middle">{c.name}</text>
+      </g>
+    ))}
+  </g>
+
+  <!-- 3 Make it a photo -->
+  <g class="st s3">
+    <use href="#bs-photo" class="photo" />
+    <g class="move">
+      <use href="#bs-damaged" />
+      <rect class="lbl-out" x="-6" y="-6" width={LW + 12} height={LH + 12} rx="10" fill="none" stroke="var(--vision)" stroke-width="2.6" stroke-dasharray="7 5" />
+      <rect class="lbl-in" x={IN.x - 3} y={IN.y - 3} width={IN.w + 6} height={IN.h + 6} fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-dasharray="5 4" />
+    </g>
+    <text x="30" y="243" class="note ok bounds">labels stay inside the picture</text>
+    <g class="count">
+      <rect x="330" y="226" width="120" height="26" rx="13" />
+      <text x="390" y="243" text-anchor="middle">{images} images</text>
+    </g>
+  </g>
+
+  <!-- 4 Find it, cut it out -->
+  <g class="st s4">
+    <g class="scene">
+      <use href="#bs-photo" />
+      <use href="#bs-damaged" transform={placed} />
+      <rect class="yolo" x={yolo.x} y={yolo.y} width={yolo.w} height={yolo.h} rx="4" pathLength="1" fill="none" stroke="var(--vision)" stroke-width="2.6" />
+      <text class="tag t-yolo" x={yolo.x} y={yolo.y - 8}>YOLO</text>
+      <polygon class="mask" points={pts(labelCorners)} fill="var(--vision)" fill-opacity="0.2" stroke="var(--vision)" stroke-width="2.2" />
+      <text class="tag t-mask" x="364" y="112">Mask R-CNN</text>
+    </g>
+    <g class="cut">
+      <use href="#bs-damaged" transform="translate(150 40) scale(0.75)" />
+      <text x="240" y="178" text-anchor="middle" class="note">found by YOLO, cut out by Mask R-CNN</text>
+    </g>
+  </g>
+
+  <!-- 5 Restore the bars -->
+  <g class="st s5">
+    <g transform="translate(120 30)">
+      <use href="#bs-damaged" />
+      {slices.map((k) => <g clip-path={`url(#bs-slice-${k})`} class="slice" style={`animation-delay:${(0.8 + k * 0.28).toFixed(2)}s`}><use href="#bs-clean" /></g>)}
+    </g>
+    <line class="wipe" x1="120" x2="120" y1="22" y2="188" stroke="var(--vision)" stroke-width="3" />
+    <g class="unet">
+      <rect x="196" y="200" width="88" height="26" rx="13" />
+      <text x="240" y="217" text-anchor="middle">U-Net</text>
+    </g>
+    <text x="240" y="248" text-anchor="middle" class="note">trained pixel to pixel</text>
+  </g>
+
+  <!-- 6 Name the format -->
+  <g class="st s6">
+    <use href="#bs-clean" transform="translate(26 82) scale(0.5)" />
+    <path d="M152 120 H 186 M178 113 L 186 120 L 178 127" fill="none" stroke="var(--ink-3)" stroke-width="2" />
+    <text x="88" y="178" text-anchor="middle" class="note">classifier</text>
+    {FORMATS.map((f, k) => {
+      const col = k % 3;
+      const row = Math.floor(k / 3);
+      const x = 200 + col * 92;
+      const y = 62 + row * 46;
+      // The winner's second animation, the light-up, keeps its own delay.
+      return (
+        <g class={`fmt${k === 0 ? ' win' : ''}`} style={`animation-delay:${(0.5 + k * 0.38).toFixed(2)}s${k === 0 ? ', 3.4s' : ''}`}>
+          <rect x={x} y={y} width="84" height="32" rx="8" />
+          <text x={x + 42} y={y + 21} text-anchor="middle">{f === 'more' ? '…' : f}</text>
+        </g>
+      );
+    })}
+    <text x="338" y="226" text-anchor="middle" class="note">{formats} 1D formats, each read in its own way</text>
+  </g>
+
+  <!-- 7 Read, or refuse -->
+  <g class="st s7">
+    <g class="row r-read">
+      <use href="#bs-clean" transform="translate(26 26) scale(0.42)" />
+      <text x="176" y="62" class="k">confidence</text>
+      <rect x="176" y="70" width="140" height="12" rx="6" fill="var(--surface)" stroke="var(--line-2)" />
+      <rect class="meter hi" x="176" y="70" width="140" height="12" rx="6" fill="var(--ok)" />
+      <text x="176" y="102" class="note">high</text>
+      <text x="334" y="82" class="res ok">read ✓</text>
+      <text x="334" y="100" class="note mono">{CODE}</text>
+    </g>
+    <g class="row r-refuse">
+      <use href="#bs-hopeless" transform="translate(26 146) scale(0.42)" />
+      <text x="176" y="182" class="k">confidence</text>
+      <rect x="176" y="190" width="140" height="12" rx="6" fill="var(--surface)" stroke="var(--line-2)" />
+      <rect class="meter lo" x="176" y="190" width="140" height="12" rx="6" fill="var(--down)" />
+      <text x="176" y="222" class="note">low</text>
+      <text x="334" y="202" class="res down">refused ✗</text>
+      <text x="334" y="220" class="note">no guess</text>
+    </g>
+  </g>
+
+  <!-- 8 The result -->
+  <g class="st s8">
+    <text x="30" y="40" class="note">damaged codes read correctly, on the damaged synthetic test set</text>
+    {[
+      { who: 'commercial SDK', v: sdk, cls: 'b-sdk', y: 66 },
+      { who: 'this reader', v: ours, cls: 'b-ours', y: 116 },
+    ].map((r) => (
+      <g>
+        <text x="30" y={r.y + 19} class="who">{r.who}</text>
+        <rect x="160" y={r.y} width="260" height="28" rx="6" fill="var(--surface)" stroke="var(--line)" />
+        <rect class={`grow ${r.cls}`} x="160" y={r.y} width={260 * pct(r.v)} height="28" rx="6" />
+        <text x="428" y={r.y + 19} class="val">{r.v}</text>
+      </g>
+    ))}
+    {specChips.map((c, k) => (
+      <g class="spec" style={`animation-delay:${(1.8 + k * 0.4).toFixed(1)}s`}>
+        <rect x={specX0 + c.x} y="190" width={c.w} height="28" rx="14" />
+        <text x={specX0 + c.x + c.w / 2} y="208" text-anchor="middle">{c.s}</text>
+      </g>
+    ))}
+  </g>
+</svg>
+
+<style>
+  .note {
+    font: 500 11.5px var(--font-sans);
+    fill: var(--ink-3);
+  }
+  .note.ok {
+    fill: var(--ok);
+    font-weight: 650;
+  }
+  .note.mono,
+  .k {
+    font: 500 11px var(--font-mono);
+    fill: var(--ink-3);
+  }
+  .code {
+    font: 600 17px var(--font-mono);
+    letter-spacing: 1.5px;
+    fill: var(--ink);
+  }
+  .tag {
+    font: 700 12px var(--font-mono);
+    fill: var(--vision);
+  }
+  .who {
+    font: 600 13px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .val {
+    font: 700 14px var(--font-mono);
+    fill: var(--ink);
+  }
+  .res {
+    font: 700 15px var(--font-sans);
+  }
+  .res.ok {
+    fill: var(--ok);
+  }
+  .res.down {
+    fill: var(--down);
+  }
+  .chip rect,
+  .count rect,
+  .unet rect,
+  .spec rect,
+  .fmt rect {
+    fill: var(--surface);
+    stroke: var(--line-2);
+  }
+  .chip text,
+  .count text,
+  .unet text,
+  .spec text,
+  .fmt text {
+    font: 600 11px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .unet text,
+  .count text {
+    fill: var(--vision);
+  }
+  .grow.b-sdk {
+    fill: var(--ink-3);
+  }
+  .grow.b-ours {
+    fill: var(--vision);
+  }
+
+  /* Steps: only the current one shows; entering it starts its animations. */
+  .st {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1,
+  svg[data-stage='2'] .s2,
+  svg[data-stage='3'] .s3,
+  svg[data-stage='4'] .s4,
+  svg[data-stage='5'] .s5,
+  svg[data-stage='6'] .s6,
+  svg[data-stage='7'] .s7,
+  svg[data-stage='8'] .s8 {
+    animation: bs-in 0.45s ease both;
+  }
+  @keyframes bs-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes bs-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* 1 */
+  .ch,
+  .bar,
+  .dg,
+  .a1,
+  .n1 {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .ch,
+  svg[data-stage='1'] .bar {
+    animation: bs-show 0.25s ease both;
+  }
+  svg[data-stage='1'] .a1 {
+    animation: bs-show 0.4s ease 2.5s both;
+  }
+  svg[data-stage='1'] .dg {
+    animation: bs-show 0.4s ease 4.4s both;
+  }
+  svg[data-stage='1'] .n1 {
+    animation: bs-show 0.5s ease 4.8s both;
+  }
+
+  /* 2 */
+  .dm,
+  .chip {
+    opacity: 0;
+  }
+  svg[data-stage='2'] .dm,
+  svg[data-stage='2'] .chip {
+    animation: bs-show 0.45s ease both;
+  }
+
+  /* 3 */
+  .photo,
+  .lbl-out,
+  .lbl-in,
+  .bounds,
+  .count {
+    opacity: 0;
+  }
+  .move {
+    transform: translate(120px, 34px) rotate(0deg) skewX(0deg) scale(1);
+  }
+  svg[data-stage='3'] .lbl-out,
+  svg[data-stage='3'] .lbl-in {
+    animation: bs-show 0.4s ease 0.5s both;
+  }
+  svg[data-stage='3'] .photo {
+    animation: bs-show 0.6s ease 1.4s both;
+  }
+  svg[data-stage='3'] .move {
+    animation: bs-place 1.8s ease-in-out 1.8s both;
+  }
+  svg[data-stage='3'] .bounds {
+    animation: bs-show 0.5s ease 4s both;
+  }
+  svg[data-stage='3'] .count {
+    animation: bs-show 0.5s ease 4.8s both;
+  }
+  @keyframes bs-place {
+    from { transform: translate(120px, 34px) rotate(0deg) skewX(0deg) scale(1); }
+    to { transform: translate(150px, 78px) rotate(-7deg) skewX(-14deg) scale(0.68); }
+  }
+
+  /* 4 */
+  .yolo {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .t-yolo,
+  .mask,
+  .t-mask,
+  .cut {
+    opacity: 0;
+  }
+  svg[data-stage='4'] .yolo {
+    animation: bs-draw 1.1s ease-out 0.4s both;
+  }
+  svg[data-stage='4'] .t-yolo {
+    animation: bs-show 0.3s ease 1.3s both;
+  }
+  svg[data-stage='4'] .mask,
+  svg[data-stage='4'] .t-mask {
+    animation: bs-show 0.5s ease 2.3s both;
+  }
+  svg[data-stage='4'] .scene {
+    animation: bs-dim 0.6s ease 4.1s both;
+  }
+  svg[data-stage='4'] .cut {
+    animation: bs-show 0.6s ease 4.4s both;
+  }
+  @keyframes bs-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes bs-dim {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* 5 */
+  .slice {
+    opacity: 0;
+  }
+  .wipe {
+    opacity: 0;
+  }
+  svg[data-stage='5'] .slice {
+    animation: bs-show 0.3s ease both;
+  }
+  svg[data-stage='5'] .wipe {
+    animation: bs-wipe 3.4s linear 0.8s both;
+  }
+  @keyframes bs-wipe {
+    0% { opacity: 1; transform: translateX(0); }
+    96% { opacity: 1; transform: translateX(240px); }
+    100% { opacity: 0; transform: translateX(240px); }
+  }
+
+  /* 6 */
+  svg[data-stage='6'] .fmt {
+    animation: bs-flash 0.5s ease both;
+  }
+  svg[data-stage='6'] .fmt.win {
+    animation: bs-flash 0.5s ease both, bs-win 0.6s ease 3.4s forwards;
+  }
+  @keyframes bs-flash {
+    0% { opacity: 0.35; }
+    40% { opacity: 1; }
+    100% { opacity: 0.55; }
+  }
+  @keyframes bs-win {
+    from { opacity: 0.55; }
+    to { opacity: 1; }
+  }
+  svg[data-stage='6'] .fmt.win rect {
+    animation: bs-winbox 0.6s ease 3.4s both;
+  }
+  @keyframes bs-winbox {
+    to { stroke: var(--vision); stroke-width: 2.6px; }
+  }
+
+  /* 7 */
+  .meter {
+    transform-box: fill-box;
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  .r-refuse {
+    opacity: 0;
+  }
+  .row .res,
+  .row .note {
+    opacity: 0;
+  }
+  svg[data-stage='7'] .meter.hi {
+    animation: bs-meter-hi 1.4s ease-out 0.5s both;
+  }
+  svg[data-stage='7'] .r-read .res,
+  svg[data-stage='7'] .r-read .note {
+    animation: bs-show 0.4s ease 2s both;
+  }
+  svg[data-stage='7'] .r-refuse {
+    animation: bs-show 0.5s ease 3.4s both;
+  }
+  svg[data-stage='7'] .meter.lo {
+    animation: bs-meter-lo 1.2s ease-out 3.9s both;
+  }
+  svg[data-stage='7'] .r-refuse .res,
+  svg[data-stage='7'] .r-refuse .note {
+    animation: bs-show 0.4s ease 5.2s both;
+  }
+  @keyframes bs-meter-hi {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(0.9); }
+  }
+  @keyframes bs-meter-lo {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(0.18); }
+  }
+
+  /* 8 */
+  .grow {
+    transform-box: fill-box;
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  .val,
+  .spec {
+    opacity: 0;
+  }
+  svg[data-stage='8'] .grow {
+    animation: bs-grow 1.2s ease-out 0.4s both;
+  }
+  svg[data-stage='8'] .b-ours {
+    animation-delay: 0.9s;
+  }
+  svg[data-stage='8'] .val {
+    animation: bs-show 0.4s ease 1.6s both;
+  }
+  svg[data-stage='8'] .spec {
+    animation: bs-show 0.4s ease both;
+  }
+  @keyframes bs-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+</style>
