@@ -459,7 +459,7 @@ family member who picks it up.
 #### Results
 About 87% accuracy, without deep learning.
 
-### Phone drop detection in under 20 parameters
+### Phone drop detection in under 22 parameters
 ```yaml
 id: drop-detection
 org: samsung
@@ -468,28 +468,28 @@ status: built
 start: 2023-03
 end: 2023-05
 priority: 1
-one_line: "Replaced a deep-learning drop detector of millions of parameters with sensor features and a model of under 20, using 95% less power."
+one_line: "Replaced a deep-learning drop detector of millions of parameters with sensor features and a model of under 22, saving over 95% of the power."
 skills: [sensor fusion, feature engineering, tiny models, statistical models, Android, Kotlin, Python]
 numbers:
   - id: parameters
-    value: "millions → under 20"
+    value: "millions → under 22"
     what: model parameters
     status: reported
-    source: LinkedIn
+    source: owner
   - id: power
-    value: "95%"
-    what: less power
+    value: "95%+"
+    what: power saved
     status: reported
-    source: LinkedIn
+    source: owner
   - id: accuracy
-    value: "98% → 96%"
+    value: "97% → 95.2%"
     what: accuracy before and after
     status: reported
-    source: resume
+    source: owner
 ```
 Detects a drop, estimates how far the phone fell, tells how hard the surface was, and tells a drop from a catch. The
 deep-learning model it replaced was accurate but heavy; engineered features from the motion sensors and a small
-statistical model did the job with 95% less power, for a two-point accuracy cost (98% to 96%).
+statistical model did the job and saved over 95% of the power, at a small cost in accuracy (97% to 95.2%).
 
 #### Problem
 A drop detector has to listen to the motion sensors all the time, so every bit of compute costs battery. The existing
@@ -500,11 +500,11 @@ model had millions of parameters.
   height, and the impact says how hard the surface was.
 - **Engineer the features.** Sensor fusion turns the raw motion signals into a handful of features that carry those
   facts, and tell a drop from a catch.
-- **Keep the model tiny.** Small statistical models on those features, under 20 parameters in all.
+- **Keep the model tiny.** Small statistical models on those features, under 22 parameters in all.
 
 #### Results
-From millions of parameters to under 20, using 95% less power. Accuracy went from 98% to 96%: two points traded for a
-model small enough to run all the time.
+From millions of parameters to under 22, saving over 95% of the power. Accuracy went from 97% to 95.2%: under two
+points traded for a model small enough to run all the time.
 
 ### Car crash detection with automatic SOS
 ```yaml
