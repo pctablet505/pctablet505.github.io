@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Lamp from '../components/Lamp.astro';
 import WorkCard from '../components/WorkCard.astro';
 import Fig from '../components/Fig.astro';
 import EntryRow from '../components/EntryRow.astro';
@@ -33,20 +32,21 @@ const contacts = [
 ---
 <Base>
   <section class="wrap hero">
-    <div class="glow" aria-hidden="true"></div>
-    <div class="who">
-      <Lamp />
-      <span class="handle">{identity.handle}</span>
-      <span aria-hidden="true">·</span>
-      <span>{identity.name}, machine learning engineer, {identity.location}</span>
-    </div>
-    <h1 class="display">{slogan.map(({ key, rest }) => <span class="slogan-line"><b>{key}</b>{` ${rest}`}</span>)}</h1>
-    <p class="lede">{identity.lede}</p>
-    <div class="btn-row">
-      <a class="btn primary" href="/work/">See all {total} projects →</a>
-      {identity.resume && <a class="btn" href={identity.resume}>Resume (PDF)</a>}
-      <a class="btn" href="/about/">About me</a>
-      {identity.email && <a class="btn" href={`mailto:${identity.email}`}>Email</a>}
+    <div class="hero-head">
+      <div class="hanging-lamp" aria-hidden="true"><span class="cord"></span><span class="cap"></span><span class="bulb"></span></div>
+      <div class="who">
+        <span class="handle">{identity.handle}</span>
+        <span aria-hidden="true">·</span>
+        <span>{identity.name}, machine learning engineer, {identity.location}</span>
+      </div>
+      <h1 class="display">{slogan.map(({ key, rest }) => <span class="slogan-line"><b>{key}</b>{` ${rest}`}</span>)}</h1>
+      <p class="lede">{identity.lede}</p>
+      <div class="btn-row">
+        <a class="btn primary" href="/work/">See all {total} projects →</a>
+        {identity.resume && <a class="btn" href={identity.resume}>Resume (PDF)</a>}
+        <a class="btn" href="/about/">About me</a>
+        {identity.email && <a class="btn" href={`mailto:${identity.email}`}>Email</a>}
+      </div>
     </div>
     <div class="proof" aria-label="Headline results">
       {proof.map(({ entry, num }) => (
