@@ -10,7 +10,7 @@ const photo = identity.photo ? imageFor(identity.photo) : sketch;
 const now = byDate(section('Experience'))[0];
 const education = section('Education');
 ---
-<Base title="About" description={`About ${identity.name}, who publishes as ${identity.handle}: ${identity.headline.toLowerCase()}.`}>
+<Base title="About" description={`About ${identity.name}, who publishes as ${identity.handle}. ${identity.headline}.`}>
   <header class="wrap entry-head">
     <p class="eyebrow">About</p>
     <h1>{identity.name}, who publishes as {identity.handle}</h1>

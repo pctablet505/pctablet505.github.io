@@ -5,12 +5,13 @@ import WorkCard from '../components/WorkCard.astro';
 import Fig from '../components/Fig.astro';
 import EntryRow from '../components/EntryRow.astro';
 import {
-  AREA_META, AREA_ORDER, byArea, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section, work,
+  AREA_META, AREA_ORDER, byAreaInTurn, byDate, byPriority, entryHref, fmtSpan, identity, numberRef, profile, section, work,
   workIn,
 } from '../lib/site';
 
 const proof = identity.proof.map(numberRef);
-const featured = byArea(work().filter((e) => e.priority === 1));
+const featured = byAreaInTurn(work().filter((e) => e.priority === 1));
+const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
 const jobs = byDate(section('Experience'));
 const demos = byPriority(section('Demos'));
 const writing = byDate(section('Writing')).slice(0, 4);
@@ -28,7 +29,7 @@ const total = work().length;
       <span aria-hidden="true">·</span>
       <span>{identity.name}, machine learning engineer, {identity.location}</span>
     </div>
-    <h1 class="display">{identity.headline}.</h1>
+    <h1 class="display">{slogan.map((line) => <span class="slogan-line">{line}</span>)}</h1>
     <p class="lede">{identity.lede}</p>
     <div class="btn-row">
       <a class="btn primary" href="/work/">See all {total} projects →</a>
@@ -115,7 +116,7 @@ const total = work().length;
       <div class="section-head">
         <div>
           <p class="eyebrow">Experience</p>
-          <h2>Phones first, then frameworks</h2>
+          <h2>Phones, chips and frameworks</h2>
         </div>
         <a class="more" href="/experience/">Full timeline →</a>
       </div>
@@ -181,8 +182,8 @@ const total = work().length;
   <section class="section">
     <div class="wrap narrow">
       <p class="eyebrow">Contact</p>
-      <h2>Working on perception, sensing or fast inference?</h2>
-      <p class="lede">I am glad to talk about roles, collaborations and hard problems in on-device ML.</p>
+      <h2>Working on on-device ML, computer vision or fast inference?</h2>
+      <p class="lede">I am glad to talk about roles, collaborations and hard problems where a model has to fit.</p>
       <div class="btn-row">
         {identity.email && <a class="btn primary" href={`mailto:${identity.email}`}>{identity.email}</a>}
         {identity.links.filter((l) => l.priority === 1).map((l) => <a class="btn" href={l.url}>{l.label}</a>)}

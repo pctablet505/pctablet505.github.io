@@ -15,7 +15,7 @@ export const AREA_META = {
   },
   performance: {
     label: 'Performance and inference',
-    blurb: 'Smaller, faster models on phones, NPUs and one GPU, and the frameworks that ship them.',
+    blurb: 'Big models made to fit and run fast on phones, NPUs and one GPU, and the frameworks that ship them.',
   },
   projects: {
     label: 'Projects and tools',
@@ -23,7 +23,8 @@ export const AREA_META = {
   },
 } as const;
 export type Area = keyof typeof AREA_META;
-export const AREA_ORDER: Area[] = ['vision', 'sensing', 'performance', 'projects'];
+// The slogan's order: big models (performance), small places (vision and sensing on devices), real numbers (projects).
+export const AREA_ORDER: Area[] = ['performance', 'vision', 'sensing', 'projects'];
 
 export const STATUS_LABEL: Record<string, string> = {
   shipped: 'Shipped',
@@ -48,12 +49,18 @@ export const byPriority = (es: Entry[]): Entry[] =>
 
 export const byDate = (es: Entry[]): Entry[] => [...es].sort((a, b) => sortKey(b).localeCompare(sortKey(a)));
 
-const AREA_RANK = ['vision', 'sensing', 'performance', 'projects'];
-// Vision and sensing first: more than half of the work.
+// One entry from each area in turn, newest first within an area, so no area sits below all the others.
+export const byAreaInTurn = (es: Entry[]): Entry[] => {
+  const queues = AREA_ORDER.map((a) => byDate(es.filter((e) => e.area === a)));
+  const out: Entry[] = [];
+  while (queues.some((q) => q.length)) for (const q of queues) if (q.length) out.push(q.shift()!);
+  return out;
+};
+
 export const byArea = (es: Entry[]): Entry[] =>
   [...es].sort(
     (a, b) =>
-      AREA_RANK.indexOf(a.area ?? '') - AREA_RANK.indexOf(b.area ?? '') ||
+      AREA_ORDER.indexOf(a.area as Area) - AREA_ORDER.indexOf(b.area as Area) ||
       a.priority - b.priority ||
       sortKey(b).localeCompare(sortKey(a)),
   );

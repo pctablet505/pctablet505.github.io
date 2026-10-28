@@ -3,10 +3,10 @@
 // labelled as illustrations.
 import BarcodeDamage from '../figures/BarcodeDamage.astro';
 import DecodeChart from '../figures/DecodeChart.astro';
-import DotGrid from '../figures/DotGrid.astro';
 import DropTrace from '../figures/DropTrace.astro';
 import ExportPipeline from '../figures/ExportPipeline.astro';
 import FaceLandmarks from '../figures/FaceLandmarks.astro';
+import GrowthChart from '../figures/GrowthChart.astro';
 import HandTrace from '../figures/HandTrace.astro';
 import NpuChip from '../figures/NpuChip.astro';
 import { profile } from '../lib/site';
@@ -18,7 +18,7 @@ interface Props {
 }
 const { id, big = false, caption = false } = Astro.props;
 const e = profile.byId.get(id);
-const tiers = profile.byId.get('rl-alpha-labs')?.numbers.find((n) => n.id === 'tiers');
+const tiers = e?.numbers.find((n) => n.id === 'tiers');
 
 const CAPTIONS: Record<string, string> = {
   'damaged-barcodes': 'Illustration drawn by code: a real EAN-13 encoding is damaged, restored and read; a code too damaged to read is refused.',
@@ -38,16 +38,16 @@ else if (['face-recognition'].includes(id)) kind = 'face-rec';
 else if (['attention-detection', 'face-attention'].includes(id)) kind = 'face-att';
 else if (['behavioural-identification', 'which-hand'].includes(id)) kind = 'hand';
 else if (id === 'drop-detection') kind = 'drop';
-else if (id === 'glm53-one-gpu' && e?.chart) kind = 'chart';
+else if (e?.chart?.bars) kind = 'chart';
+else if (e?.chart?.growth) kind = 'growth';
 else if (id === 'keras-litert-export') kind = 'export';
 else if (id === 'snapdragon-speed') kind = 'npu';
-else if (id === 'rl-alpha-labs' && tiers) kind = 'tiers';
 
 const cap =
   kind === 'chart' && e?.chart
     ? `Drawn from the repository's measurements (read ${e.chart.as_of}). ${e.chart.note ?? ''}`
-    : kind === 'tiers' && tiers
-      ? `Drawn from rlalphalabs.com (read ${tiers.as_of}): ${tiers.what}.`
+    : kind === 'growth' && e?.chart
+      ? `Drawn from ${new URL(e.chart.source).host} (read ${e.chart.as_of}). ${e.chart.note ?? ''}${e.closed ? ' The tape lists the ideas closed so far.' : ''}`
       : CAPTIONS[id];
 ---
 {kind && (
@@ -61,7 +61,9 @@ const cap =
       {kind === 'chart' && e?.chart && <DecodeChart chart={e.chart} big={big} />}
       {kind === 'export' && <ExportPipeline big={big} />}
       {kind === 'npu' && <NpuChip big={big} />}
-      {kind === 'tiers' && tiers && <DotGrid value={tiers.value} yes="index fund ahead after costs and tax" no="the other tier" big={big} />}
+      {kind === 'growth' && e?.chart && (
+        <GrowthChart chart={e.chart} closed={e.closed} verdict={tiers && `Index fund ahead in ${tiers.value} tiers`} big={big} />
+      )}
     </div>
     {caption && cap && <figcaption>{cap}</figcaption>}
   </figure>
