@@ -3,6 +3,8 @@
 // says how to refresh it after the slogan changes. Not linked, not in the sitemap or the search index.
 // The slogan leads with the first word of each line in bold, the focus labels sit under it, and the name and the handle
 // sign the foot. It carries no job title, so the card does not date.
+// The layout is the LinkedIn banner's, scaled by 1.1 and centred: the lamp hangs beside the slogan, the slogan is the
+// largest text, and the labels, the rule and the foot are evenly spaced.
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import { identity, sloganLines } from '../lib/site';
@@ -20,10 +22,10 @@ const slogan = sloganLines.map((line) => {
   </head>
   <body>
     <div class="card">
-      <svg class="lamp" viewBox="0 0 120 280" aria-hidden="true">
-        <rect x="53.5" y="0" width="13" height="160" fill="#cbd5e1" />
-        <rect x="42" y="152" width="36" height="25" rx="6" fill="#cbd5e1" />
-        <circle cx="60" cy="218" r="44" fill="#fbbf24" />
+      <svg class="lamp" viewBox="0 0 88 292" aria-hidden="true">
+        <rect x="39" y="0" width="10" height="215" fill="#cbd5e1" />
+        <rect x="31" y="208" width="26" height="19" rx="4" fill="#cbd5e1" />
+        <circle cx="44" cy="259" r="33" fill="#fbbf24" />
       </svg>
       <div class="slogan">{slogan.map(({ key, rest }) => <div><b>{key}</b>{` ${rest}`}</div>)}</div>
       <div class="focus">
@@ -50,26 +52,26 @@ const slogan = sloganLines.map((line) => {
     height: 640px;
     overflow: hidden;
     background:
-      radial-gradient(circle at 140px 218px, rgb(251 191 36 / 22%), transparent 260px),
+      radial-gradient(circle at 134px 259px, rgb(251 191 36 / 22%), transparent 330px),
       linear-gradient(135deg, #1e2230 0%, #0f172a 70%);
     color: #f8fafc;
     font-family: 'Inter Variable', sans-serif;
   }
   .lamp {
     position: absolute;
-    left: 80px;
+    left: 90px;
     top: 0;
-    width: 120px;
-    height: 280px;
+    width: 88px;
+    height: 292px;
   }
-  /* Bold keeps the emphasis in one colour family; the middle line sits level with the bulb. */
+  /* Bold keeps the emphasis in one colour family; the bulb hangs level with the last two lines. */
   .slogan {
     position: absolute;
-    left: 256px;
-    top: 92px;
+    left: 231px;
+    top: 140px;
     font-size: 60px;
     font-weight: 400;
-    line-height: 1.16;
+    line-height: 1.1;
     letter-spacing: -0.01em;
     color: #cbd5e1;
   }
@@ -79,11 +81,11 @@ const slogan = sloganLines.map((line) => {
   }
   .focus {
     position: absolute;
-    left: 256px;
-    top: 332px;
+    left: 233px;
+    top: 358px;
     display: flex;
     gap: 12px;
-    font-size: 28px;
+    font-size: 27px;
     color: #cbd5e1;
   }
   .focus .sep {
@@ -91,27 +93,27 @@ const slogan = sloganLines.map((line) => {
   }
   .rule {
     position: absolute;
-    left: 256px;
-    right: 64px;
-    top: 452px;
+    left: 233px;
+    right: 90px;
+    top: 411px;
     height: 1px;
     background: #334155;
   }
   .foot {
     position: absolute;
-    left: 256px;
-    right: 64px;
-    top: 484px;
+    left: 233px;
+    right: 90px;
+    top: 433px;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
   }
   .name {
-    font-size: 30px;
+    font-size: 31px;
     color: #cbd5e1;
   }
   .handle {
-    font: 700 64px/1 'JetBrains Mono Variable', monospace;
+    font: 700 51px/1 'JetBrains Mono Variable', monospace;
     letter-spacing: -0.02em;
   }
 </style>
