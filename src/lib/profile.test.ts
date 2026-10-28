@@ -18,7 +18,7 @@ test('the real PROFILE.md passes every check', () => {
 });
 
 test('a measurement in the text that is not declared fails', () => {
-  const bad = broken('using 95% less power. Accuracy went', 'using 95% less power and 3x faster. Accuracy went');
+  const bad = broken('saving over 95% of the power. Accuracy went', 'saving over 95% of the power and 3x faster. Accuracy went');
   assert.throws(() => parseProfile(bad), /drop-detection: measurements in the text that are not in numbers: 3x/);
 });
 
