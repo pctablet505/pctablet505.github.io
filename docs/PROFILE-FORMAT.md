@@ -97,7 +97,8 @@ link, if any), `image` (a file in `src/assets/`, if any). Open source entries: `
 `venue`, `url`, `related`, and `date` if known.
 
 Identity (no entries, one yaml block): `handle`, `name`, `headline` (the short line the home page leads with),
-`lede` (one or two sentences under it), `location`, `email`, `links` (each with a `priority`), `photo`, `resume`,
+`lede` (one or two sentences under it), `focus` (at most four short labels under the slogan on the link-preview
+card), `location`, `email`, `links` (each with a `priority`), `photo`, `resume`,
 `languages`, and `proof`: the numbers the home page leads with, written as `entry-id.number-id`.
 
 ## 3. Sections, in file order

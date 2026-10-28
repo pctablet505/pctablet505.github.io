@@ -109,6 +109,7 @@ export interface Identity {
   name: string;
   headline: string;
   lede?: string;
+  focus: string[];
   location: string;
   email?: string;
   links: Link[];
@@ -332,6 +333,8 @@ function check(p: Profile): string[] {
   }
   const id = p.identity;
   for (const k of ['handle', 'name', 'headline', 'location'] as const) if (!id[k]) errs.push(`PROFILE.md: Identity: missing ${k}`);
+  // The card has room for four labels on one line.
+  if (id.focus.length > 4 || id.focus.some((f) => !f.trim())) errs.push('PROFILE.md: Identity: focus takes at most four labels, none empty');
   for (const ref of id.proof) {
     const [eid, nid] = ref.split('.');
     if (!p.byId.get(eid)?.numbers.some((n) => n.id === nid)) errs.push(`PROFILE.md: Identity: proof "${ref}" points nowhere`);
@@ -359,6 +362,7 @@ export function parseProfile(raw: string): Profile {
         name: String(f.name ?? ''),
         headline: String(f.headline ?? ''),
         lede: str(f.lede),
+        focus: list<string>(f.focus).map(String),
         location: String(f.location ?? ''),
         email: str(f.email),
         links: list<Link>(f.links),
