@@ -5,9 +5,9 @@
 // sign the foot. It carries no job title, so the card does not date.
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
-import { identity } from '../lib/site';
+import { identity, sloganLines } from '../lib/site';
 
-const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/).map((line) => {
+const slogan = sloganLines.map((line) => {
   const [key, ...rest] = line.split(' ');
   return { key, rest: rest.join(' ') };
 });

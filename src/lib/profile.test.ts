@@ -56,6 +56,6 @@ test('a growth line without a numeric rate fails', () => {
 });
 
 test('a fifth focus label fails', () => {
-  const bad = broken('focus: [LLM inference, Computer vision, On-device AI, Trading research]', 'focus: [LLM inference, Computer vision, On-device AI, Trading research, Profiling]');
+  const bad = broken('focus: [LLM inference, Computer vision, On-device AI, Automated trading]', 'focus: [LLM inference, Computer vision, On-device AI, Automated trading, Profiling]');
   assert.throws(() => parseProfile(bad), /Identity: focus takes at most four labels/);
 });
