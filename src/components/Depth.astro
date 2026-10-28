@@ -1,0 +1,10 @@
+---
+// How much there is to read behind a link: 1 a line, 2 a summary, 3 a case study, 4 a case study with a deep dive.
+interface Props {
+  level: number;
+}
+const { level } = Astro.props;
+---
+<span class="depth" role="img" aria-label={`Depth ${level} of 4`}>
+  {[1, 2, 3, 4].map((i) => <i class={i <= level ? 'on' : undefined} />)}
+</span>

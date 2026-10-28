@@ -1,36 +1,33 @@
 # pctablet505.github.io
 
-Personal portfolio site for Rahul Kumar — hosted on **GitHub Pages** via Jekyll + minimal-mistakes theme.
+The source of [pctablet505.github.io](https://pctablet505.github.io), the site of Rahul Kumar (pctablet505): on-device
+computer vision, sensor ML and fast inference, with a case study for each piece of work.
 
-**Live site:** [https://pctablet505.github.io](https://pctablet505.github.io)
+## One file holds the facts
 
-## Stack
+Every job, project, number, link and certificate on the site is written once, in [PROFILE.md](PROFILE.md). The site is
+built from that file alone, so a correction there reaches every page, and `/profile.json` gives the same data to other
+tools. The format is in [docs/PROFILE-FORMAT.md](docs/PROFILE-FORMAT.md).
 
-- **Jekyll** with [minimal-mistakes](https://github.com/mmistakes/minimal-mistakes) remote theme (`4.27.1`)
-- **GitHub Pages** — deploys automatically on push to `main`
-- All content authored in `index.md` (single-page splash layout)
+The build checks the file. If an edit breaks the format, leaves a number without its source, or points at an entry that
+does not exist, the build stops with the line number and the live site stays as it was.
 
-## Structure
+## Run it
 
-```
-pctablet505.github.io/
-├── _config.yml          # Site config, remote_theme, author sidebar
-├── _data/
-│   └── navigation.yml   # Top nav links
-├── index.md             # All portfolio content (hero + 8 sections)
-├── Gemfile              # For local builds (github-pages gem)
-├── robots.txt
-└── assets/
-    └── images/          # sketch.jpg (headshot) + certificate images
-```
-
-## Local build
+Node 22.23.4 or newer.
 
 ```bash
-bundle install
-bundle exec jekyll serve
+npm ci
+npm run dev     # http://localhost:4321; reloads when PROFILE.md changes
+npm test        # the checks on PROFILE.md
+npm run build   # the static site in dist/, with its search index
 ```
 
-## TODO
+A push to `main` builds the site with GitHub Actions and deploys it to GitHub Pages.
 
-- Upload résumé PDF to `assets/` and link from Contact section in `index.md`
+## Where things are
+
+- `PROFILE.md`: the facts. `src/lib/profile.ts` reads and checks it.
+- `src/pages/`: one file per page, plus `profile.json`, `llms.txt` and `llms-full.txt`.
+- `src/figures/`: figures drawn by code, either from data in PROFILE.md or labelled as illustrations.
+- `src/assets/`: certificate images, optimized at build time.

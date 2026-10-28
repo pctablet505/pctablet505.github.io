@@ -1,0 +1,24 @@
+---
+import type { Entry } from '../lib/profile';
+import { STATUS_LABEL, entryHref, fmtSpan, isExternal, jobLabel } from '../lib/site';
+
+interface Props {
+  entry: Entry;
+  showOrg?: boolean;
+}
+const { entry: e, showOrg = true } = Astro.props;
+const href = entryHref(e);
+const meta = [showOrg && e.section === 'Work' ? jobLabel(e.org) : '', e.venue ?? e.issuer ?? '', e.status ? STATUS_LABEL[e.status] : '']
+  .filter(Boolean)
+  .join(' · ');
+---
+<li id={e.section === 'Work' ? undefined : e.id}>
+  <a class="title" href={href} rel={isExternal(href) ? 'noopener' : undefined}>{e.title}{isExternal(href) && ' ↗'}</a>
+  <span class="when">{fmtSpan(e)}</span>
+  {(e.one_line || meta) && (
+    <p class="sub">
+      {e.one_line}
+      {meta && <span class="muted">{e.one_line ? ' · ' : ''}{meta}</span>}
+    </p>
+  )}
+</li>

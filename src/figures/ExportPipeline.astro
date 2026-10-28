@@ -1,0 +1,78 @@
+---
+// Illustration: the LiteRT export path, from a Keras model trained on the TensorFlow or PyTorch backend to a file a
+// phone runs. The call is the one in the keras.io guide.
+interface Props {
+  big?: boolean;
+}
+const { big = false } = Astro.props;
+---
+<svg viewBox="0 0 480 270" role="img" aria-label="Illustration: a Keras model, trained on the TensorFlow or PyTorch backend, becomes a .tflite file with one export call, and the file runs on a phone." class:list={['ep', { big }]}>
+  <g>
+    <rect x="18" y="62" width="128" height="112" rx="12" fill="var(--surface)" stroke="var(--line-2)" />
+    <text x="82" y="88" text-anchor="middle" class="h">Keras model</text>
+    {[0, 1, 2, 3].map((i) => <rect x="40" y={100 + i * 10} width={84 - i * 14} height="6" rx="3" fill="var(--performance)" opacity={0.9 - i * 0.15} />)}
+    <g font-family="var(--font-mono)" font-size="10">
+      <rect x="30" y="146" width="44" height="18" rx="9" fill="var(--surface-2)" stroke="var(--line)" />
+      <text x="52" y="158" text-anchor="middle" class="c">TF</text>
+      <rect x="80" y="146" width="56" height="18" rx="9" fill="var(--surface-2)" stroke="var(--line)" />
+      <text x="108" y="158" text-anchor="middle" class="c">PyTorch</text>
+    </g>
+  </g>
+  <path id="ep-a" d="M146 118 H 214" stroke="var(--line-2)" stroke-width="2" fill="none" />
+  <rect x="150" y="196" width="180" height="30" rx="8" fill="var(--surface-2)" stroke="var(--line)" />
+  <text x="240" y="215" text-anchor="middle" class="code">model.export(…, format="litert")</text>
+  <g>
+    <path d="M214 76 h 40 l 16 16 v 62 h -56 Z" fill="var(--surface)" stroke="var(--line-2)" />
+    <path d="M254 76 v 16 h 16" fill="none" stroke="var(--line-2)" />
+    <text x="242" y="130" text-anchor="middle" class="file">.tflite</text>
+  </g>
+  <path id="ep-b" d="M270 118 H 334" stroke="var(--line-2)" stroke-width="2" fill="none" />
+  <g>
+    <rect x="334" y="40" width="98" height="176" rx="16" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+    <rect x="370" y="48" width="26" height="5" rx="2.5" fill="var(--line-2)" />
+    <rect x="346" y="64" width="74" height="54" rx="6" fill="var(--surface-2)" />
+    <circle cx="372" cy="86" r="10" fill="var(--bulb)" opacity="0.8" />
+    <path d="M350 112 l 18 -16 l 12 10 l 14 -14 l 22 20" fill="none" stroke="var(--ink-3)" stroke-width="2" />
+    {[0, 1, 2].map((i) => (
+      <g class="res" style={`--d:${i * 0.25}s`}>
+        <rect x="346" y={132 + i * 22} width={[62, 34, 18][i]} height="10" rx="5" fill="var(--performance)" opacity={1 - i * 0.25} />
+      </g>
+    ))}
+    <text x="383" y="206" text-anchor="middle" class="c">on device</text>
+  </g>
+  <circle r="4" fill="var(--performance)"><animateMotion dur="2.4s" repeatCount="indefinite"><mpath href="#ep-a" /></animateMotion></circle>
+  <circle r="4" fill="var(--performance)"><animateMotion dur="2.4s" begin="1.2s" repeatCount="indefinite"><mpath href="#ep-b" /></animateMotion></circle>
+</svg>
+
+<style>
+  .h {
+    font: 650 13px var(--font-sans);
+    fill: var(--ink);
+  }
+  .c {
+    fill: var(--ink-2);
+    font: 500 10px var(--font-mono);
+  }
+  .code {
+    font: 500 12px var(--font-mono);
+    fill: var(--ink);
+  }
+  .file {
+    font: 650 14px var(--font-mono);
+    fill: var(--ink);
+  }
+  .res rect {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: ep-grow 3s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes ep-grow {
+    0% { transform: scaleX(0); }
+    30%, 85% { transform: scaleX(1); }
+    100% { transform: scaleX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .res rect { animation: none; }
+  }
+</style>

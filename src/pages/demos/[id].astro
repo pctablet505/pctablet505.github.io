@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import Fig from '../../components/Fig.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import type { Entry } from '../../lib/profile';
+import { md } from '../../lib/md';
+import { related, section } from '../../lib/site';
+
+export function getStaticPaths() {
+  return section('Demos').map((e) => ({ params: { id: e.id }, props: { entry: e } }));
+}
+interface Props {
+  entry: Entry;
+}
+const { entry: d } = Astro.props;
+const rel = related(d);
+---
+<Base title={d.title} description={d.summary.split('. ')[0]} section="/demos/">
+  <header class="wrap entry-head">
+    <div class="crumbs"><a href="/demos/">Demos lab</a></div>
+    <h1>{d.title}</h1>
+    <ul class="chips"><li class="chip">{d.status === 'live' ? 'Live' : 'Planned: live version in progress'}</li></ul>
+  </header>
+  <div class="wrap entry-body">
+    <div>
+      <div style="margin-bottom:2rem"><Fig id={d.id} big caption /></div>
+      <div class="prose"><Fragment set:html={md(d.summary)} /></div>
+      {d.live_url ? (
+        <p><a class="btn primary" href={d.live_url}>Open the live demo →</a></p>
+      ) : (
+        <div class="note" style="margin-top:1.5rem">
+          <strong>Not live yet.</strong> The animation above shows what the demo does. The live version is being built and
+          will be linked here when it is ready.
+        </div>
+      )}
+    </div>
+    <aside class="entry-aside" data-pagefind-ignore>
+      {rel.length > 0 && (
+        <div>
+          <h2>The work behind it</h2>
+          <ul class="list">{rel.map((r) => <EntryRow entry={r} />)}</ul>
+        </div>
+      )}
+    </aside>
+  </div>
+</Base>

@@ -1,0 +1,81 @@
+---
+// Illustration drawn by code: an idealized accelerometer trace of a phone dropped from 1 m. Free fall reads near
+// 0 g for t = sqrt(2h/g); the impact is a short spike. The signal is generated from that physics, not recorded.
+const G = 9.81;
+const H = 1.0;
+const tFall = Math.sqrt((2 * H) / G);
+const t0 = 0.35;
+const tImpact = t0 + tFall;
+const T = 1.6;
+const X0 = 46;
+const X1 = 462;
+const Y0 = 222;
+const YMAX = 6;
+const PX_PER_G = (Y0 - 34) / YMAX;
+const x = (t: number) => X0 + (t / T) * (X1 - X0);
+const y = (a: number) => Y0 - Math.min(a, YMAX) * PX_PER_G;
+const wiggle = (t: number, amp: number) => amp * (Math.sin(t * 61.3) * 0.6 + Math.sin(t * 23.7 + 1.3) * 0.4);
+
+const pts: [number, number][] = [];
+for (let t = 0; t <= T + 1e-9; t += 0.004) {
+  let a: number;
+  if (t < t0) a = 1 + wiggle(t, 0.05);
+  else if (t < tImpact) a = 0.04 + Math.abs(wiggle(t, 0.02));
+  else {
+    const s = t - tImpact;
+    const ring = 5.4 * Math.exp(-s / 0.018) + 2.2 * Math.exp(-((s - 0.09) ** 2) / 0.0006) + 0.9 * Math.exp(-((s - 0.2) ** 2) / 0.0008);
+    a = 1 + ring * Math.abs(Math.cos(s * 90)) + wiggle(t, 0.04 * Math.exp(-s / 0.4));
+  }
+  pts.push([x(t), y(a)]);
+}
+const d = 'M' + pts.map(([px, py]) => `${px.toFixed(1)} ${py.toFixed(1)}`).join(' L');
+const ticks = [0, 1, 2, 3, 4, 5, 6];
+interface Props {
+  big?: boolean;
+}
+const { big = false } = Astro.props;
+---
+<svg viewBox="0 0 480 270" role="img" aria-label={`Illustration: acceleration of a falling phone. About 1 g at rest, near 0 g during ${tFall.toFixed(2)} seconds of free fall, a sharp spike at impact, then 1 g again.`} class:list={['dt', { big }]}>
+  <rect x={x(t0)} y="30" width={x(tImpact) - x(t0)} height={Y0 - 30} fill="var(--sensing)" opacity="0.1" />
+  {ticks.map((g) => (
+    <g>
+      <line x1={X0} x2={X1} y1={y(g)} y2={y(g)} stroke="var(--line)" stroke-width="1" />
+      <text x={X0 - 8} y={y(g) + 4} text-anchor="end" class="tick">{g}g</text>
+    </g>
+  ))}
+  <path class="trace" d={d} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="2.2" stroke-linejoin="round" />
+  <text x={x(t0 / 2)} y={y(1) - 12} text-anchor="middle" class="lbl">at rest</text>
+  <text x={(x(t0) + x(tImpact)) / 2} y={y(0) - 14} text-anchor="middle" class="lbl">free fall</text>
+  <text x={X0 + 10} y="22" class="lbl strong">free fall t = {tFall.toFixed(2)} s → height h = g·t²/2 ≈ {H.toFixed(1)} m</text>
+  <text x={x(tImpact) + 12} y={y(4.2)} class="lbl">impact</text>
+  <text x={x(1.35)} y={y(1) - 12} text-anchor="middle" class="lbl">settled</text>
+  <text x={X1} y="258" text-anchor="end" class="tick">time →</text>
+</svg>
+
+<style>
+  .tick {
+    font: 500 11px var(--font-mono);
+    fill: var(--ink-3);
+  }
+  .lbl {
+    font: 500 12px var(--font-sans);
+    fill: var(--ink-2);
+  }
+  .lbl.strong {
+    font: 600 12px var(--font-mono);
+    fill: var(--ink);
+  }
+  .trace {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: dt-draw 6s ease-in-out infinite;
+  }
+  @keyframes dt-draw {
+    0% { stroke-dashoffset: 1; }
+    55%, 88% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .trace { animation: none; stroke-dashoffset: 0; }
+  }
+</style>

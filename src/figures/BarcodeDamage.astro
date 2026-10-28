@@ -1,0 +1,158 @@
+---
+// Illustration drawn by code: a real EAN-13 encoding is damaged, restored and read, then a code too damaged to
+// read is refused. The bars come from the EAN-13 tables, not from a picture.
+const DIGITS = '5901234123457';
+const L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+const G = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
+const R = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
+const PARITY = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
+
+const d = DIGITS.split('').map(Number);
+const sum = d.slice(0, 12).reduce((s, x, i) => s + x * (i % 2 ? 3 : 1), 0);
+if ((10 - (sum % 10)) % 10 !== d[12]) throw new Error('BarcodeDamage: bad EAN-13 check digit');
+
+let modules = '101';
+const parity = PARITY[d[0]];
+for (let i = 1; i <= 6; i++) modules += (parity[i - 1] === 'L' ? L : G)[d[i]];
+modules += '01010';
+for (let i = 7; i <= 12; i++) modules += R[d[i]];
+modules += '101';
+
+const guard = new Set<number>();
+for (const i of [0, 1, 2, 45, 46, 47, 48, 49, 92, 93, 94]) guard.add(i);
+const x0 = 112;
+const w = 256 / modules.length;
+const bars: { x: number; w: number; tall: boolean }[] = [];
+for (let i = 0; i < modules.length; ) {
+  if (modules[i] === '1') {
+    let j = i;
+    while (j < modules.length && modules[j] === '1') j++;
+    bars.push({ x: x0 + i * w, w: (j - i) * w, tall: guard.has(i) });
+    i = j;
+  } else i++;
+}
+
+interface Props {
+  big?: boolean;
+}
+const { big = false } = Astro.props;
+const uid = big ? 'bcb' : 'bc';
+---
+<svg viewBox="0 0 480 270" role="img" aria-label="Animated illustration: a barcode gets blurred, scuffed and caught by glare, is restored and read; then a barcode with most of its middle missing is refused." class:list={['bc', { big }]}>
+  <defs>
+    <filter id={`${uid}-blur`} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2" /></filter>
+    <radialGradient id={`${uid}-glare`} cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id={`${uid}-laser`} x1="0" x2="1">
+      <stop offset="0" stop-color="#ef4444" stop-opacity="0" />
+      <stop offset="0.5" stop-color="#ef4444" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#ef4444" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <g class="label">
+    <rect x="96" y="38" width="288" height="158" rx="8" fill="#ffffff" stroke="var(--line-2)" />
+    <g class="sharp">
+      {bars.map((b) => <rect x={b.x} y="52" width={b.w} height={b.tall ? 120 : 110} fill="#0f172a" />)}
+    </g>
+    <g class="blurred" filter={`url(#${uid}-blur)`}>
+      {bars.map((b) => <rect x={b.x} y="52" width={b.w} height={b.tall ? 120 : 110} fill="#0f172a" />)}
+    </g>
+    <text x="240" y="188" text-anchor="middle" class="digits">5 901234 123457</text>
+    <g class="scuff">
+      <path d="M150 70 C 170 58, 205 64, 214 84 C 224 104, 200 120, 182 116 C 160 112, 138 92, 150 70 Z" fill="#a8a29e" opacity="0.92" />
+      <path d="M262 132 C 280 124, 300 132, 296 148 C 292 160, 268 162, 258 152 C 250 144, 252 136, 262 132 Z" fill="#a8a29e" opacity="0.85" />
+    </g>
+    <ellipse class="glare" cx="318" cy="96" rx="58" ry="40" fill={`url(#${uid}-glare)`} />
+    <g class="hole">
+      <path d="M176 60 C 220 44, 300 52, 318 86 C 334 118, 300 168, 246 170 C 196 172, 150 150, 156 110 C 158 88, 162 66, 176 60 Z" fill="#78716c" />
+    </g>
+    <rect class="laser" x="96" y="108" width="288" height="3" fill={`url(#${uid}-laser)`} />
+  </g>
+  <g class="status" font-family="var(--font-mono)" font-size="15" text-anchor="middle">
+    <text class="s1" x="240" y="236" fill="var(--ink-3)">scanning</text>
+    <text class="s2" x="240" y="236" fill="var(--ink-2)">blur · scuff · glare</text>
+    <text class="s3" x="240" y="236" fill="var(--ok)">restored → read 5901234123457 ✓</text>
+    <text class="s4" x="240" y="236" fill="#dc2626">too damaged → no read, no guess ✗</text>
+  </g>
+</svg>
+
+<style>
+  .bc {
+    --t: 12s;
+  }
+  .digits {
+    font: 500 13px var(--font-mono);
+    fill: #0f172a;
+    letter-spacing: 2px;
+  }
+  .label {
+    transform-origin: 240px 117px;
+    animation: bc-tilt var(--t) infinite ease-in-out;
+  }
+  .blurred {
+    opacity: 0;
+    animation: bc-blurred var(--t) infinite;
+  }
+  .scuff,
+  .glare {
+    opacity: 0;
+    animation: bc-damage var(--t) infinite;
+  }
+  .hole {
+    opacity: 0;
+    animation: bc-hole var(--t) infinite;
+  }
+  .laser {
+    animation: bc-laser var(--t) infinite linear;
+  }
+  .status text {
+    opacity: 0;
+  }
+  .s1 {
+    animation: bc-s1 var(--t) infinite;
+  }
+  .s2 {
+    animation: bc-s2 var(--t) infinite;
+  }
+  .s3 {
+    animation: bc-s3 var(--t) infinite;
+  }
+  .s4 {
+    animation: bc-s4 var(--t) infinite;
+  }
+  @keyframes bc-tilt {
+    0%, 12%, 46%, 100% { transform: none; }
+    18%, 40% { transform: skewX(-7deg) rotate(-2deg) scale(0.97); }
+  }
+  @keyframes bc-blurred {
+    0%, 12% { opacity: 0; }
+    18%, 40% { opacity: 1; }
+    46%, 100% { opacity: 0; }
+  }
+  @keyframes bc-damage {
+    0%, 12% { opacity: 0; }
+    18%, 40% { opacity: 1; }
+    46%, 100% { opacity: 0; }
+  }
+  @keyframes bc-hole {
+    0%, 66% { opacity: 0; }
+    71%, 92% { opacity: 1; }
+    97%, 100% { opacity: 0; }
+  }
+  @keyframes bc-laser {
+    0% { transform: translateY(-50px); opacity: 0.9; }
+    10% { transform: translateY(50px); }
+    11%, 100% { opacity: 0; }
+  }
+  @keyframes bc-s1 { 0%, 11% { opacity: 1; } 13%, 100% { opacity: 0; } }
+  @keyframes bc-s2 { 0%, 14% { opacity: 0; } 17%, 42% { opacity: 1; } 45%, 100% { opacity: 0; } }
+  @keyframes bc-s3 { 0%, 46% { opacity: 0; } 49%, 64% { opacity: 1; } 67%, 100% { opacity: 0; } }
+  @keyframes bc-s4 { 0%, 70% { opacity: 0; } 73%, 93% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .label, .blurred, .scuff, .glare, .hole, .laser, .status text { animation: none; }
+    .s3 { opacity: 1; }
+  }
+</style>

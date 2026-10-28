@@ -1,0 +1,115 @@
+---
+import Base from '../../layouts/Base.astro';
+import Fig from '../../components/Fig.astro';
+import Stat from '../../components/Stat.astro';
+import Depth from '../../components/Depth.astro';
+import EntryRow from '../../components/EntryRow.astro';
+import type { Entry } from '../../lib/profile';
+import { md } from '../../lib/md';
+import {
+  AREA_META, STATUS_LABEL, entryHref, fmtSpan, isExternal, jobLabel, profile, readMinutes, related, usedBy, work,
+  workIn,
+} from '../../lib/site';
+
+export function getStaticPaths() {
+  return work().map((e) => ({ params: { id: e.id }, props: { entry: e } }));
+}
+interface Props {
+  entry: Entry;
+}
+const { entry: e } = Astro.props;
+const area = e.area!;
+const rel = [...related(e), ...usedBy(e)].filter(
+  (x, i, a) => a.findIndex((y) => y.id === x.id) === i && x.id !== e.id && x.id !== e.demo,
+);
+const more = workIn(area).filter((x) => x.id !== e.id).slice(0, 4);
+const demo = e.demo ? profile.byId.get(e.demo) : undefined;
+const job = e.org && e.org !== 'personal' ? profile.byId.get(e.org) : undefined;
+const src = `https://github.com/pctablet505/pctablet505.github.io/blob/main/PROFILE.md#L${e.line}`;
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : e.parts.length ? 3 : e.summary ? 2 : 1;
+---
+<Base title={e.title} description={e.one_line} section="/work/">
+  <article data-area={area}>
+    <header class="wrap entry-head">
+      <div class="crumbs"><a href="/work/">Work</a> / <a href={`/work/#${area}`}>{AREA_META[area].label}</a></div>
+      <h1>{e.title}</h1>
+      {e.one_line && <p class="lede" style="margin-top:1rem">{e.one_line}</p>}
+      <ul class="chips">
+        <li class="chip"><span class="dot" />{AREA_META[area].label}</li>
+        <li class="chip">{jobLabel(e.org)}</li>
+        {fmtSpan(e) && <li class="chip">{fmtSpan(e)}</li>}
+        {e.status && <li class="chip">{STATUS_LABEL[e.status]}</li>}
+        <li class="chip"><Depth level={level} /> {level >= 3 ? `${readMinutes(e)} min read` : 'short entry'}</li>
+      </ul>
+    </header>
+    <div class="wrap entry-body">
+      <div>
+        {e.numbers.length > 0 && (
+          <div class="numbers" style="margin-bottom:2rem">
+            {e.numbers.map((n) => <Stat num={n} />)}
+          </div>
+        )}
+        <div style="margin-bottom:2rem"><Fig id={e.id} big caption /></div>
+        <div class="prose">
+          <Fragment set:html={md(e.summary)} />
+          {e.wording === 'exact' && !e.summary && <p>{e.one_line}</p>}
+          {e.parts.map((p) => (
+            <section id={slug(p.name)}>
+              <h2>{p.name}</h2>
+              <Fragment set:html={md(p.md)} />
+            </section>
+          ))}
+        </div>
+        {more.length > 0 && (
+          <section style="margin-top:3.5rem">
+            <h2 style="margin-bottom:1rem">More in {AREA_META[area].label.toLowerCase()}</h2>
+            <ul class="list">{more.map((x) => <EntryRow entry={x} />)}</ul>
+          </section>
+        )}
+      </div>
+      <aside class="entry-aside" data-pagefind-ignore>
+        {e.parts.length > 0 && (
+          <div>
+            <h2>On this page</h2>
+            <ul>{e.parts.map((p) => <li><a href={`#${slug(p.name)}`}>{p.name}</a></li>)}</ul>
+          </div>
+        )}
+        {demo && (
+          <div>
+            <h2>Demo</h2>
+            <ul><li><a href={entryHref(demo)}>{demo.title} →</a></li></ul>
+          </div>
+        )}
+        {e.links.length > 0 && (
+          <div>
+            <h2>Links</h2>
+            <ul>{e.links.map((l) => <li><a href={l.url}>{l.label} ↗</a></li>)}</ul>
+          </div>
+        )}
+        {rel.length > 0 && (
+          <div>
+            <h2>Related</h2>
+            <ul>{rel.map((r) => <li><a href={entryHref(r)}>{r.title}{isExternal(entryHref(r)) && ' ↗'}</a></li>)}</ul>
+          </div>
+        )}
+        {job && (
+          <div>
+            <h2>Where</h2>
+            <ul><li><a href={entryHref(job)}>{job.title_field}, {job.org}</a></li></ul>
+          </div>
+        )}
+        {e.skills.length > 0 && (
+          <div>
+            <h2>Skills</h2>
+            <ul class="chips">{e.skills.map((s) => <li class="chip">{s}</li>)}</ul>
+          </div>
+        )}
+        <div>
+          <h2>Facts</h2>
+          <ul><li><a href={src}>This entry in PROFILE.md ↗</a></li></ul>
+        </div>
+      </aside>
+    </div>
+  </article>
+</Base>

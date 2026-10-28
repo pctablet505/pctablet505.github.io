@@ -1,0 +1,78 @@
+---
+// Illustration: a model's layers move from the CPU onto the NPU and DSP of a phone chip, quantized to INT8 so less
+// data crosses the memory bus. No measurements are drawn.
+interface Props {
+  big?: boolean;
+}
+const { big = false } = Astro.props;
+const blocks = [
+  { k: 'CPU', x: 60, y: 60 },
+  { k: 'GPU', x: 60, y: 140 },
+  { k: 'NPU', x: 250, y: 60 },
+  { k: 'DSP', x: 250, y: 140 },
+];
+---
+<svg viewBox="0 0 480 270" role="img" aria-label="Illustration: on a phone chip, a model's layers move from the CPU to the NPU and DSP, quantized to INT8, and the memory bus carries less." class:list={['np', { big }]}>
+  <rect x="36" y="36" width="352" height="198" rx="16" fill="var(--surface)" stroke="var(--ink-3)" stroke-width="2" />
+  {Array.from({ length: 9 }, (_, i) => <line x1={60 + i * 38} y1="28" x2={60 + i * 38} y2="36" stroke="var(--ink-3)" stroke-width="2" />)}
+  {Array.from({ length: 9 }, (_, i) => <line x1={60 + i * 38} y1="234" x2={60 + i * 38} y2="242" stroke="var(--ink-3)" stroke-width="2" />)}
+  {blocks.map((b) => (
+    <g>
+      <rect x={b.x} y={b.y} width="114" height="62" rx="10" fill={b.k === 'NPU' || b.k === 'DSP' ? 'color-mix(in srgb, var(--performance) 16%, var(--surface))' : 'var(--surface-2)'} stroke="var(--line-2)" />
+      <text x={b.x + 12} y={b.y + 22} class="k">{b.k}</text>
+    </g>
+  ))}
+  <g class="model">
+    {[0, 1, 2, 3].map((i) => <rect x="72" y={92 + i * 7} width={86 - i * 12} height="5" rx="2.5" fill="var(--performance)" />)}
+  </g>
+  <rect x="412" y="56" width="44" height="160" rx="8" fill="var(--surface-2)" stroke="var(--line-2)" />
+  <text x="434" y="232" text-anchor="middle" class="k">RAM</text>
+  <path class="bus" d="M388 135 H 412" stroke="var(--performance)" stroke-width="14" stroke-linecap="round" />
+  <g class="int8">
+    <rect x="292" y="210" width="54" height="20" rx="10" fill="var(--performance)" />
+    <text x="319" y="224" text-anchor="middle" class="tag">INT8</text>
+  </g>
+</svg>
+
+<style>
+  .k {
+    font: 650 12px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .tag {
+    font: 700 11px var(--font-mono);
+    fill: var(--bg);
+  }
+  .model {
+    animation: np-move 6s ease-in-out infinite;
+  }
+  .bus {
+    animation: np-bus 6s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .int8 {
+    opacity: 0;
+    animation: np-int8 6s ease-in-out infinite;
+  }
+  @keyframes np-move {
+    0%, 15% { transform: none; }
+    40%, 85% { transform: translate(190px, 0); }
+    100% { transform: none; }
+  }
+  @keyframes np-bus {
+    0%, 30% { stroke-width: 14; }
+    50%, 85% { stroke-width: 4; }
+    100% { stroke-width: 14; }
+  }
+  @keyframes np-int8 {
+    0%, 35% { opacity: 0; }
+    45%, 85% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .model, .bus, .int8 { animation: none; }
+    .model { transform: translate(190px, 0); }
+    .int8 { opacity: 1; }
+  }
+</style>

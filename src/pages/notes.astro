@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { md } from '../lib/md';
+import { byPriority, entryHref, profile, section } from '../lib/site';
+
+const notes = byPriority(section('Notes'));
+---
+<Base title="Notes" description="A knowledge base of technical notes: LLM serving on one GPU, Keras on Android, backtest traps, trading costs and running a lab with AI agents.">
+  <header class="wrap entry-head">
+    <p class="eyebrow">Notes</p>
+    <h1>The knowledge base</h1>
+    <p class="lede">
+      Technical notes and lessons, kept where the work lives so each stays one document. This page is the index, with what each note is for.
+    </p>
+  </header>
+  <section class="wrap" style="padding-bottom:4rem">
+    <div class="grid two">
+      {notes.map((n) => {
+        const about = n.related.map((r) => profile.byId.get(r)).filter(Boolean)[0];
+        return (
+          <article class="card" id={n.id}>
+            <div class="meta"><span class="chip">{n.venue}</span>{about && <span>from {about.title}</span>}</div>
+            <h3><a href={n.url}>{n.title} ↗</a></h3>
+            <div class="one-line"><Fragment set:html={md(n.summary).replace(/^<p>|<\/p>\s*$/g, '')} /></div>
+            {about && <div class="foot"><span /><a class="go" href={entryHref(about)} style="position:relative;z-index:1">the project →</a></div>}
+          </article>
+        );
+      })}
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,92 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { md } from '../lib/md';
+import { imageFor } from '../lib/images';
+import { byPriority, fmtDate, fmtSpan, section } from '../lib/site';
+import type { Entry } from '../lib/profile';
+
+const education = byPriority(section('Education'));
+const awards = byPriority(section('Awards'));
+const certs = byPriority(section('Certificates'));
+const featured = certs.filter((c) => c.priority < 3);
+const rest = certs.filter((c) => c.priority === 3);
+const when = (e: Entry) => fmtSpan(e) || fmtDate(e.date);
+---
+<Base title="Education and certificates" description="MITx MicroMasters in Statistics and Data Science, B.Tech in computer science, MIT and Harvard courses, competition ranks and every certificate with its verify link.">
+  <header class="wrap entry-head">
+    <p class="eyebrow">Education, awards, certificates</p>
+    <h1>The record, with links to check it</h1>
+    <p class="lede">The degrees and awards first, then every certificate, each with its issuer's verify link where one exists.</p>
+  </header>
+
+  <section class="section" style="padding-top:1rem">
+    <div class="wrap">
+      <div class="section-head"><div><h2>Education</h2></div></div>
+      <div class="grid two">
+        {education.map((e) => {
+          const img = imageFor(e.image);
+          return (
+            <article class="card" id={e.id}>
+              {img && <Image src={img} alt={`${e.title} certificate`} width={720} style="width:100%;height:auto;border-radius:10px;border:1px solid var(--line)" />}
+              <div class="meta"><span>{e.issuer}</span><span>· {when(e)}</span></div>
+              <h3>{e.url ? <a href={e.url}>{e.title} ↗</a> : e.title}</h3>
+              {e.summary && <p class="one-line">{e.summary}</p>}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><div><h2>Awards and competitions</h2></div></div>
+      <ul class="list">
+        {awards.map((a) => (
+          <li id={a.id}>
+            <span class="title">{a.url ? <a href={a.url}>{a.title} ↗</a> : a.title}</span>
+            <span class="when">{when(a)}</span>
+            <p class="sub">
+              {a.summary && <Fragment set:html={md(a.summary).replace(/^<p>|<\/p>\s*$/g, '')} />}
+              <span class="muted">{a.summary ? ' · ' : ''}{a.issuer}</span>
+              {a.links.map((l) => <span class="muted"> · <a href={l.url}>{l.label}</a></span>)}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head"><div><h2>Certificates</h2><p>{certs.length} in all. The university courses first.</p></div></div>
+      <div class="grid three">
+        {featured.map((c) => {
+          const img = imageFor(c.image);
+          return (
+            <article class="card" id={c.id}>
+              {img && <Image src={img} alt={`${c.title} certificate`} width={560} style="width:100%;height:auto;border-radius:8px;border:1px solid var(--line)" />}
+              <div class="meta"><span>{c.issuer}</span>{when(c) && <span>· {when(c)}</span>}</div>
+              <h3 style="font-size:1rem">{c.url ? <a href={c.url}>{c.title} ↗</a> : c.title}</h3>
+              {c.summary && <p class="one-line">{c.summary}</p>}
+            </article>
+          );
+        })}
+      </div>
+      <h3 style="margin:2.5rem 0 .75rem">Everything else</h3>
+      <ul class="list">
+        {rest.map((c) => (
+          <li id={c.id}>
+            <span class="title">{c.url ? <a href={c.url}>{c.title} ↗</a> : c.title}</span>
+            <span class="when">{when(c)}</span>
+            <p class="sub">
+              <span class="muted">{c.issuer}</span>
+              {c.links.map((l) => <span class="muted"> · <a href={l.url}>{l.label}</a></span>)}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Base>

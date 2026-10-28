@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import { md } from '../lib/md';
+import { byDate, entryHref, fmtDate, profile, section } from '../lib/site';
+
+const posts = byDate(section('Writing'));
+---
+<Base title="Writing" description="Articles on LLM inference on one GPU, Keras export to LiteRT and on-device ML testing.">
+  <header class="wrap entry-head">
+    <p class="eyebrow">Writing</p>
+    <h1>Articles</h1>
+    <p class="lede">Long-form write-ups of the work. For shorter technical notes, see <a class="text-link" href="/notes/">Notes</a>.</p>
+  </header>
+  <section class="wrap narrow" style="padding-bottom:4rem">
+    <ul class="list">
+      {posts.map((p) => (
+        <li id={p.id}>
+          <a class="title" href={p.url}>{p.title} ↗</a>
+          <span class="when">{fmtDate(p.date)}</span>
+          <p class="sub">
+            {p.summary && <Fragment set:html={md(p.summary).replace(/^<p>|<\/p>\s*$/g, '')} />}
+            <span class="muted"> {p.summary ? '· ' : ''}{p.venue}</span>
+            {p.links.map((l) => <span class="muted"> · <a href={l.url}>{l.label}</a></span>)}
+            {p.related.map((r) => profile.byId.get(r)).filter(Boolean).slice(0, 1).map((r) => (
+              <span class="muted"> · about <a href={entryHref(r!)}>{r!.title}</a></span>
+            ))}
+          </p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
