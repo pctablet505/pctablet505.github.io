@@ -1,6 +1,8 @@
 ---
 // The 1280 x 640 link-preview card, drawn from PROFILE.md. public/social.png is a screenshot of this page; the README
 // says how to refresh it after the slogan changes. Not linked, not in the sitemap or the search index.
+// Laid out like the LinkedIn banner: the lamp, the slogan, and the handle signed at the lower right. It carries no job
+// title, so the card does not date.
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import { identity } from '../lib/site';
@@ -20,12 +22,12 @@ const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
         <rect x="42" y="152" width="36" height="25" rx="6" fill="#cbd5e1" />
         <circle cx="60" cy="218" r="44" fill="#fbbf24" />
       </svg>
-      <div class="text">
-        <div class="handle">{identity.handle}</div>
-        <div class="slogan">{slogan.map((line) => <div>{line}</div>)}</div>
-      </div>
+      <div class="slogan">{slogan.map((line) => <div>{line}</div>)}</div>
       <div class="rule"></div>
-      <div class="name">{identity.name} · machine learning engineer</div>
+      <div class="sign">
+        <div class="handle">{identity.handle}</div>
+        <div class="name">{identity.name}</div>
+      </div>
     </div>
   </body>
 </html>
@@ -42,45 +44,45 @@ const slogan = `${identity.headline}.`.split(/(?<=\.)\s+/);
     height: 640px;
     overflow: hidden;
     background:
-      radial-gradient(circle at 140px 218px, rgb(251 191 36 / 22%), transparent 260px),
+      radial-gradient(circle at 156px 218px, rgb(251 191 36 / 22%), transparent 300px),
       linear-gradient(135deg, #1e2230 0%, #0f172a 70%);
     color: #f8fafc;
   }
   .lamp {
     position: absolute;
-    left: 80px;
+    left: 96px;
     top: 0;
     width: 120px;
     height: 280px;
   }
-  .text {
-    position: absolute;
-    left: 256px;
-    top: 118px;
-  }
-  .handle {
-    font: 700 96px/1 'JetBrains Mono Variable', monospace;
-    letter-spacing: -0.02em;
-  }
+  /* The middle line sits level with the bulb. */
   .slogan {
-    margin-top: 34px;
-    font: 700 52px/1.22 'Inter Variable', sans-serif;
-    letter-spacing: -0.01em;
-    color: #e2e8f0;
+    position: absolute;
+    left: 272px;
+    top: 76px;
+    font: 700 88px/1.08 'Inter Variable', sans-serif;
+    letter-spacing: -0.02em;
   }
   .rule {
     position: absolute;
-    left: 64px;
+    left: 272px;
     right: 64px;
-    top: 532px;
+    top: 436px;
     height: 1px;
     background: #334155;
   }
-  .name {
+  .sign {
     position: absolute;
-    left: 64px;
-    top: 558px;
-    font: 400 30px/1.2 'Inter Variable', sans-serif;
+    right: 64px;
+    top: 466px;
+    text-align: right;
+  }
+  .handle {
+    font: 700 52px/1 'JetBrains Mono Variable', monospace;
+  }
+  .name {
+    margin-top: 14px;
+    font: 400 28px/1 'Inter Variable', sans-serif;
     color: #cbd5e1;
   }
 </style>
