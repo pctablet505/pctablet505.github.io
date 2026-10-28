@@ -1,36 +1,9 @@
 ---
 // Illustration drawn by code: a real EAN-13 encoding is damaged, restored and read, then a code too damaged to
 // read is refused. The bars come from the EAN-13 tables, not from a picture.
-const DIGITS = '5901234123457';
-const L = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
-const G = ['0100111', '0110011', '0011011', '0100001', '0011101', '0111001', '0000101', '0010001', '0001001', '0010111'];
-const R = ['1110010', '1100110', '1101100', '1000010', '1011100', '1001110', '1010000', '1000100', '1001000', '1110100'];
-const PARITY = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'];
+import { bars as layBars, ean13 } from '../lib/ean13';
 
-const d = DIGITS.split('').map(Number);
-const sum = d.slice(0, 12).reduce((s, x, i) => s + x * (i % 2 ? 3 : 1), 0);
-if ((10 - (sum % 10)) % 10 !== d[12]) throw new Error('BarcodeDamage: bad EAN-13 check digit');
-
-let modules = '101';
-const parity = PARITY[d[0]];
-for (let i = 1; i <= 6; i++) modules += (parity[i - 1] === 'L' ? L : G)[d[i]];
-modules += '01010';
-for (let i = 7; i <= 12; i++) modules += R[d[i]];
-modules += '101';
-
-const guard = new Set<number>();
-for (const i of [0, 1, 2, 45, 46, 47, 48, 49, 92, 93, 94]) guard.add(i);
-const x0 = 112;
-const w = 256 / modules.length;
-const bars: { x: number; w: number; tall: boolean }[] = [];
-for (let i = 0; i < modules.length; ) {
-  if (modules[i] === '1') {
-    let j = i;
-    while (j < modules.length && modules[j] === '1') j++;
-    bars.push({ x: x0 + i * w, w: (j - i) * w, tall: guard.has(i) });
-    i = j;
-  } else i++;
-}
+const bars = layBars(ean13('5901234123457'), 112, 256).map((b) => ({ x: b.x, w: b.w, tall: b.guard }));
 
 interface Props {
   big?: boolean;

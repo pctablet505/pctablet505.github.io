@@ -1,0 +1,289 @@
+---
+// The stepped figure for the crash-detection case study: four sensor channels read together. The traces are drawn
+// to show which signals move together in each case (normal, rash, a look-alike, a crash), not recorded; there is no
+// result number to show (PROFILE.md has none yet).
+const CH = [
+  { name: 'g-force', y: 110 },
+  { name: 'rotation', y: 146 },
+  { name: 'pressure', y: 182 },
+  { name: 'sound', y: 218 },
+];
+const XA = 100;
+const XB = 462;
+const crashLevel = 10;
+const noise = (t: number, k: number, amp: number) => amp * (Math.sin(t * 97.1 + k * 3.1) * 0.55 + Math.sin(t * 41.7 + k) * 0.45);
+const bump = (t: number, at: number, width: number) => Math.exp(-(((t - at) / width) ** 2));
+type Gen = (t: number) => number;
+function trace(row: number, gen: Gen): string {
+  const p: string[] = [];
+  for (let t = 0; t <= 1.0001; t += 0.004) {
+    const v = Math.max(-17, Math.min(17, gen(t)));
+    p.push(`${(XA + t * (XB - XA)).toFixed(1)} ${(CH[row].y - v).toFixed(1)}`);
+  }
+  return 'M' + p.join(' L');
+}
+const calm = (k: number, amp = 1.6): Gen => (t) => noise(t, k, amp);
+const cases: Record<string, Gen[]> = {
+  normal: [calm(0), calm(1), calm(2, 0.8), calm(3)],
+  rash: [
+    (t) => noise(t, 0, 1.6) + 6.5 * Math.sin(t * 26) * bump(t, 0.5, 0.22),
+    (t) => noise(t, 1, 1.6) + 6 * Math.sin(t * 18 + 1) * bump(t, 0.52, 0.2),
+    calm(2, 0.8),
+    (t) => noise(t, 3, 1.6) + 3 * bump(t, 0.5, 0.2),
+  ],
+  lookalike: [
+    (t) => noise(t, 0, 1.6) + 16 * bump(t, 0.72, 0.012) - 6 * bump(t, 0.735, 0.01),
+    calm(1),
+    calm(2, 0.8),
+    (t) => noise(t, 3, 1.6) + 12 * Math.abs(Math.sin(t * 70)) * bump(t, 0.3, 0.13),
+  ],
+  crash: [
+    (t) => noise(t, 0, 1.6) + 19 * bump(t, 0.42, 0.014) - 7 * bump(t, 0.44, 0.012) + 5 * bump(t, 0.5, 0.05),
+    (t) => noise(t, 1, 1.6) + 14 * Math.sin((t - 0.47) * 22) * (t > 0.47 ? bump(t, 0.62, 0.14) : 0),
+    (t) => noise(t, 2, 0.8) + 14 * bump(t, 0.455, 0.02),
+    (t) => noise(t, 3, 1.6) + 16 * Math.abs(Math.sin(t * 90)) * bump(t, 0.46, 0.03),
+  ],
+};
+const paths = Object.fromEntries(Object.entries(cases).map(([k, g]) => [k, g.map((gen, row) => trace(row, gen))]));
+const xAt = (t: number) => XA + t * (XB - XA);
+const FOR_REAL = ['rash driving', 'thrown phones', 'loud music', 'films'];
+---
+<svg viewBox="0 0 480 270" data-stage="1" role="img" aria-label="Animated illustration in six steps: four sensor channels on a phone in a car, quiet in normal driving, larger in rash driving, one channel spiking in a look-alike, and all of them together in a crash; then the SOS, and the toy-car tests." class="cs">
+  <defs>
+    <g id="cs-car">
+      <path d="M0 0 H 64 V -12 L 52 -14 L 44 -26 H 18 L 10 -14 L 0 -12 Z" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" />
+      <circle cx="15" cy="0" r="6" fill="var(--ink-2)" /><circle cx="49" cy="0" r="6" fill="var(--ink-2)" />
+      <rect x="27" y="-22" width="9" height="14" rx="2" fill="var(--sensing)" />
+    </g>
+    <g id="cs-rows">
+      <line x1="16" x2="464" y1="76" y2="76" stroke="var(--line-2)" stroke-width="2" />
+      {CH.map((c) => (
+        <g>
+          <text x="20" y={c.y + 4} font-size="11" fill="var(--ink-3)" font-family="JetBrains Mono Variable, ui-monospace, monospace">{c.name}</text>
+          <line x1={XA} x2={XB} y1={c.y} y2={c.y} stroke="var(--line)" stroke-width="1" />
+        </g>
+      ))}
+      <line x1={XA} x2={XB} y1={CH[0].y - crashLevel} y2={CH[0].y - crashLevel} stroke="var(--down)" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.8" />
+      <text x={XB} y={CH[0].y - crashLevel - 4} text-anchor="end" font-size="10" fill="var(--down)" font-family="JetBrains Mono Variable, ui-monospace, monospace">crash level</text>
+    </g>
+  </defs>
+
+  {(['normal', 'rash', 'lookalike', 'crash'] as const).map((name, k) => (
+    <g class={`st s${k + 1}`}>
+      <use href="#cs-rows" />
+      {name === 'crash' && <rect x="420" y="36" width="10" height="40" rx="2" fill="var(--ink-3)" />}
+      <use href="#cs-car" class={`car car-${name}`} transform="translate(20 70)" />
+      {paths[name].map((d) => <path class="trace" d={d} pathLength="1" fill="none" stroke="var(--sensing)" stroke-width="1.8" />)}
+      {name === 'normal' && <text x="462" y="26" text-anchor="end" class="tag">normal driving</text>}
+      {name === 'rash' && <text x="462" y="26" text-anchor="end" class="tag warn">rash, below crash level</text>}
+      {name === 'lookalike' && (
+        <g>
+          <text x={xAt(0.3)} y={CH[3].y - 22} text-anchor="middle" class="note la1">loud music</text>
+          <text x={xAt(0.72)} y={CH[0].y + 22} text-anchor="middle" class="note la2">thrown phone</text>
+          <text x="462" y="26" text-anchor="end" class="tag warn verdict">one signal alone: not a crash</text>
+        </g>
+      )}
+      {name === 'crash' && (
+        <g>
+          <text x={xAt(0.46)} y={CH[2].y - 20} text-anchor="middle" class="note cn">airbag</text>
+          <text x={xAt(0.66)} y={CH[1].y - 20} text-anchor="middle" class="note cn">roll</text>
+          <text x="462" y="26" text-anchor="end" class="tag down verdict">crash: the signals agree</text>
+        </g>
+      )}
+    </g>
+  ))}
+
+  <!-- 5 SOS -->
+  <g class="st s5">
+    <rect x="70" y="58" width="76" height="140" rx="14" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" />
+    <circle cx="108" cy="122" r="24" fill="var(--down)" class="sos-dot" />
+    <text x="108" y="128" text-anchor="middle" class="sos">SOS</text>
+    {[60, 128, 196].map((cy, k) => (
+      <g class="contact" style={`animation-delay:${(1.2 + k * 0.5).toFixed(1)}s`}>
+        <path d={`M150 122 C 230 122, 260 ${cy}, 330 ${cy}`} fill="none" stroke="var(--down)" stroke-width="2" stroke-dasharray="5 5" />
+        <circle cx="352" cy={cy - 8} r="10" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" />
+        <path d={`M334 ${cy + 18} C 336 ${cy + 4}, 368 ${cy + 4}, 370 ${cy + 18}`} fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" />
+      </g>
+    ))}
+    <text x="240" y="248" text-anchor="middle" class="note strong n5">sent to the contacts the user chose</text>
+  </g>
+
+  <!-- 6 Tested without crashing cars -->
+  <g class="st s6">
+    <line x1="30" x2="330" y1="150" y2="150" stroke="var(--line-2)" stroke-width="2" />
+    <rect x="300" y="104" width="34" height="46" rx="3" fill="#c9a774" stroke="#b08d57" />
+    <g class="toy">
+      <use href="#cs-car" transform="translate(0 0) scale(0.8)" />
+      <rect x="19" y="-38" width="14" height="22" rx="3" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="1.5" />
+    </g>
+    <path class="bang" d="M296 112 l 10 -14 l 2 14 l 14 -8 l -6 14 l 16 2 l -16 6 l 8 12 l -14 -4 l -2 14 l -8 -12 l -10 8 l 2 -14 l -14 -2 l 12 -8 z" fill="var(--accent)" />
+    <text x="180" y="186" text-anchor="middle" class="note strong">a toy car carrying a phone</text>
+    <text x="400" y="58" text-anchor="middle" class="note">recorded for real:</text>
+    {FOR_REAL.map((f, k) => (
+      <g class="real" style={`animation-delay:${(2.6 + k * 0.4).toFixed(1)}s`}>
+        <rect x="350" y={70 + k * 34} width="100" height="26" rx="13" />
+        <text x="400" y={87 + k * 34} text-anchor="middle">{f}</text>
+      </g>
+    ))}
+  </g>
+</svg>
+
+<style>
+  .note {
+    font: 500 11px var(--font-sans);
+    fill: var(--ink-3);
+  }
+  .note.strong {
+    font-weight: 650;
+    fill: var(--ink-2);
+  }
+  .tag {
+    font: 700 12px var(--font-mono);
+    fill: var(--ink-2);
+  }
+  .tag.warn {
+    fill: var(--accent);
+  }
+  .tag.down {
+    fill: var(--down);
+  }
+  .sos {
+    font: 800 14px var(--font-sans);
+    fill: #ffffff;
+  }
+  .real rect {
+    fill: var(--surface);
+    stroke: var(--sensing);
+  }
+  .real text {
+    font: 600 10.5px var(--font-mono);
+    fill: var(--sensing);
+  }
+
+  .st {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1,
+  svg[data-stage='2'] .s2,
+  svg[data-stage='3'] .s3,
+  svg[data-stage='4'] .s4,
+  svg[data-stage='5'] .s5,
+  svg[data-stage='6'] .s6 {
+    animation: cs-in 0.45s ease both;
+  }
+  @keyframes cs-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes cs-show {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .trace {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  svg[data-stage='1'] .s1 .trace,
+  svg[data-stage='2'] .s2 .trace,
+  svg[data-stage='3'] .s3 .trace,
+  svg[data-stage='4'] .s4 .trace {
+    animation: cs-draw 4.2s linear 0.4s both;
+  }
+  @keyframes cs-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+  svg[data-stage='1'] .car-normal,
+  svg[data-stage='3'] .car-lookalike {
+    animation: cs-drive 4.2s linear 0.4s both;
+  }
+  svg[data-stage='2'] .car-rash {
+    animation: cs-swerve 4.2s ease-in-out 0.4s both;
+  }
+  svg[data-stage='4'] .car-crash {
+    animation: cs-crash 4.2s linear 0.4s both;
+  }
+  @keyframes cs-drive {
+    from { transform: translate(20px, 70px); }
+    to { transform: translate(380px, 70px); }
+  }
+  @keyframes cs-swerve {
+    0% { transform: translate(20px, 70px) rotate(0deg); }
+    35% { transform: translate(150px, 66px) rotate(-5deg); }
+    55% { transform: translate(230px, 72px) rotate(5deg); }
+    75% { transform: translate(300px, 68px) rotate(-3deg); }
+    100% { transform: translate(380px, 70px) rotate(0deg); }
+  }
+  @keyframes cs-crash {
+    0% { transform: translate(20px, 70px) rotate(0deg); }
+    42% { transform: translate(352px, 70px) rotate(0deg); }
+    50% { transform: translate(356px, 62px) rotate(-24deg); }
+    70%, 100% { transform: translate(350px, 66px) rotate(-160deg); }
+  }
+  .tag,
+  .la1,
+  .la2,
+  .cn {
+    opacity: 0;
+  }
+  svg[data-stage='1'] .s1 .tag,
+  svg[data-stage='2'] .s2 .tag {
+    animation: cs-show 0.45s ease 2.4s both;
+  }
+  svg[data-stage='3'] .la1 {
+    animation: cs-show 0.4s ease 1.8s both;
+  }
+  svg[data-stage='3'] .la2 {
+    animation: cs-show 0.4s ease 3.6s both;
+  }
+  svg[data-stage='3'] .verdict {
+    animation: cs-show 0.45s ease 4.8s both;
+  }
+  svg[data-stage='4'] .cn {
+    animation: cs-show 0.4s ease 2.8s both;
+  }
+  svg[data-stage='4'] .verdict {
+    animation: cs-show 0.45s ease 4.8s both;
+  }
+
+  /* 5 */
+  .contact,
+  .n5 {
+    opacity: 0;
+  }
+  svg[data-stage='5'] .sos-dot {
+    animation: cs-pulse 1s ease-in-out 0.3s 3 both;
+  }
+  svg[data-stage='5'] .contact {
+    animation: cs-show 0.45s ease both;
+  }
+  svg[data-stage='5'] .n5 {
+    animation: cs-show 0.45s ease 3.2s both;
+  }
+  @keyframes cs-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  /* 6 */
+  .bang,
+  .real {
+    opacity: 0;
+  }
+  .toy {
+    transform: translate(40px, 150px);
+  }
+  svg[data-stage='6'] .toy {
+    animation: cs-roll 1.6s ease-in 0.4s both;
+  }
+  svg[data-stage='6'] .bang {
+    animation: cs-show 0.2s ease 2s both;
+  }
+  svg[data-stage='6'] .real {
+    animation: cs-show 0.4s ease both;
+  }
+  @keyframes cs-roll {
+    from { transform: translate(40px, 150px); }
+    to { transform: translate(250px, 150px); }
+  }
+</style>

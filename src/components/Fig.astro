@@ -1,6 +1,12 @@
 ---
 // The figure for an entry, if it has one. Figures drawn from data read their numbers from PROFILE.md; the rest are
-// labelled as illustrations.
+// labelled as illustrations. On a case-study page (big), an entry with a story gets the long stepped version instead.
+import Story from './Story.astro';
+import BarcodeStory from '../figures/BarcodeStory.astro';
+import FaceStory from '../figures/FaceStory.astro';
+import DropStory from '../figures/DropStory.astro';
+import CrashStory from '../figures/CrashStory.astro';
+import HandStory from '../figures/HandStory.astro';
 import BarcodeDamage from '../figures/BarcodeDamage.astro';
 import DecodeChart from '../figures/DecodeChart.astro';
 import DropTrace from '../figures/DropTrace.astro';
@@ -11,6 +17,7 @@ import HandTrace from '../figures/HandTrace.astro';
 import NpuChip from '../figures/NpuChip.astro';
 import ReportChart from '../figures/ReportChart.astro';
 import { fmtDate, profile } from '../lib/site';
+import { STORIES } from '../lib/stories';
 
 interface Props {
   id: string;
@@ -18,6 +25,7 @@ interface Props {
   caption?: boolean;
 }
 const { id, big = false, caption = false } = Astro.props;
+const story = big ? STORIES[id] : undefined;
 const e = profile.byId.get(id);
 const tiers = e?.numbers.find((n) => n.id === 'tiers');
 
@@ -54,7 +62,15 @@ const cap =
         ? `${e.report.charts[0].alt}. From ${e.report.title}, posted ${fmtDate(e.report.date)}.`
         : CAPTIONS[id];
 ---
-{kind && (
+{story ? (
+  <Story stages={story.stages} caption={caption ? story.caption : undefined}>
+    {id === 'damaged-barcodes' && <BarcodeStory />}
+    {id === 'face-recognition' && <FaceStory />}
+    {id === 'drop-detection' && <DropStory />}
+    {id === 'crash-detection' && <CrashStory />}
+    {id === 'behavioural-identification' && <HandStory />}
+  </Story>
+) : kind && (
   <figure>
     <div class:list={['fig', { 'fig-big': big }]}>
       {kind === 'barcode' && <BarcodeDamage big={big} />}
