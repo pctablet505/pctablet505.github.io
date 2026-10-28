@@ -31,3 +31,6 @@ A push to `main` builds the site with GitHub Actions and deploys it to GitHub Pa
 - `src/pages/`: one file per page, plus `profile.json`, `llms.txt` and `llms-full.txt`.
 - `src/figures/`: figures drawn by code, either from data in PROFILE.md or labelled as illustrations.
 - `src/assets/`: certificate images, optimized at build time.
+- `src/pages/social-card.astro`: the link-preview card, drawn from PROFILE.md. `public/social.png` is a screenshot of
+  it; after the slogan changes, run `npm run build && npm run preview` and then
+  `google-chrome --headless=new --window-size=1280,640 --screenshot=public/social.png http://localhost:4321/social-card/`.

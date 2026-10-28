@@ -19,7 +19,7 @@ const profileReload = {
 
 export default defineConfig({
   site: 'https://pctablet505.github.io',
-  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],
+  integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') && !page.endsWith('/social-card/') })],
   build: { format: 'directory' },
   devToolbar: { enabled: false },
   vite: { plugins: [profileReload] },

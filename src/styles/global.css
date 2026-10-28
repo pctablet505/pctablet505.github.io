@@ -594,6 +594,9 @@ a.stat-src:hover {
 .hero .display {
   max-width: 18ch;
 }
+.slogan-line {
+  display: block;
+}
 .hero .lede {
   margin-top: 1.25rem;
 }

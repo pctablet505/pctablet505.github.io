@@ -7,12 +7,12 @@ export and tool that uses it changes with it. Format: [docs/PROFILE-FORMAT.md](d
 ```yaml
 handle: pctablet505
 name: Rahul Kumar
-# The brand line, as on the LinkedIn banner and the GitHub bio.
-headline: "Smaller, faster ML models"
-lede: "Lately I served an LLM larger than my GPU's memory from that one GPU, built the path that exports Keras models to phones, and started RL Alpha Labs, automated trading research on Indian stocks. Before that, I built vision and motion-sensing models for phones."
+# The slogan, used on every profile; the lede is the short story under it, and the lamp is the symbol.
+headline: "Big models. Small places. Real numbers"
+lede: "The model you need rarely fits where it has to run, and the number you are shown is rarely the one that decides. I work on both: vision and sensing on phones, large models on one GPU, and trading research after costs and tax."
 location: India
-# The numbers the home page leads with, as entry-id.number-id: the newest work first.
-proof: [glm53-one-gpu.decode, oss-summary.merged, rl-alpha-labs.tiers, damaged-barcodes.read-rate]
+# The numbers the home page leads with, as entry-id.number-id: one per beat of the slogan.
+proof: [glm53-one-gpu.decode, damaged-barcodes.read-rate, drop-detection.parameters, rl-alpha-labs.tiers]
 # The live site's contact address; confirm before launch.
 email: "work.rahul126@gmail.com"
 links:
@@ -30,21 +30,24 @@ languages: [English, Hindi]
 
 ## About
 
-I'm Rahul Kumar, and I publish as pctablet505. I build machine learning that has to run somewhere tight: a phone, a
-camera, a single GPU.
+I'm Rahul Kumar, and I publish as pctablet505.
 
-For most of my career that meant perception and sensing on phones: reading damaged barcodes, recognising faces,
-proctoring exams, noticing when someone stops paying attention, catching a falling phone, and telling who is holding a
-phone from the way they hold it. Then I fitted camera and generative-imaging models onto a phone chip's NPU and DSP.
-Since 2025 I have worked on open-source ML frameworks and tools: the LiteRT export path in Keras and KerasHub, Llama 3.1
-in KerasHub, Keras speed on PyTorch, and now XProf, the open-source ML profiler.
+Two problems run through my work. The model you need rarely fits where it has to run, and the number you are shown is
+rarely the one that decides.
 
-On my own time I run RL Alpha Labs, automated trading research that tests ideas on Indian stocks and keeps only what
-beats an index fund after costs and tax, writing down why each closed idea failed. I built Porchlamp, which ranks
-open-source projects by how they treat a stranger's pull request. And I serve a language model larger than my GPU's
-memory from that one GPU.
+**Big models, small places.** I build computer vision and sensing that run on phones and cameras: reading damaged
+barcodes, recognising faces in a crowd, proctoring exams, noticing when attention drifts, catching a falling phone, and
+telling who is holding a phone from the way they hold it. I fit camera and generative-imaging models onto phone NPUs and
+DSPs, built the path that exports Keras models to phones, and serve a language model larger than my GPU's memory from
+that one GPU.
 
-How I work: measure first, change one thing, measure again, and write down what did not work.
+**Real numbers.** A backtest's best run, a benchmark's peak and a project's stars are the flattering numbers. RL Alpha
+Labs, my trading research on Indian stocks, counts an idea only if it beats an index fund after costs and tax, and writes
+down why each closed idea failed. Porchlamp ranks open-source projects by what happens to a stranger's pull request, not
+by stars.
+
+How I work: measure first, change one thing, measure again, and write down what did not work. The lamp is for that last
+part: a light left on for the next person who checks.
 
 (Draft. Background and life outside work to come.)
 
