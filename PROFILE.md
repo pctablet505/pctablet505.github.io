@@ -660,7 +660,7 @@ area: performance
 status: built
 start: 2024-09
 end: 2025-01
-priority: 1
+priority: 2
 one_line: "Made deep-learning models run 3x faster on the Snapdragon NPU and DSP, and cut memory bandwidth 75% with quantization-aware training."
 skills: [Snapdragon NPU, Hexagon DSP, quantization-aware training, INT8, TFLite, C++]
 numbers:
@@ -678,7 +678,7 @@ numbers:
 Models tuned for the phone's NPU and DSP ran 3x faster, and quantization-aware training cut the memory bandwidth of
 high-fidelity image-processing models by 75%.
 
-### Why Keras on PyTorch ran 9x slower, fixed one cause at a time
+### Keras on PyTorch: 15 fixes merged, compiled generation 11.6x faster
 ```yaml
 id: keras-pytorch-speed
 org: google
@@ -686,22 +686,96 @@ area: performance
 status: merged
 start: 2026-07
 end: 2026-10
-priority: 2
-one_line: "Traced why Keras on PyTorch ran about 9x slower than plain PyTorch on small models, and landed the fixes one root cause at a time."
-skills: [performance analysis, PyTorch, torch.compile, Keras, benchmarking, Python]
+priority: 1
+one_line: "Traced why Keras on PyTorch ran about 9x slower than plain PyTorch, and merged 15 fixes upstream, one root cause each."
+skills: [performance analysis, PyTorch, torch.compile, JAX, Keras, cProfile, benchmarking, Python]
 numbers:
+  - id: compiled
+    value: "11.6x"
+    what: faster 32-token LLM generation under torch.compile, Keras master on July 18 against October 15 (87.8 → 7.54 ms per call)
+    status: checked
+    source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+    as_of: 2026-10-28
+  - id: breaks
+    value: "20 → 0"
+    what: torch.compile graph breaks per forward pass (CNN 9 → 0, LLM 11 → 0)
+    status: checked
+    source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+    as_of: 2026-10-28
+  - id: calls
+    value: "−12 to −23%"
+    what: Python function calls per forward pass, on all four Keras backends
+    status: checked
+    source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+    as_of: 2026-10-28
+  - id: eager
+    value: "1.21x"
+    what: faster 32-token generation in eager mode over the same months (59.8 → 49.5 ms per call)
+    status: checked
+    source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+    as_of: 2026-10-28
+  - id: gap
+    value: "8.45x"
+    what: the time eager Keras on PyTorch still takes against plain PyTorch on the same benchmark (10.2x in July)
+    status: checked
+    source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+    as_of: 2026-10-28
   - id: slowdown
     value: "9x"
-    what: slower than plain PyTorch on small models in eager mode, about
+    what: slower than plain PyTorch on small models in eager mode, about, when the issue was opened
     status: checked
     source: "https://github.com/keras-team/keras/issues/22561"
-    as_of: 2026-10-27
+    as_of: 2026-10-28
+report:
+  title: "the progress update on keras#22561"
+  source: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"
+  date: 2026-10-18
+  dir: reports/keras-22561
+  charts:
+    - {file: tiles.png, alt: "Headline numbers, Keras master on July 18 against October 15: compiled and eager generation, Python calls per forward, graph breaks"}
+    - {file: flips.png, alt: "Three merges that each made one compiled Keras-on-PyTorch workload several times faster"}
+    - {file: waterfall.png, alt: "Compiled 32-token generation from July to October, one bar per pull request, the rest of master as one grey bar"}
+    - {file: throughput.png, alt: "Tokens per second for 32-token generation, July against October, Keras on PyTorch and JAX, with the plain frameworks for reference"}
+    - {file: backends.png, alt: "Python function calls per LLM forward on PyTorch, JAX, TensorFlow and NumPy, July against October and at every commit"}
+    - {file: timeline.png, alt: "Compiled 32-token generation at every commit from July to October, and torch.compile graph breaks per forward"}
+    - {file: jax.png, alt: "Keras on JAX, eager and under jax.jit, 32-token generation at every commit"}
 links:
+  - {label: "The progress report, keras#22561", url: "https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051"}
+  - {label: "Interactive version, on DEV", url: "https://dev.to/pctablet505/keras-22561-speedups-compiled-keras-on-pytorch-now-generates-text-116x-faster-595m"}
   - {label: "The issue, keras#22561", url: "https://github.com/keras-team/keras/issues/22561"}
+related: [keras-22561-speedups]
 ```
-The cost was per-call Python dispatch, paid on every call in eager mode. A large first fix was split into small pull
-requests, one root cause each, each with tests, a before-and-after benchmark and a check that the numbers did not
-change.
+Keras runs on PyTorch, but on small models it ran about 9x slower than the same model in plain PyTorch. I traced the
+cost to Python work Keras repeated on every call, opened [keras#22561](https://github.com/keras-team/keras/issues/22561)
+with the root causes, and landed the fixes as small pull requests, one cause each. Each was timed on the commit just
+before and just after its merge.
+
+#### Problem
+Most of each call went to Keras's own Python: building traceback details that were only needed when an op failed,
+re-setting layer state, checking dtypes and inputs. `torch.compile` could not help either. Graph breaks split every
+forward pass and compiled steps kept recompiling, so compiling a Keras model made generation slower than running it
+eagerly.
+
+#### Approach
+- Counted every Python call with cProfile and every `torch.compile` graph break with `torch._dynamo.explain`, on the
+  issue's two models: a small CNN and a two-layer transformer language model.
+- Split one large fix into small pull requests, one root cause each, each with tests and a before-and-after benchmark.
+- Three merges made `torch.compile` work with Keras: one removed the graph break in attention, one made the PyTorch
+  tree code traceable, and one stopped compiled steps from recompiling.
+- Most fixes changed shared code (`Layer.__call__`, op tracebacks, dtype handling, input checks), so the JAX,
+  TensorFlow and NumPy backends gained too.
+
+#### Results
+15 pull requests are merged. Between Keras master on July 18 and on October 15, compiled 32-token generation got 11.6x
+faster and eager generation 1.21x faster. Graph breaks per forward pass fell from 20 to 0, and Python calls per forward
+pass fell 12 to 23% on all four backends. The
+[progress report](https://github.com/keras-team/keras/issues/22561#issuecomment-6247116051) times every pull request on
+its own; its interactive version on DEV is under Links.
+
+#### What did not work
+The eager gap did not close: eager Keras on PyTorch still takes 8.45x the time of plain PyTorch on this benchmark, so
+the issue stays open. When the report was posted, two more fixes were in review. Training, CPU timing and larger models
+were not measured.
 
 ### End-to-end UI tests for XProf
 ```yaml
@@ -1232,6 +1306,16 @@ url: "https://keras.io/guides/litert_export/"
 related: [keras-litert-export]
 ```
 The official keras.io guide to LiteRT export.
+
+### Keras #22561 speedups: compiled Keras on PyTorch now generates text 11.6x faster
+```yaml
+id: keras-22561-speedups
+priority: 1
+date: 2026-10-16
+venue: DEV
+url: "https://dev.to/pctablet505/keras-22561-speedups-compiled-keras-on-pytorch-now-generates-text-116x-faster-595m"
+related: [keras-pytorch-speed]
+```
 
 ### A hot-expert cache made a 181 GiB model faster on one 96 GiB GPU
 ```yaml

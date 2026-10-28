@@ -1,0 +1,21 @@
+---
+// One chart from a published report, in the light or dark copy that matches the site's theme. In a work card it sits
+// in the same 16:9 frame as the drawn figures; on the entry's page it keeps its own shape.
+import { Image } from 'astro:assets';
+import type { Report } from '../lib/profile';
+import { imageFor } from '../lib/images';
+
+interface Props {
+  report: Report;
+  chart: Report['charts'][number];
+  card?: boolean;
+}
+const { report, chart, card = false } = Astro.props;
+const light = imageFor(`${report.dir}/light/${chart.file}`)!;
+const dark = imageFor(`${report.dir}/dark/${chart.file}`)!;
+const sizes = card ? '(min-width: 1100px) 540px, 100vw' : '(min-width: 1100px) 760px, 100vw';
+---
+<div class:list={['report-chart', { card }]}>
+  <Image class="theme-light" src={light} alt={chart.alt} widths={[640, 1100, light.width]} sizes={sizes} />
+  <Image class="theme-dark" src={dark} alt={chart.alt} widths={[640, 1100, dark.width]} sizes={sizes} data-pagefind-ignore />
+</div>

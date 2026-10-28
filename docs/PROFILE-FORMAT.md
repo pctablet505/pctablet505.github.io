@@ -75,6 +75,7 @@ Work entries add:
 | `demo` | no | The id of a Demos entry. |
 | `chart` | no | Data for a chart the site draws: `title`, `source` (https), `as_of`, `note`, and one of: `bars`, a list of `{label, value}` (add `off: true` for a setup that was measured but not used); or `growth`, `{from, years, start, lines}`: an amount (`start`, such as `"₹1 lakh"`) grown for `years` from the year `from`, one line per `{label, rate}` in percent a year (add `high` for a range, drawn as a band). The values are the source's exact numbers; `numbers` may round them for text. |
 | `closed` | no | The ideas a research project tested and closed: `source` (https), `as_of`, and `ideas`, a list of `{idea, why}`. If the entry has a number with id `closed`, its value must equal the number of ideas. |
+| `report` | no | Charts from a published report: `title`, `source` (https), `date` posted, `dir` under `src/assets/` holding a `light/` and a `dark/` copy of each chart, and `charts`, a list of `{file, alt}`. The first chart is the entry's figure; the rest show under "Charts from the report". |
 
 Each item in `numbers`:
 

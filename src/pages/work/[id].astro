@@ -4,11 +4,12 @@ import Fig from '../../components/Fig.astro';
 import Stat from '../../components/Stat.astro';
 import Depth from '../../components/Depth.astro';
 import EntryRow from '../../components/EntryRow.astro';
+import ReportChart from '../../figures/ReportChart.astro';
 import type { Entry } from '../../lib/profile';
 import { md } from '../../lib/md';
 import {
-  AREA_META, STATUS_LABEL, entryHref, fmtSpan, isExternal, jobLabel, profile, readMinutes, related, usedBy, work,
-  workIn,
+  AREA_META, STATUS_LABEL, entryHref, fmtDate, fmtSpan, isExternal, jobLabel, profile, readMinutes, related, usedBy,
+  work, workIn,
 } from '../../lib/site';
 
 export function getStaticPaths() {
@@ -31,6 +32,8 @@ const level = e.parts.some((p) => p.name === 'Deep dive') ? 4 : e.parts.length ?
 const closedGroups = [...Map.groupBy(e.closed?.ideas ?? [], (i) => i.why)].map(
   ([why, ideas]) => [why, ideas.map((i) => i.idea)] as const,
 );
+// The first chart is the figure at the top; the rest follow the text.
+const moreCharts = e.report?.charts.slice(1) ?? [];
 ---
 <Base title={e.title} description={e.one_line} section="/work/">
   <article data-area={area}>
@@ -75,6 +78,18 @@ const closedGroups = [...Map.groupBy(e.closed?.ideas ?? [], (i) => i.why)].map(
               <p>From <a href={e.closed.source}>{new URL(e.closed.source).host}</a>, read {e.closed.as_of}.</p>
             </section>
           )}
+          {e.report && moreCharts.length > 0 && (
+            <section id="charts">
+              <h2>Charts from the report</h2>
+              <p>From <a href={e.report.source}>{e.report.title}</a>, posted {fmtDate(e.report.date)}.</p>
+              {moreCharts.map((c) => (
+                <figure class="report-figure">
+                  <ReportChart report={e.report!} chart={c} />
+                  <figcaption>{c.alt}.</figcaption>
+                </figure>
+              ))}
+            </section>
+          )}
         </div>
         {more.length > 0 && (
           <section style="margin-top:3.5rem">
@@ -90,6 +105,7 @@ const closedGroups = [...Map.groupBy(e.closed?.ideas ?? [], (i) => i.why)].map(
             <ul>
               {e.parts.map((p) => <li><a href={`#${slug(p.name)}`}>{p.name}</a></li>)}
               {e.closed && <li><a href="#ideas-closed">Ideas closed so far</a></li>}
+              {moreCharts.length > 0 && <li><a href="#charts">Charts from the report</a></li>}
             </ul>
           </div>
         )}

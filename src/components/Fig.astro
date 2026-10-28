@@ -9,7 +9,8 @@ import FaceLandmarks from '../figures/FaceLandmarks.astro';
 import GrowthChart from '../figures/GrowthChart.astro';
 import HandTrace from '../figures/HandTrace.astro';
 import NpuChip from '../figures/NpuChip.astro';
-import { profile } from '../lib/site';
+import ReportChart from '../figures/ReportChart.astro';
+import { fmtDate, profile } from '../lib/site';
 
 interface Props {
   id: string;
@@ -42,13 +43,16 @@ else if (e?.chart?.bars) kind = 'chart';
 else if (e?.chart?.growth) kind = 'growth';
 else if (id === 'keras-litert-export') kind = 'export';
 else if (id === 'snapdragon-speed') kind = 'npu';
+else if (e?.report) kind = 'report';
 
 const cap =
   kind === 'chart' && e?.chart
     ? `Drawn from the repository's measurements (read ${e.chart.as_of}). ${e.chart.note ?? ''}`
     : kind === 'growth' && e?.chart
       ? `Drawn from ${new URL(e.chart.source).host} (read ${e.chart.as_of}). ${e.chart.note ?? ''}${e.closed ? ' The tape lists the ideas closed so far.' : ''}`
-      : CAPTIONS[id];
+      : kind === 'report' && e?.report
+        ? `${e.report.charts[0].alt}. From ${e.report.title}, posted ${fmtDate(e.report.date)}.`
+        : CAPTIONS[id];
 ---
 {kind && (
   <figure>
@@ -61,6 +65,7 @@ const cap =
       {kind === 'chart' && e?.chart && <DecodeChart chart={e.chart} big={big} />}
       {kind === 'export' && <ExportPipeline big={big} />}
       {kind === 'npu' && <NpuChip big={big} />}
+      {kind === 'report' && e?.report && <ReportChart report={e.report} chart={e.report.charts[0]} card={!big} />}
       {kind === 'growth' && e?.chart && (
         <GrowthChart chart={e.chart} closed={e.closed} verdict={tiers && `Index fund ahead in ${tiers.value} tiers`} big={big} />
       )}

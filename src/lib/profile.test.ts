@@ -55,6 +55,11 @@ test('a growth line without a numeric rate fails', () => {
   assert.throws(() => parseProfile(bad), /rl-alpha-labs: chart growth needs/);
 });
 
+test('a report chart without alt text fails', () => {
+  const bad = broken('{file: jax.png, alt: "Keras on JAX, eager and under jax.jit, 32-token generation at every commit"}', '{file: jax.png}');
+  assert.throws(() => parseProfile(bad), /keras-pytorch-speed: report charts need a file and an alt text each/);
+});
+
 test('a fifth focus label fails', () => {
   const bad = broken('focus: [LLM inference, Computer vision, On-device AI, Automated trading]', 'focus: [LLM inference, Computer vision, On-device AI, Automated trading, Profiling]');
   assert.throws(() => parseProfile(bad), /Identity: focus takes at most four labels/);
