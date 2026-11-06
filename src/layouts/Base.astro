@@ -15,7 +15,8 @@ const { title, description, section } = Astro.props;
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site).href;
 const fullTitle = title ? `${title} · ${identity.handle}` : `${identity.handle} (${identity.name}): ${identity.headline}`;
-const desc = description ?? `${identity.headline}. ${identity.lede ?? ''}`.trim();
+const rawDesc = description ?? `${identity.headline}. ${identity.lede ?? ''}`.trim();
+const desc = rawDesc.length > 160 ? `${rawDesc.slice(0, 157).replace(/[,;:\s]+\S*$/, '')}…` : rawDesc;
 const nav = [
   ['Work', '/work/'],
   ['Experience', '/experience/'],
@@ -88,11 +89,11 @@ const built = new Date().toISOString().slice(0, 10);
           ))}
         </nav>
         <div class="tools">
-          <a class="icon-btn" href="/search/" aria-label="Search the site">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <a class="icon-btn" href="/search/" aria-label="Search the site" aria-current={current.startsWith('/search/') ? 'page' : undefined}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           </a>
           <button class="icon-btn" id="theme" type="button" aria-label="Switch theme">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" /></svg>
           </button>
         </div>
       </div>

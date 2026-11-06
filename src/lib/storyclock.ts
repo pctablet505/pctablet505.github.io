@@ -25,9 +25,9 @@ export function toggle(c: Clock, elapsed: number): Clock {
   return { ...b, wanted: !b.wanted, held: b.wanted };
 }
 
-export function go(c: Clock, n: number, stages: { ms: number }[]): Clock {
+export function go(c: Clock, n: number, stages: { ms: number }[], byHand = false): Clock {
   const i = (n + stages.length) % stages.length;
-  return { ...c, i, left: stages[i].ms, held: false };
+  return { ...c, i, left: stages[i].ms, held: false, wanted: byHand ? false : c.wanted };
 }
 
 // The progress bar's animation delay: negative, so the bar starts as far along as the step already is.

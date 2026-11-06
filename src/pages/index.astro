@@ -29,7 +29,7 @@ const contacts = [
   ...identity.links.filter((l) => l.priority === 1 && l !== linkedin).map((l) => ({ label: l.label, href: l.url })),
 ];
 ---
-<Base>
+<Base description={`${identity.headline}: on-device computer vision and sensing, LLM inference on one GPU, open-source Keras and automated trading.`}>
   <section class="wrap hero">
     <div class="hero-head">
       <div class="hanging-lamp" aria-hidden="true"><span class="cord"></span><span class="cap"></span><span class="bulb"></span></div>
@@ -38,7 +38,7 @@ const contacts = [
         <span aria-hidden="true">·</span>
         <span>{identity.name}, machine learning engineer, {identity.location}</span>
       </div>
-      <h1 class="display">{slogan.map(({ key, rest }) => <span class="slogan-line"><b>{key}</b>{` ${rest}`}</span>)}</h1>
+      <h1 class="display">{slogan.map(({ key, rest }, i) => <>{i > 0 && ' '}<span class="slogan-line"><b>{key}</b>{` ${rest}`}</span></>)}</h1>
       <p class="lede">{identity.lede}</p>
       <div class="btn-row">
         <a class="btn primary" href="/work/">See all projects →</a>
@@ -53,7 +53,7 @@ const contacts = [
           <span class="stat-value">{num.value}</span>
           <span class="stat-what">{num.what}</span>
           <span class="stat-src">{num.status === 'checked' ? <><span class="ok">●</span> checked</> : '○ reported'}</span>
-          <span class="stat-src" style="color:var(--accent-ink);margin-top:auto">{entry.title} →</span>
+          <span class="stat-src" style="color:var(--accent-ink)">{entry.title} →</span>
         </a>
       ))}
     </div>
@@ -156,7 +156,7 @@ const contacts = [
           <div class="num">
             <div class="stat-value">{n.value}</div>
             <div class="stat-what">{n.what}</div>
-            <a class="stat-src" href={n.source}><span class="ok">●</span> {isFloor(n) ? 'live list ↗' : `checked ${n.as_of}`}</a>
+            <a class="stat-src" href={n.source} aria-label={isFloor(n) ? `Live list for ${n.value} ${n.what}` : `Source for ${n.value} ${n.what} (checked ${n.as_of})`}><span class="ok">●</span> {isFloor(n) ? 'live list ↗' : `checked ${n.as_of}`}</a>
           </div>
         ))}
       </div>

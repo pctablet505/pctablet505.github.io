@@ -21,7 +21,7 @@ const demos = byPriority(section('Demos'));
           <Fig id={d.id} />
           <div class="body">
             <div class="meta"><span class="chip">{d.status === 'live' ? 'Live' : 'Planned'}</span></div>
-            <h3><a href={entryHref(d)}>{d.title}</a></h3>
+            <h2><a href={entryHref(d)}>{d.title}</a></h2>
             <p class="one-line">{d.summary.split('. ')[0]}.</p>
             <div class="foot"><span>{d.related.length} related project{d.related.length === 1 ? '' : 's'}</span><span class="go">Open →</span></div>
           </div>

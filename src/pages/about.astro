@@ -85,7 +85,7 @@ const elsewhere = linksAt(2);
         {path.map((e) => (
           <li>
             <div class="when">{years(e)}</div>
-            <a href={entryHref(e)}>{e.title}</a>
+            <a href={entryHref(e)}>{e.title} <span aria-hidden="true">→</span></a>
           </li>
         ))}
       </ol>
