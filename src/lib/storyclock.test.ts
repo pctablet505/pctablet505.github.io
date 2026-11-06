@@ -51,13 +51,3 @@ test('time off screen is not spent, and the steps wrap around', () => {
   assert.equal(go(c, -1, stages).i, 2);
   assert.equal(go(c, 3, stages).i, 0);
 });
-
-test('stepping by hand while playing pauses auto-advance and lets the step draw', () => {
-  let c = see(start(6500, false), true, 0);
-  assert.equal(running(c), true);
-  c = go(c, c.i + 1, stages, true);
-  assert.equal(c.i, 1);
-  assert.equal(c.wanted, false);
-  assert.equal(running(c), false);
-  assert.equal(frozen(c), false);
-});

@@ -28,6 +28,7 @@ A push to `main` builds the site with GitHub Actions and deploys it to GitHub Pa
 ## Where things are
 
 - `PROFILE.md`: the facts. `src/lib/profile.ts` reads and checks it.
+- `docs/UI-GUIDELINES.md`: the layout, responsive, contrast and accessibility rules for the site's UI.
 - `src/pages/`: one file per page, plus `profile.json`, `llms.txt` and `llms-full.txt`.
 - `src/figures/`: figures drawn by code, either from data in PROFILE.md or labelled as illustrations.
 - `src/assets/`: certificate images, optimized at build time.
