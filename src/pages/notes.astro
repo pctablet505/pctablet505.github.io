@@ -22,7 +22,7 @@ const notes = byPriority(section('Notes'));
             <div class="meta"><span class="chip">{n.venue}</span>{about && <span>from {about.title}</span>}</div>
             <h2><a href={n.url}>{n.title} ↗</a></h2>
             <div class="one-line"><Fragment set:html={md(n.summary).replace(/^<p>|<\/p>\s*$/g, '')} /></div>
-            {about && <div class="foot"><span /><a class="go" href={entryHref(about)} aria-label={`Read the project: ${about.title}`} style="position:relative;z-index:1">the project →</a></div>}
+            {about && <div class="foot"><span /><a class="go" href={entryHref(about)} aria-label={`Read the project for ${n.title}: ${about.title}`} style="position:relative;z-index:1">the project →</a></div>}
           </article>
         );
       })}
