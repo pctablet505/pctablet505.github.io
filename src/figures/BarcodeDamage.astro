@@ -7,9 +7,10 @@ const bars = layBars(ean13('5901234123457'), 112, 256).map((b) => ({ x: b.x, w: 
 
 interface Props {
   big?: boolean;
+  uid?: string;
 }
-const { big = false } = Astro.props;
-const uid = big ? 'bcb' : 'bc';
+const { big = false, uid: propUid } = Astro.props;
+const uid = propUid ?? (big ? 'bcb' : 'bc');
 ---
 <svg viewBox="0 0 480 270" role="img" aria-label="Animated illustration: a barcode gets blurred, scuffed and caught by glare, is restored and read; then a barcode with most of its middle missing is refused." class:list={['bc', { big }]}>
   <defs>
@@ -48,7 +49,7 @@ const uid = big ? 'bcb' : 'bc';
     <text class="s1" x="240" y="236" fill="var(--ink-3)">scanning</text>
     <text class="s2" x="240" y="236" fill="var(--ink-2)">blur · scuff · glare</text>
     <text class="s3" x="240" y="236" fill="var(--ok)">restored → read 5901234123457 ✓</text>
-    <text class="s4" x="240" y="236" fill="#dc2626">too damaged → no read, no guess ✗</text>
+    <text class="s4" x="240" y="236" fill="var(--down)">too damaged → no read, no guess ✗</text>
   </g>
 </svg>
 

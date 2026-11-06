@@ -1730,7 +1730,7 @@ id: udemy-ds-bootcamp
 priority: 3
 issuer: Udemy
 date: 2020-12-15
-url: "http://ude.my/UC-d7c52c49-464f-4b63-a9b4-2da5d4c53ff4/"
+url: "https://ude.my/UC-d7c52c49-464f-4b63-a9b4-2da5d4c53ff4/"
 image: "certificates/udemy-ds-bootcamp.jpg"
 ```
 

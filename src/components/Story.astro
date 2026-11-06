@@ -14,8 +14,10 @@ const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
 <figure class="story" data-stages={JSON.stringify(stages)}>
   <div class="fig fig-big"><slot /></div>
   <div class="story-panel">
-    <p class="story-step"><span class="story-count">1 of {stages.length}</span><strong class="story-title">{stages[0].title}</strong></p>
-    <p class="story-text">{stages[0].text}</p>
+    <div class="story-live" aria-live="off" aria-atomic="true">
+      <p class="story-step"><span class="story-count">1 of {stages.length}</span><strong class="story-title">{stages[0].title}</strong></p>
+      <p class="story-text">{stages[0].text}</p>
+    </div>
     <div class="story-bar" aria-hidden="true"><i></i></div>
     <div class="story-controls">
       <button type="button" class="story-btn story-prev" aria-label="Previous step">‹</button>
@@ -45,6 +47,7 @@ const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
     const stages: Stage[] = JSON.parse(root.dataset.stages ?? '[]');
     if (!svg || !stages.length) continue;
     const pick = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const live = pick('.story-live');
     const title = pick('.story-title');
     const text = pick('.story-text');
     const count = pick('.story-count');
@@ -68,14 +71,20 @@ const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
       play.textContent = c.wanted ? 'Pause' : 'Play';
       play.setAttribute('aria-label', c.wanted ? 'Pause' : 'Play');
       // Read each new step aloud only when the reader moves by hand, not every few seconds while it plays.
-      text.setAttribute('aria-live', c.wanted ? 'off' : 'polite');
+      const mode = c.wanted ? 'off' : 'polite';
+      live.setAttribute('aria-live', mode);
+      text.setAttribute('aria-live', mode);
       if (running(c)) {
         since = performance.now();
         timer = window.setTimeout(() => go(c.i + 1), c.left);
       }
     }
-    function go(n: number) {
-      c = step(c, n, stages);
+    function go(n: number, byHand = false) {
+      c = step(c, n, stages, byHand);
+      if (byHand) {
+        live.setAttribute('aria-live', 'polite');
+        text.setAttribute('aria-live', 'polite');
+      }
       const { i } = c;
       // Take the step away and give it back, so its animations start from the beginning.
       svg!.removeAttribute('data-stage');
@@ -93,9 +102,9 @@ const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
       if (c.wanted) fill();
       sync();
     });
-    pick('.story-prev').addEventListener('click', () => go(c.i - 1));
-    pick('.story-next').addEventListener('click', () => go(c.i + 1));
-    dots.forEach((d, k) => d.addEventListener('click', () => go(k)));
+    pick('.story-prev').addEventListener('click', () => go(c.i - 1, true));
+    pick('.story-next').addEventListener('click', () => go(c.i + 1, true));
+    dots.forEach((d, k) => d.addEventListener('click', () => go(k, true)));
     new IntersectionObserver(
       ([entry]) => {
         c = see(c, entry.isIntersecting, elapsed());
@@ -176,16 +185,17 @@ const seconds = Math.round(stages.reduce((s, x) => s + x.ms, 0) / 1000);
   .story-dots {
     display: flex;
     flex-wrap: wrap;
+    gap: 0.2rem;
     list-style: none;
     margin: 0 0 0 0.1rem;
     padding: 0;
   }
-  /* Each dot is small, but the button around it is a full 24px target. */
+  /* Each dot is small, but the button around it is a full 28px target. */
   .story-dot {
     display: grid;
     place-items: center;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
     padding: 0;
     border: 0;
     border-radius: 50%;

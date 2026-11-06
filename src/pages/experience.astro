@@ -10,7 +10,7 @@ const personal = work().filter((e) => e.org === 'personal');
 const independent = byArea(personal.filter((e) => e.priority < 3));
 const since = Math.min(...personal.map((e) => Number((e.start ?? e.date ?? '9999').slice(0, 4))));
 ---
-<Base title="Experience" description="Experience timeline: on-device computer vision, biometrics and sensor ML at Samsung R&D Institute India and Qualcomm, then open-source ML frameworks and tools.">
+<Base title="Experience" description="Experience timeline: on-device computer vision, biometrics and sensor ML at Samsung R&D India and Qualcomm, then open-source ML at Google.">
   <header class="wrap entry-head">
     <p class="eyebrow">Experience</p>
     <h1>Where the work was done</h1>

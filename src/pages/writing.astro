@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { md } from '../lib/md';
-import { byDate, entryHref, fmtDate, profile, section } from '../lib/site';
+import { byDate, entryHref, fmtDate, isExternal, profile, section } from '../lib/site';
 
 const posts = byDate(section('Writing'));
 ---
@@ -20,7 +20,7 @@ const posts = byDate(section('Writing'));
           <p class="sub">
             {p.summary && <Fragment set:html={md(p.summary).replace(/^<p>|<\/p>\s*$/g, '')} />}
             <span class="muted"> {p.summary ? '· ' : ''}{p.venue}</span>
-            {p.links.map((l) => <span class="muted"> · <a href={l.url}>{l.label}</a></span>)}
+            {p.links.map((l) => <span class="muted"> · <a href={l.url} aria-label={`${l.label}: ${p.title}`}>{l.label}{isExternal(l.url) && ' ↗'}</a></span>)}
             {p.related.map((r) => profile.byId.get(r)).filter(Boolean).slice(0, 1).map((r) => (
               <span class="muted"> · about <a href={entryHref(r!)}>{r!.title}</a></span>
             ))}

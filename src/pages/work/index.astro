@@ -32,7 +32,7 @@ import { AREA_META, AREA_ORDER, workIn } from '../../lib/site';
             </div>
           </div>
           <div class="grid two">
-            {top.map((e) => <WorkCard entry={e} feature={e.priority === 1} />)}
+            {top.map((e) => <WorkCard entry={e} feature={e.priority === 1 || e.id === 'snapdragon-speed'} />)}
           </div>
           {rest.length > 0 && (
             <div style="margin-top:2rem">

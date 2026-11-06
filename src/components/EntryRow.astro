@@ -14,7 +14,7 @@ const meta = [showOrg && e.section === 'Work' ? jobLabel(e.org) : '', e.venue ??
 ---
 <li id={e.section === 'Work' ? undefined : e.id}>
   <a class="title" href={href} rel={isExternal(href) ? 'noopener' : undefined}>{e.title}{isExternal(href) && ' ↗'}</a>
-  <span class="when">{fmtSpan(e)}</span>
+  {fmtSpan(e) && <span class="when">{fmtSpan(e)}</span>}
   {(e.one_line || meta) && (
     <p class="sub">
       {e.one_line}

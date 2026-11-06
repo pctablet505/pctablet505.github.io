@@ -73,7 +73,7 @@ const cap =
 ) : kind && (
   <figure>
     <div class:list={['fig', { 'fig-big': big }]}>
-      {kind === 'barcode' && <BarcodeDamage big={big} />}
+      {kind === 'barcode' && <BarcodeDamage big={big} uid={`${id}-${big ? 'b' : 'c'}`} />}
       {kind === 'face-rec' && <FaceLandmarks variant="recognition" big={big} />}
       {kind === 'face-att' && <FaceLandmarks variant="attention" big={big} />}
       {kind === 'hand' && <HandTrace big={big} />}
