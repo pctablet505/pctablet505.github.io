@@ -27,7 +27,7 @@ links:
   - {label: Kaggle, url: "https://www.kaggle.com/pctablet505", priority: 2}
   - {label: X, url: "https://x.com/pctablet505", priority: 3}
 photo: null
-resume: null
+resume: "/resume/Rahul_Kumar_Resume.pdf"
 languages: [English, Hindi]
 ```
 
